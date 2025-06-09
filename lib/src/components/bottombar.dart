@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
-class Bottombar extends StatelessWidget {
-  const Bottombar({super.key});
+class BottomBar extends StatelessWidget {
+  const BottomBar({super.key});
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
