@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/src/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
-  final String mealName;
-  const MealContainer({Key? key, required this.mealName}) : super(key: key);
+  final Meal meal;
+  const MealContainer({Key? key, required this.meal}) : super(key: key);
 
   @override
   State<MealContainer> createState() => _MealContainerState();
@@ -15,37 +17,27 @@ class _MealContainerState extends State<MealContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          Align(child: Text(widget.mealName), alignment: Alignment.centerLeft),
-          ...foods.map((food) => Text(food.name ?? '')),
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Add Food'),
-                        content: Text('This is a pop-up modal!'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the modal
-                            },
-                            child: Text('Close'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Text('Show Modal'),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+        
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text(widget.meal.mealName),IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage()));}, icon: Icon(Icons.add))],
+            ),
+            Container(
+              decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(8))),
+              width: double.infinity,
+              constraints: BoxConstraints(minHeight: 80),
+              child: Column(
+                children: [
+                  ...foods.map((food) => Text(food.name ?? '')),
+                ],
               ),
-            ],
-          ),
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
