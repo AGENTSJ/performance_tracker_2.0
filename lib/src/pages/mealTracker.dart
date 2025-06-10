@@ -16,7 +16,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
   );
   var foodService = FoodService();
   var foods;
-  var showSearchRes = true;
+  var showSearchRes = false;
   var showSuggested = true;
   _MealTrackerState() {
     this.foods = foodService.getFoods();
@@ -30,110 +30,90 @@ class _MealTrackerState extends State<MealTrackerPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Container(
-              child: Column(
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Food name',
+                focusedBorder: inputBorder,
+                border: inputBorder,
+                enabledBorder: inputBorder,
+              ),
+              controller: foodNameControl,
+              onChanged: (str) {handleSearchChange(str);},
+            ),
+            if (showSearchRes) ...[
+              SizedBox(height: 20,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Food name',
-                      focusedBorder: inputBorder,
-                      border: inputBorder,
-                      enabledBorder: inputBorder,
-                    ),
-                    controller: foodNameControl,
-                    onChanged: (str) {},
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      children: [
-                        Visibility(
-                          visible: showSearchRes,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Search results'),
-                                  IconButton(
-                                    onPressed: () {
-                                      this.handleSearchClose();
-                                    },
-                                    icon: const Icon(Icons.close),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              ...foods.map(
-                                (food) => Padding(
-                                  padding: EdgeInsetsGeometry.only(
-                                    top: 5,
-                                    bottom: 5,
-                                  ),
-                                  child: Text(food, style: TextStyle()),
-                                ),
-                              ),
-                            ],
-                          ),
+                  Text('Search results'),
+                  IconButton(onPressed: handleSearchClose, icon: Icon(Icons.close))
+                ],
+              ),
+              Expanded(
+                flex: 1,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: foods.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 5.0,bottom: 5.0),
+                      child: Text('${foods[index]}'),
+                    );
+                  },
+                ),
+              ),
+            ] else ...[
+              Column(
+                // suggested
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Suggested'),
+                      if (showSuggested) ...[
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              this.showSuggested = false;
+                            });
+                          },
+                          icon: const Icon(Icons.close),
                         ),
-                        Column( // suggested 
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Suggested'),
-                                if (showSuggested) ...[
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        this.showSuggested = false;
-                                      });
-                                    },
-                                    icon: const Icon(Icons.close),
-                                  ),
-                                ] else ...[
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        this.showSuggested = true;
-                                      });
-                                    },
-                                    icon: const Icon(Icons.visibility),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Visibility(
-                              visible: showSuggested,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ...foods.map(
-                                    (food) => Padding(
-                                      padding: EdgeInsetsGeometry.only(
-                                        top: 5,
-                                        bottom: 5,
-                                      ),
-                                      child: Text(food, style: TextStyle()),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      ] else ...[
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              this.showSuggested = true;
+                            });
+                          },
+                          icon: const Icon(Icons.visibility),
                         ),
                       ],
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Visibility(
+                    visible: showSuggested,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ...foods.map(
+                            (food) => Padding(
+                              padding: EdgeInsetsGeometry.only(top: 5, bottom: 5),
+                              child: Text(food, style: TextStyle()),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -148,7 +128,13 @@ class _MealTrackerState extends State<MealTrackerPage> {
 
   handleSearchClose() {
     setState(() {
-      this.showSearchRes = false;
+     showSearchRes = false;
+    });
+  }
+  handleSearchChange(String str)
+  {
+    setState(() { 
+      showSearchRes = foodNameControl.text.isNotEmpty;
     });
   }
 }
