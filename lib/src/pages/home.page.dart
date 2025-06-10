@@ -10,10 +10,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: PRIMARY,scaffoldBackgroundColor: const Color.fromARGB(255, 243, 243, 243)),
+      theme: ThemeData(primaryColor: PRIMARY,scaffoldBackgroundColor: BACKGROUND),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: PRIMARY,
+          title: Text('Today',style: TextStyle(fontSize: 19 ,fontWeight: FontWeight.w500),),
+          backgroundColor: BACKGROUND,
           shape: ContinuousRectangleBorder(),
         ),
         body: ListView(

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
-  const MealTrackerPage({super.key});
+  final Meal meal;
+  const MealTrackerPage({super.key, required this.meal});
   @override
   State<MealTrackerPage> createState() => _MealTrackerState();
 }
@@ -15,17 +18,21 @@ class _MealTrackerState extends State<MealTrackerPage> {
     borderSide: BorderSide(color: PRIMARY, width: 1),
   );
   var foodService = FoodService();
-  var foods;
+  List<Food> foods = [];
+  List<Food> searchfoods = [];
   var showSearchRes = false;
   var showSuggested = true;
   _MealTrackerState() {
-    this.foods = foodService.getFoods();
+    this.foods = foodService.getAllFoods();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: PRIMARY),
+      appBar: AppBar(
+        title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18)),
+        backgroundColor: BACKGROUND,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -38,26 +45,31 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 enabledBorder: inputBorder,
               ),
               controller: foodNameControl,
-              onChanged: (str) {handleSearchChange(str);},
+              onChanged: (str) {
+                handleSearchChange(str);
+              },
             ),
             if (showSearchRes) ...[
-              SizedBox(height: 20,),
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Search results'),
-                  IconButton(onPressed: handleSearchClose, icon: Icon(Icons.close))
+                  IconButton(
+                    onPressed: handleSearchClose,
+                    icon: Icon(Icons.close),
+                  ),
                 ],
               ),
               Expanded(
                 flex: 1,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: foods.length,
+                  itemCount: searchfoods.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
-                      padding: const EdgeInsets.only(top: 5.0,bottom: 5.0),
-                      child: Text('${foods[index]}'),
+                      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                      child: Text('${this.searchfoods[index].name}'),
                     );
                   },
                 ),
@@ -98,16 +110,21 @@ class _MealTrackerState extends State<MealTrackerPage> {
                     visible: showSuggested,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...foods.map(
-                            (food) => Padding(
-                              padding: EdgeInsetsGeometry.only(top: 5, bottom: 5),
-                              child: Text(food, style: TextStyle()),
-                            ),
-                          ),
-                        ],
+                      child: SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          itemCount: foods.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                top: 5.0,
+                                bottom: 5.0,
+                              ),
+                              child: Text('${this.foods[index].name}'),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -128,13 +145,17 @@ class _MealTrackerState extends State<MealTrackerPage> {
 
   handleSearchClose() {
     setState(() {
-     showSearchRes = false;
+      showSearchRes = false;
     });
   }
-  handleSearchChange(String str)
-  {
-    setState(() { 
+
+  handleSearchChange(String str) {
+    setState(() {
       showSearchRes = foodNameControl.text.isNotEmpty;
+      if(showSearchRes)
+      {
+        this.searchfoods =  this.foodService.searchFood(str);
+      }
     });
   }
 }
