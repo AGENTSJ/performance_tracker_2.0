@@ -12,8 +12,6 @@ class MealContainer extends StatefulWidget {
 }
 
 class _MealContainerState extends State<MealContainer> {
-  List<Food> foods = [];
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +19,6 @@ class _MealContainerState extends State<MealContainer> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-        
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [Text(widget.meal.mealName),IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage()));}, icon: Icon(Icons.add))],
@@ -32,7 +29,7 @@ class _MealContainerState extends State<MealContainer> {
               constraints: BoxConstraints(minHeight: 80),
               child: Column(
                 children: [
-                  ...foods.map((food) => Text(food.name ?? '')),
+                  ...widget.meal.foods.map((food) => Text(food.name ?? '')),
                 ],
               ),
             )
@@ -44,7 +41,7 @@ class _MealContainerState extends State<MealContainer> {
 
   void addFood(String name) {
     setState(() {
-      foods.add(Food(name: name));
+      widget.meal.foods.add(Food(name: name));
     });
   }
 }
