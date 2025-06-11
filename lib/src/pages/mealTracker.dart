@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/src/components/AddFoodModal.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
@@ -16,6 +17,15 @@ class _MealTrackerState extends State<MealTrackerPage> {
   var inputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(10),
     borderSide: BorderSide(color: PRIMARY, width: 1),
+  );
+  var foodListStyle = ElevatedButton.styleFrom(
+    backgroundColor: BACKGROUND,
+    foregroundColor: Colors.black,
+    alignment: Alignment.centerLeft,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+    minimumSize: Size(double.infinity, 20),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    elevation: 0
   );
   var foodService = FoodService();
   List<Food> foods = [];
@@ -50,6 +60,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
               },
             ),
             if (showSearchRes) ...[
+              // search
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,18 +73,50 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 ],
               ),
               Expanded(
-                flex: 1,
+                flex: 4,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8),
                   itemCount: searchfoods.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                      child: Text('${this.searchfoods[index].name}'),
+                    return ElevatedButton(
+                      onPressed: (){showAddFoodModal(searchfoods[index]);},
+                      style: foodListStyle,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                        child: Text('${searchfoods[index].name}'),
+                      ),
                     );
                   },
                 ),
               ),
+              Expanded(
+                flex: 1,
+                child: Column(
+                  
+                  children: [
+                    ElevatedButton(
+                      onPressed: (){}, 
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: PRIMARY,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        minimumSize: Size(double.infinity, 40)
+                      ),
+                      child: Text('Custom'),
+                    ),
+                    SizedBox(height: 5,),
+                    ElevatedButton(
+                      onPressed: (){},
+                       style: ElevatedButton.styleFrom(
+                        backgroundColor: PRIMARY,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        minimumSize: Size(double.infinity, 40)
+                      ),
+                      child: Text('AI Create')
+                    ),
+                  ],
+              ))
             ] else ...[
               Column(
                 // suggested
@@ -116,12 +159,16 @@ class _MealTrackerState extends State<MealTrackerPage> {
                           padding: const EdgeInsets.all(8),
                           itemCount: foods.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                top: 5.0,
-                                bottom: 5.0,
+                            return ElevatedButton(
+                              onPressed: (){showAddFoodModal(foods[index]);},
+                              style: foodListStyle,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 5.0,
+                                  bottom: 5.0,
+                                ),
+                                child: Text('${this.foods[index].name}'),
                               ),
-                              child: Text('${this.foods[index].name}'),
                             );
                           },
                         ),
@@ -157,5 +204,10 @@ class _MealTrackerState extends State<MealTrackerPage> {
         this.searchfoods =  this.foodService.searchFood(str);
       }
     });
+  }
+
+  showAddFoodModal(Food food)
+  {
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddFoodModal(food:food)));
   }
 }

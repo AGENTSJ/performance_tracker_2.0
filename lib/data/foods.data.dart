@@ -1,145 +1,123 @@
-
 import 'package:performance_tracker/models/food.model.dart';
 
 final List<Food> availableFoods = [
+  // 1. Chicken Breast (cooked)
   Food(
-    name: "Apple",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "52"),
-      UnitCalorieMap(unit: "1 medium (182 gram)", calories: "95"),
-    ],
+    name: 'Chicken Breast (cooked)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(31.0, 0.0, 3.6, 0.0, 165.0),
+    micros: MicroNutrients(
+      vitaminB6: MeasuredUnit(value: 0.6, unit: 'mg'),
+      phosphorus: MeasuredUnit(value: 210, unit: 'mg'),
+      niacin: MeasuredUnit(value: 13.7, unit: 'mg'),
+      selenium: MeasuredUnit(value: 27.6, unit: 'µg'),
+    ),
   ),
+
+  // 2. Egg (whole, boiled)
   Food(
-    name: "Banana",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "89"),
-      UnitCalorieMap(unit: "1 medium (118 gram)", calories: "105"),
-    ],
+    name: 'Boiled Egg',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(13.0, 1.1, 11.0, 0.0, 155.0),
+    micros: MicroNutrients(
+      vitaminB12: MeasuredUnit(value: 1.1, unit: 'µg'),
+      vitaminA: MeasuredUnit(value: 160, unit: 'µg'),
+      iron: MeasuredUnit(value: 1.2, unit: 'mg'),
+      selenium: MeasuredUnit(value: 30.8, unit: 'µg'),
+    ),
   ),
+
+  // 3. Milk (whole, cow)
   Food(
-    name: "Rice (cooked)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "130"),
-      UnitCalorieMap(unit: "1 cup (158 gram)", calories: "205"),
-    ],
+    name: 'Whole Milk (cow)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(3.2, 4.8, 3.7, 0.0, 61.0),
+    micros: MicroNutrients(
+      calcium: MeasuredUnit(value: 113, unit: 'mg'),
+      vitaminB12: MeasuredUnit(value: 0.4, unit: 'µg'),
+      riboflavin: MeasuredUnit(value: 0.2, unit: 'mg'),
+      phosphorus: MeasuredUnit(value: 84, unit: 'mg'),
+    ),
   ),
+
+  // 4. Brown Rice (cooked)
   Food(
-    name: "Bread (white)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "265"),
-      UnitCalorieMap(unit: "1 slice (25 gram)", calories: "66"),
-    ],
+    name: 'Brown Rice (cooked)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(2.6, 23.0, 0.9, 1.8, 111.0),
+    micros: MicroNutrients(
+      magnesium: MeasuredUnit(value: 39, unit: 'mg'),
+      phosphorus: MeasuredUnit(value: 103, unit: 'mg'),
+    ),
   ),
+
+  // 5. Apple (raw)
   Food(
-    name: "Chicken breast (cooked)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "165"),
-      UnitCalorieMap(unit: "1 piece (174 gram)", calories: "287"),
-    ],
+    name: 'Apple (raw)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(0.3, 13.8, 0.2, 2.4, 52.0),
+    micros: MicroNutrients(
+      vitaminC: MeasuredUnit(value: 4.6, unit: 'mg'),
+      potassium: MeasuredUnit(value: 107, unit: 'mg'),
+    ),
   ),
+
+  // 6. Banana (raw)
   Food(
-    name: "Egg (boiled)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "155"),
-      UnitCalorieMap(unit: "1 large (50 gram)", calories: "78"),
-    ],
+    name: 'Banana (raw)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(1.1, 22.8, 0.3, 2.6, 89.0),
+    micros: MicroNutrients(
+      vitaminC: MeasuredUnit(value: 8.7, unit: 'mg'),
+      potassium: MeasuredUnit(value: 358, unit: 'mg'),
+      vitaminB6: MeasuredUnit(value: 0.4, unit: 'mg'),
+    ),
   ),
+
+  // 7. Broccoli (raw)
   Food(
-    name: "Milk (whole)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "61"),
-      UnitCalorieMap(unit: "1 cup (244 gram)", calories: "149"),
-    ],
+    name: 'Broccoli (raw)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(2.8, 6.6, 0.4, 2.6, 34.0),
+    micros: MicroNutrients(
+      vitaminC: MeasuredUnit(value: 89.2, unit: 'mg'),
+      vitaminK: MeasuredUnit(value: 101.6, unit: 'µg'),
+      folate: MeasuredUnit(value: 63, unit: 'µg'),
+    ),
   ),
+
+  // 8. Carrot (raw)
   Food(
-    name: "Orange",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "47"),
-      UnitCalorieMap(unit: "1 medium (131 gram)", calories: "62"),
-    ],
+    name: 'Carrot (raw)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(0.9, 9.6, 0.2, 2.8, 41.0),
+    micros: MicroNutrients(
+      vitaminA: MeasuredUnit(value: 835, unit: 'µg'),
+      vitaminK: MeasuredUnit(value: 13.2, unit: 'µg'),
+      potassium: MeasuredUnit(value: 320, unit: 'mg'),
+    ),
   ),
+
+  // 9. Almonds (raw)
   Food(
-    name: "Potato (boiled)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "87"),
-      UnitCalorieMap(unit: "1 medium (150 gram)", calories: "130"),
-    ],
+    name: 'Almonds (raw)',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(21.2, 21.6, 49.4, 12.5, 579.0),
+    micros: MicroNutrients(
+      magnesium: MeasuredUnit(value: 268, unit: 'mg'),
+      calcium: MeasuredUnit(value: 269, unit: 'mg'),
+      iron: MeasuredUnit(value: 3.7, unit: 'mg'),
+    ),
   ),
+
+  // 10. Olive Oil
   Food(
-    name: "Carrot",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "41"),
-      UnitCalorieMap(unit: "1 medium (61 gram)", calories: "25"),
-    ],
-  ),
-  Food(
-    name: "Tomato",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "18"),
-      UnitCalorieMap(unit: "1 medium (123 gram)", calories: "22"),
-    ],
-  ),
-  Food(
-    name: "Cheese (cheddar)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "402"),
-      UnitCalorieMap(unit: "1 slice (28 gram)", calories: "113"),
-    ],
-  ),
-  Food(
-    name: "Butter",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "717"),
-      UnitCalorieMap(unit: "1 tbsp (14 gram)", calories: "102"),
-    ],
-  ),
-  Food(
-    name: "Almonds",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "579"),
-      UnitCalorieMap(unit: "1 oz (28 gram)", calories: "164"),
-    ],
-  ),
-  Food(
-    name: "Oats (cooked)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "71"),
-      UnitCalorieMap(unit: "1 cup (234 gram)", calories: "166"),
-    ],
-  ),
-  Food(
-    name: "Yogurt (plain, low-fat)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "63"),
-      UnitCalorieMap(unit: "1 cup (245 gram)", calories: "154"),
-    ],
-  ),
-  Food(
-    name: "Spinach (raw)",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "23"),
-      UnitCalorieMap(unit: "1 cup (30 gram)", calories: "7"),
-    ],
-  ),
-  Food(
-    name: "Cucumber",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "16"),
-      UnitCalorieMap(unit: "1 cup sliced (104 gram)", calories: "16"),
-    ],
-  ),
-  Food(
-    name: "Onion",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "40"),
-      UnitCalorieMap(unit: "1 medium (110 gram)", calories: "44"),
-    ],
-  ),
-  Food(
-    name: "Mango",
-    caloriesData: [
-      UnitCalorieMap(unit: "100 gram", calories: "60"),
-      UnitCalorieMap(unit: "1 medium (200 gram)", calories: "120"),
-    ],
+    name: 'Olive Oil',
+    baseUnit: MeasuredUnit(value: 100, unit: 'g'),
+    macros: MacroNutrients(0.0, 0.0, 100.0, 0.0, 884.0),
+    micros: MicroNutrients(
+      vitaminE: MeasuredUnit(value: 14.4, unit: 'mg'),
+      vitaminK: MeasuredUnit(value: 60.2, unit: 'µg'),
+    ),
   ),
 ];
