@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
@@ -10,6 +12,12 @@ class AddFoodModal extends StatefulWidget {
 }
 
 class _AddFoodModalState extends State<AddFoodModal> {
+  var caloriesController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    this.caloriesController.text = widget.food.baseUnit.value.round().toString();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +29,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
           children: [
             // measure container
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -66,30 +74,66 @@ class _AddFoodModalState extends State<AddFoodModal> {
                       Expanded(
                         flex: 1,
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text('Measure'),
-                                      Text(widget.food.baseUnit.unit),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text('Quantity'),
-                                      Text(
-                                        widget.food.baseUnit.value.toString(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text('Measure'),
+                                    SizedBox(
+                                      width: 80,
+                                      height: 40,
+                                      child: Center(
+                                        child: Text(
+                                          widget.food.baseUnit.unit,
+                                          style: TextStyle(),
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text('Quantity'),
+                                    Container(
+                                      width: 50,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Center(
+                                        child: TextField(
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
+                                          decoration: InputDecoration(
+                                            constraints: BoxConstraints(
+                                              maxHeight: 40,
+                                            ),
+                                            border: InputBorder.none,
+                                            enabledBorder: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 10,
+                                                ),
+                                          ),
+                                          controller: caloriesController,
+                                          onChanged: (str){handleQuantityChange(str);},
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -107,37 +151,53 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   SizedBox(height: 10),
                   Text('Macro nutrients breakdown'),
                   SizedBox(height: 10),
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Protein'),
-                          Text(widget.food.macros.protein.toString()),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Carbohydrate'),
-                          Text(widget.food.macros.carbohydrate.toString()),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Fat'),
-                          Text(widget.food.macros.fat.toString()),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Fiber'),
-                          Text(widget.food.macros.fiber.toString()),
-                        ],
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Protein'),
+                            Text(widget.food.macros.protein.round().toString()),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Carbohydrate'),
+                            Text(
+                              widget.food.macros.carbohydrate
+                                  .round()
+                                  .toString(),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Fat'),
+                            Text(widget.food.macros.fat.round().toString()),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Fiber'),
+                            Text(widget.food.macros.fiber.round().toString()),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Calories'),
+                            Text(
+                              widget.food.macros.calories.round().toString(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -147,9 +207,9 @@ class _AddFoodModalState extends State<AddFoodModal> {
             SizedBox(height: 10),
             // micro
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Padding(
-                padding: EdgeInsets.only(bottom: 30),
+                padding: EdgeInsets.only(bottom: 30, left: 8, right: 8),
                 child: ListView(
                   children: widget.food.micros.microMap.entries.map((entry) {
                     final microNutrient = entry.value;
@@ -172,5 +232,34 @@ class _AddFoodModalState extends State<AddFoodModal> {
         ),
       ),
     );
+  }
+
+  handleQuantityChange(String str)
+  {
+    setState(() {
+      var baseQuant = widget.food.baseUnit.value;
+      double newQuant = double.parse( str.isEmpty ? '0' : str);
+      if(newQuant<0)
+      {
+        // caloriesController.text = '0';
+        newQuant = 0;
+      }
+      if(MAX_FOOD_QUANTITY_ALLOWED<newQuant)
+      {
+        // caloriesController.text = MAX_FOOD_QUANTITY_ALLOWED.toString();
+        newQuant = MAX_FOOD_QUANTITY_ALLOWED;
+      }
+      widget.food.macros.calories = (widget.food.macros.calories/baseQuant)*newQuant;
+      widget.food.macros.fat = (widget.food.macros.fat/baseQuant)*newQuant;
+      widget.food.macros.protein = (widget.food.macros.protein/baseQuant)*newQuant;
+      widget.food.macros.carbohydrate = (widget.food.macros.carbohydrate/baseQuant)*newQuant;
+      widget.food.macros.fiber = (widget.food.macros.fiber/baseQuant)*newQuant;
+      print(widget.food.macros.fat);
+    });
+  }
+
+  getStandardFood(Food food)
+  {
+    
   }
 }

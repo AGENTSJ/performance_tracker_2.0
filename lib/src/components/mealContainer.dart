@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/models/day.model.dart';
-import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/src/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {

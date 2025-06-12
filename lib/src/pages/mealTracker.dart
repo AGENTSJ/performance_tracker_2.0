@@ -25,7 +25,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
     minimumSize: Size(double.infinity, 20),
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    elevation: 0
+    elevation: 0,
   );
   var foodService = FoodService();
   List<Food> foods = [];
@@ -79,7 +79,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   itemCount: searchfoods.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ElevatedButton(
-                      onPressed: (){showAddFoodModal(searchfoods[index]);},
+                      onPressed: () {
+                        showAddFoodModal(searchfoods[index]);
+                      },
                       style: foodListStyle,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
@@ -92,31 +94,35 @@ class _MealTrackerState extends State<MealTrackerPage> {
               Expanded(
                 flex: 1,
                 child: Column(
-                  
                   children: [
                     ElevatedButton(
-                      onPressed: (){}, 
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        minimumSize: Size(double.infinity, 40)
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: Size(double.infinity, 40),
                       ),
                       child: Text('Custom'),
                     ),
-                    SizedBox(height: 5,),
+                    SizedBox(height: 5),
                     ElevatedButton(
-                      onPressed: (){},
-                       style: ElevatedButton.styleFrom(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        minimumSize: Size(double.infinity, 40)
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: Size(double.infinity, 40),
                       ),
-                      child: Text('AI Create')
+                      child: Text('AI Create'),
                     ),
                   ],
-              ))
+                ),
+              ),
             ] else ...[
               Column(
                 // suggested
@@ -160,7 +166,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                           itemCount: foods.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ElevatedButton(
-                              onPressed: (){showAddFoodModal(foods[index]);},
+                              onPressed: () {
+                                showAddFoodModal(foods[index]);
+                              },
                               style: foodListStyle,
                               child: Padding(
                                 padding: const EdgeInsets.only(
@@ -199,15 +207,16 @@ class _MealTrackerState extends State<MealTrackerPage> {
   handleSearchChange(String str) {
     setState(() {
       showSearchRes = foodNameControl.text.isNotEmpty;
-      if(showSearchRes)
-      {
-        this.searchfoods =  this.foodService.searchFood(str);
+      if (showSearchRes) {
+        this.searchfoods = this.foodService.searchFood(str);
       }
     });
   }
 
-  showAddFoodModal(Food food)
-  {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddFoodModal(food:food)));
+  showAddFoodModal(Food food) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+    );
   }
 }

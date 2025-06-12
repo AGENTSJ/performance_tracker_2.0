@@ -3,7 +3,8 @@ class Food {
   final MacroNutrients macros;
   final MicroNutrients micros;
   final MeasuredUnit baseUnit;
-  const Food({
+
+  Food({
     this.name,
     required this.macros,
     required this.micros,
@@ -24,7 +25,8 @@ class MacroNutrients {
     this.fiber,
     double calories,
   ) {
-    this.calories = 0;
+
+    this.calories = protein*4+carbohydrate*4+fat*9;
   }
 }
 
