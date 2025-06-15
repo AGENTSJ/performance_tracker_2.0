@@ -13,11 +13,17 @@ class AddFoodModal extends StatefulWidget {
 
 class _AddFoodModalState extends State<AddFoodModal> {
   var caloriesController = TextEditingController();
+  Food? standard;
   @override
   void initState() {
     super.initState();
-    this.caloriesController.text = widget.food.baseUnit.value.round().toString();
+    this.caloriesController.text = widget.food.quantity.value
+        .round()
+        .toString();
+    this.standard = this.getStandardFood(widget.food);
+    print(this.standard!.quantity.value);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +93,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                       height: 40,
                                       child: Center(
                                         child: Text(
-                                          widget.food.baseUnit.unit,
+                                          widget.food.quantity.unit,
                                           style: TextStyle(),
                                         ),
                                       ),
@@ -99,7 +105,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                   children: [
                                     Text('Quantity'),
                                     Container(
-                                      width: 50,
+                                      width: 80,
                                       height: 40,
                                       decoration: BoxDecoration(
                                         color: Colors.grey[200],
@@ -127,7 +133,9 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                                 ),
                                           ),
                                           controller: caloriesController,
-                                          onChanged: (str){handleQuantityChange(str);},
+                                          onChanged: (str) {
+                                            handleQuantityChange(str);
+                                          },
                                         ),
                                       ),
                                     ),
@@ -147,9 +155,13 @@ class _AddFoodModalState extends State<AddFoodModal> {
             Expanded(
               flex: 1,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 10),
-                  Text('Macro nutrients breakdown'),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Macro nutrients breakdown',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w600),),
+                  ),
                   SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -203,7 +215,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
               ),
             ),
             SizedBox(height: 10),
-            Text('Micro nutrients breakdown'),
+            Align(alignment: Alignment.centerLeft,child: Text('Micro nutrients breakdown',style: TextStyle(fontWeight: FontWeight.w600),)),
             SizedBox(height: 10),
             // micro
             Expanded(
@@ -228,38 +240,230 @@ class _AddFoodModalState extends State<AddFoodModal> {
                 ),
               ),
             ),
+            Container(
+              child: ElevatedButton(
+                onPressed: (){},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PRIMARY,
+                  minimumSize: Size(double.infinity, 50),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
+                ),
+                child: Text('Add Food'),
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  handleQuantityChange(String str)
-  {
+  handleQuantityChange(String str) {
     setState(() {
-      var baseQuant = widget.food.baseUnit.value;
-      double newQuant = double.parse( str.isEmpty ? '0' : str);
-      if(newQuant<0)
-      {
-        // caloriesController.text = '0';
+      double newQuant = double.parse(str.isEmpty ? '0' : str);
+      if (newQuant < 0) {
+        caloriesController.text = '0';
         newQuant = 0;
       }
-      if(MAX_FOOD_QUANTITY_ALLOWED<newQuant)
-      {
-        // caloriesController.text = MAX_FOOD_QUANTITY_ALLOWED.toString();
+      if (MAX_FOOD_QUANTITY_ALLOWED < newQuant) {
+        caloriesController.text = MAX_FOOD_QUANTITY_ALLOWED.toString();
         newQuant = MAX_FOOD_QUANTITY_ALLOWED;
       }
-      widget.food.macros.calories = (widget.food.macros.calories/baseQuant)*newQuant;
-      widget.food.macros.fat = (widget.food.macros.fat/baseQuant)*newQuant;
-      widget.food.macros.protein = (widget.food.macros.protein/baseQuant)*newQuant;
-      widget.food.macros.carbohydrate = (widget.food.macros.carbohydrate/baseQuant)*newQuant;
-      widget.food.macros.fiber = (widget.food.macros.fiber/baseQuant)*newQuant;
-      print(widget.food.macros.fat);
+      updateFood(newQuant);
     });
   }
 
-  getStandardFood(Food food)
-  {
-    
+  getStandardFood(Food food) {
+    var baseQuant = food.quantity.value;
+
+    var newFood = Food(
+      macros: MacroNutrients(
+        (food.macros.protein / baseQuant),
+        (food.macros.carbohydrate / baseQuant),
+        (food.macros.fat / baseQuant),
+        (food.macros.fiber / baseQuant),
+        (food.macros.calories / baseQuant),
+      ),
+      micros: MicroNutrients(
+        vitaminA: food.micros.vitaminA != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminA!.value / baseQuant),
+                unit: food.micros.vitaminA!.unit,
+              )
+            : null,
+        vitaminC: food.micros.vitaminC != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminC!.value / baseQuant),
+                unit: food.micros.vitaminC!.unit,
+              )
+            : null,
+        vitaminD: food.micros.vitaminD != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminD!.value / baseQuant),
+                unit: food.micros.vitaminD!.unit,
+              )
+            : null,
+        vitaminE: food.micros.vitaminE != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminE!.value / baseQuant),
+                unit: food.micros.vitaminE!.unit,
+              )
+            : null,
+        vitaminK: food.micros.vitaminK != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminK!.value / baseQuant),
+                unit: food.micros.vitaminK!.unit,
+              )
+            : null,
+        thiamin: food.micros.thiamin != null
+            ? MeasuredUnit(
+                value: (food.micros.thiamin!.value / baseQuant),
+                unit: food.micros.thiamin!.unit,
+              )
+            : null,
+        riboflavin: food.micros.riboflavin != null
+            ? MeasuredUnit(
+                value: (food.micros.riboflavin!.value / baseQuant),
+                unit: food.micros.riboflavin!.unit,
+              )
+            : null,
+        niacin: food.micros.niacin != null
+            ? MeasuredUnit(
+                value: (food.micros.niacin!.value / baseQuant),
+                unit: food.micros.niacin!.unit,
+              )
+            : null,
+        vitaminB6: food.micros.vitaminB6 != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminB6!.value / baseQuant),
+                unit: food.micros.vitaminB6!.unit,
+              )
+            : null,
+        folate: food.micros.folate != null
+            ? MeasuredUnit(
+                value: (food.micros.folate!.value / baseQuant),
+                unit: food.micros.folate!.unit,
+              )
+            : null,
+        vitaminB12: food.micros.vitaminB12 != null
+            ? MeasuredUnit(
+                value: (food.micros.vitaminB12!.value / baseQuant),
+                unit: food.micros.vitaminB12!.unit,
+              )
+            : null,
+        pantothenicAcid: food.micros.pantothenicAcid != null
+            ? MeasuredUnit(
+                value: (food.micros.pantothenicAcid!.value / baseQuant),
+                unit: food.micros.pantothenicAcid!.unit,
+              )
+            : null,
+      ),
+      quantity: MeasuredUnit(
+        value: (food.quantity.value / baseQuant),
+        unit: food.quantity.unit,
+      ),
+    );
+
+    return newFood;
+  }
+
+  updateFood(double newQuant) {
+    widget.food.macros.protein = (standard!.macros.protein * newQuant);
+    widget.food.macros.carbohydrate =
+        (standard!.macros.carbohydrate * newQuant);
+    widget.food.macros.fat = (standard!.macros.fat * newQuant);
+    widget.food.macros.fiber = (standard!.macros.fiber * newQuant);
+    widget.food.macros.calories = (standard!.macros.calories * newQuant);
+
+    // Update micros directly
+    void updateMicro(
+      MeasuredUnit? target,
+      MeasuredUnit? std,
+      String unit,
+      double newQuant,
+    ) {
+      if (target != null && std != null) {
+        // target.value = std.value * newQuant;
+        target.value = double.parse((std.value * newQuant).toStringAsFixed(2));
+        ;
+        target.unit = unit;
+      }
+    }
+
+    updateMicro(
+      widget.food.micros.vitaminA,
+      standard!.micros.vitaminA,
+      widget.food.micros.vitaminA?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminC,
+      standard!.micros.vitaminC,
+      widget.food.micros.vitaminC?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminD,
+      standard!.micros.vitaminD,
+      widget.food.micros.vitaminD?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminE,
+      standard!.micros.vitaminE,
+      widget.food.micros.vitaminE?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminK,
+      standard!.micros.vitaminK,
+      widget.food.micros.vitaminK?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.thiamin,
+      standard!.micros.thiamin,
+      widget.food.micros.thiamin?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.riboflavin,
+      standard!.micros.riboflavin,
+      widget.food.micros.riboflavin?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.niacin,
+      standard!.micros.niacin,
+      widget.food.micros.niacin?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminB6,
+      standard!.micros.vitaminB6,
+      widget.food.micros.vitaminB6?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.folate,
+      standard!.micros.folate,
+      widget.food.micros.folate?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.vitaminB12,
+      standard!.micros.vitaminB12,
+      widget.food.micros.vitaminB12?.unit ?? '',
+      newQuant,
+    );
+    updateMicro(
+      widget.food.micros.pantothenicAcid,
+      standard!.micros.pantothenicAcid,
+      widget.food.micros.pantothenicAcid?.unit ?? '',
+      newQuant,
+    );
+
+    // Update baseUnit directly
+    widget.food.quantity.value = newQuant;
   }
 }

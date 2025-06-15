@@ -2,13 +2,13 @@ class Food {
   final String? name;
   final MacroNutrients macros;
   final MicroNutrients micros;
-  final MeasuredUnit baseUnit;
+  final MeasuredUnit quantity;
 
   Food({
     this.name,
     required this.macros,
     required this.micros,
-    required this.baseUnit,
+    required this.quantity,
   });
 }
 
@@ -31,35 +31,35 @@ class MacroNutrients {
 }
 
 class MicroNutrients {
-  final MeasuredUnit? vitaminA;
-  final MeasuredUnit? vitaminC;
-  final MeasuredUnit? vitaminD;
-  final MeasuredUnit? vitaminE;
-  final MeasuredUnit? vitaminK;
-  final MeasuredUnit? thiamin; // Vitamin B1
-  final MeasuredUnit? riboflavin; // Vitamin B2
-  final MeasuredUnit? niacin; // Vitamin B3
-  final MeasuredUnit? vitaminB6;
-  final MeasuredUnit? folate; // Vitamin B9
-  final MeasuredUnit? vitaminB12;
-  final MeasuredUnit? pantothenicAcid; // Vitamin B5
-  final MeasuredUnit? biotin; // Vitamin B7
+  MeasuredUnit? vitaminA;
+  MeasuredUnit? vitaminC;
+  MeasuredUnit? vitaminD;
+  MeasuredUnit? vitaminE;
+  MeasuredUnit? vitaminK;
+  MeasuredUnit? thiamin; // Vitamin B1
+  MeasuredUnit? riboflavin; // Vitamin B2
+  MeasuredUnit? niacin; // Vitamin B3
+  MeasuredUnit? vitaminB6;
+  MeasuredUnit? folate; // Vitamin B9
+  MeasuredUnit? vitaminB12;
+  MeasuredUnit? pantothenicAcid; // Vitamin B5
+  MeasuredUnit? biotin; // Vitamin B7
 
-  final MeasuredUnit? calcium;
-  final MeasuredUnit? iron;
-  final MeasuredUnit? magnesium;
-  final MeasuredUnit? phosphorus;
-  final MeasuredUnit? potassium;
-  final MeasuredUnit? sodium;
-  final MeasuredUnit? zinc;
-  final MeasuredUnit? copper;
-  final MeasuredUnit? manganese;
-  final MeasuredUnit? selenium;
-  final MeasuredUnit? iodine;
-  final MeasuredUnit? chromium;
-  final MeasuredUnit? molybdenum;
-  final MeasuredUnit? fluoride;
-  final MeasuredUnit? chloride;
+  MeasuredUnit? calcium;
+  MeasuredUnit? iron;
+  MeasuredUnit? magnesium;
+  MeasuredUnit? phosphorus;
+  MeasuredUnit? potassium;
+  MeasuredUnit? sodium;
+  MeasuredUnit? zinc;
+  MeasuredUnit? copper;
+  MeasuredUnit? manganese;
+  MeasuredUnit? selenium;
+  MeasuredUnit? iodine;
+  MeasuredUnit? chromium;
+  MeasuredUnit? molybdenum;
+  MeasuredUnit? fluoride;
+  MeasuredUnit? chloride;
   late Map<String,MeasuredUnit?> microMap;
   
   MicroNutrients({
@@ -124,7 +124,7 @@ class MicroNutrients {
 }
 
 class MeasuredUnit {
-  final double value;
-  final String unit;
-  const MeasuredUnit({required this.value, required this.unit});
+  double value;
+  String unit;
+  MeasuredUnit({required this.value, required this.unit});
 }
