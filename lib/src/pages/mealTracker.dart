@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/AddFoodModal.dart';
+import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
@@ -27,13 +31,14 @@ class _MealTrackerState extends State<MealTrackerPage> {
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     elevation: 0,
   );
-  var foodService = FoodService();
+  final foodService = locator<FoodService>();
+  final ai = locator<AiService>();
   List<Food> foods = [];
   List<Food> searchfoods = [];
   var showSearchRes = false;
   var showSuggested = true;
   _MealTrackerState() {
-    this.foods = foodService.getAllFoods();
+    foods = foodService.getAllFoods();
   }
 
   @override
@@ -109,7 +114,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                     ),
                     SizedBox(height: 5),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {handleCustomFood();},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
@@ -261,5 +266,37 @@ class _MealTrackerState extends State<MealTrackerPage> {
     setState(() {
       
     });
+  }
+
+  handleCustomFood() async
+  {
+    if(foodNameControl.text.isNotEmpty)
+    {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
+      );
+    }
+  }
+
+  generateFood(String foodName, String description) async
+  {
+    var food = await foodService.AI_CreateFood(foodNameControl.text, description);
+    Navigator.of(context).pop();
+    if(food!=null)
+    {
+      showAddFoodModal(food);
+    }else
+    {
+      Fluttertoast.showToast(
+        msg: "Mysterious food indeed !!, Try again.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        webBgColor: "white",
+      );
+    }
   }
 }
