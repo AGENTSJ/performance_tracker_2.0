@@ -99,7 +99,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 child: Column(
                   children: [
                     ElevatedButton(
-                      onPressed: () {handleCustomFood();},
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
@@ -112,7 +112,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                     ),
                     SizedBox(height: 5),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {handleCustomFood();},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
@@ -225,27 +225,26 @@ class _MealTrackerState extends State<MealTrackerPage> {
 
   handleCustomFood() async
   {
-    // Navigator.push(context, MaterialPageRoute(builder: (context)=>))
     if(foodNameControl.text.isNotEmpty)
     {
       showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        content: Row(
-          children: [
-            CircularProgressIndicator(
-              color: PRIMARY,
-            ),
-            SizedBox(width: 20),
-            Text('Wait few seconds...'),
-          ],
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(
+                color: PRIMARY,
+              ),
+              SizedBox(width: 20),
+              Text('Wait few seconds...'),
+            ],
+          ),
         ),
-      ),
-    );
-    var food = await foodService.AI_CreateFood(foodNameControl.text, '');
-    Navigator.of(context).pop();
-    showAddFoodModal(food);
+      );
+      var food = await foodService.AI_CreateFood(foodNameControl.text, '');
+      Navigator.of(context).pop();
+      showAddFoodModal(food);
     }
 
   }
