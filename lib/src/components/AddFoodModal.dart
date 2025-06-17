@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:performance_tracker/constants.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class AddFoodModal extends StatefulWidget {
   final Food food;
-  const AddFoodModal({super.key, required this.food});
+  final Meal meal;
+  const AddFoodModal({super.key, required this.food, required this.meal});
   @override
   State<StatefulWidget> createState() => _AddFoodModalState();
 }
@@ -17,11 +19,10 @@ class _AddFoodModalState extends State<AddFoodModal> {
   @override
   void initState() {
     super.initState();
-    this.caloriesController.text = widget.food.quantity.value
+    caloriesController.text = widget.food.quantity.value
         .round()
         .toString();
-    this.standard = this.getStandardFood(widget.food);
-    print(this.standard!.quantity.value);
+    standard = getStandardFood(widget.food);
   }
 
   @override
@@ -47,7 +48,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   child: Column(
                     children: [
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: Stack(
                           children: [
                             Container(
@@ -77,73 +78,72 @@ class _AddFoodModalState extends State<AddFoodModal> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 10,),
                       Expanded(
                         flex: 1,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text('Measure'),
-                                    SizedBox(
-                                      width: 80,
-                                      height: 40,
-                                      child: Center(
-                                        child: Text(
-                                          widget.food.quantity.unit,
-                                          style: TextStyle(),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text('Quantity'),
-                                    Container(
-                                      width: 80,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Center(
-                                        child: TextField(
-                                          textAlign: TextAlign.center,
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                          ],
-                                          decoration: InputDecoration(
-                                            constraints: BoxConstraints(
-                                              maxHeight: 40,
-                                            ),
-                                            border: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                  vertical: 10,
-                                                ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      SizedBox(
+                                        width: 80,
+                                        child: Center(
+                                          child: Text(
+                                            widget.food.quantity.unit,
+                                            style: TextStyle(),
                                           ),
-                                          controller: caloriesController,
-                                          onChanged: (str) {
-                                            handleQuantityChange(str);
-                                          },
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 80,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Center(
+                                          child: TextField(
+                                            textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <TextInputFormatter>[
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
+                                            decoration: InputDecoration(
+                                              constraints: BoxConstraints(
+                                                maxHeight: 40,
+                                              ),
+                                              border: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              focusedBorder: InputBorder.none,
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 10,
+                                                  ),
+                                            ),
+                                            controller: caloriesController,
+                                            onChanged: (str) {
+                                              handleQuantityChange(str);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -154,64 +154,66 @@ class _AddFoodModalState extends State<AddFoodModal> {
             // macro
             Expanded(
               flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('Macro nutrients breakdown',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w600),),
-                  ),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Protein'),
-                            Text(widget.food.macros.protein.round().toString()),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Carbohydrate'),
-                            Text(
-                              widget.food.macros.carbohydrate
-                                  .round()
-                                  .toString(),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Fat'),
-                            Text(widget.food.macros.fat.round().toString()),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Fiber'),
-                            Text(widget.food.macros.fiber.round().toString()),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Calories'),
-                            Text(
-                              widget.food.macros.calories.round().toString(),
-                            ),
-                          ],
-                        ),
-                      ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Macro nutrients breakdown',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w600),),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Protein'),
+                              Text(widget.food.macros.protein.round().toString()),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Carbohydrate'),
+                              Text(
+                                widget.food.macros.carbohydrate
+                                    .round()
+                                    .toString(),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Fat'),
+                              Text(widget.food.macros.fat.round().toString()),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Fiber'),
+                              Text(widget.food.macros.fiber.round().toString()),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Calories'),
+                              Text(
+                                widget.food.macros.calories.round().toString(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -242,7 +244,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
             ),
             Container(
               child: ElevatedButton(
-                onPressed: (){},
+                onPressed: (){addFood();},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PRIMARY,
                   minimumSize: Size(double.infinity, 50),
@@ -271,6 +273,13 @@ class _AddFoodModalState extends State<AddFoodModal> {
       }
       updateFood(newQuant);
     });
+  }
+
+  addFood()
+  {
+    widget.meal.foods.add(widget.food);
+    Navigator.pop(context);
+    // Navigator.pop(context);
   }
 
   getStandardFood(Food food) {

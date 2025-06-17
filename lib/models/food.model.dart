@@ -10,6 +10,20 @@ class Food {
     required this.micros,
     required this.quantity,
   });
+
+  Food clone({
+    String? name,
+    MacroNutrients? macros,
+    MicroNutrients? micros,
+    MeasuredUnit? quantity,
+  }) {
+    return  Food(
+      name: name ?? this.name,
+      macros: macros ?? this.macros.clone(),
+      micros: micros ?? this.micros.clone(),
+      quantity: quantity ?? this.quantity.clone(),
+    );
+  }
 }
 
 class MacroNutrients {
@@ -25,8 +39,17 @@ class MacroNutrients {
     this.fiber,
     double calories,
   ) {
+    this.calories = protein * 4 + carbohydrate * 4 + fat * 9;
+  }
 
-    this.calories = protein*4+carbohydrate*4+fat*9;
+  MacroNutrients clone() {
+    return MacroNutrients(
+      this.protein,
+      this.carbohydrate,
+      this.fat,
+      this.fiber,
+      this.calories,
+    );
   }
 }
 
@@ -60,8 +83,8 @@ class MicroNutrients {
   MeasuredUnit? molybdenum;
   MeasuredUnit? fluoride;
   MeasuredUnit? chloride;
-  late Map<String,MeasuredUnit?> microMap;
-  
+  late Map<String, MeasuredUnit?> microMap;
+
   MicroNutrients({
     this.vitaminA,
     this.vitaminC,
@@ -92,39 +115,76 @@ class MicroNutrients {
     this.fluoride,
     this.chloride,
   }) : microMap = {
-    'Vitamin A': vitaminA,
-    'Vitamin C': vitaminC,
-    'Vitamin D': vitaminD,
-    'Vitamin E': vitaminE,
-    'Vitamin K': vitaminK,
-    'Thiamin': thiamin,
-    'Riboflavin': riboflavin,
-    'Niacin': niacin,
-    'Vitamin B6': vitaminB6,
-    'Folate': folate,
-    'Vitamin B12': vitaminB12,
-    'Pantothenic Acid': pantothenicAcid,
-    'Biotin': biotin,
-    'Calcium': calcium,
-    'Iron': iron,
-    'Magnesium': magnesium,
-    'Phosphorus': phosphorus,
-    'Potassium': potassium,
-    'Sodium': sodium,
-    'Zinc': zinc,
-    'Copper': copper,
-    'Manganese': manganese,
-    'Selenium': selenium,
-    'Iodine': iodine,
-    'Chromium': chromium,
-    'Molybdenum': molybdenum,
-    'Fluoride': fluoride,
-    'Chloride': chloride,
-  };
+         'Vitamin A': vitaminA,
+         'Vitamin C': vitaminC,
+         'Vitamin D': vitaminD,
+         'Vitamin E': vitaminE,
+         'Vitamin K': vitaminK,
+         'Thiamin': thiamin,
+         'Riboflavin': riboflavin,
+         'Niacin': niacin,
+         'Vitamin B6': vitaminB6,
+         'Folate': folate,
+         'Vitamin B12': vitaminB12,
+         'Pantothenic Acid': pantothenicAcid,
+         'Biotin': biotin,
+         'Calcium': calcium,
+         'Iron': iron,
+         'Magnesium': magnesium,
+         'Phosphorus': phosphorus,
+         'Potassium': potassium,
+         'Sodium': sodium,
+         'Zinc': zinc,
+         'Copper': copper,
+         'Manganese': manganese,
+         'Selenium': selenium,
+         'Iodine': iodine,
+         'Chromium': chromium,
+         'Molybdenum': molybdenum,
+         'Fluoride': fluoride,
+         'Chloride': chloride,
+       };
+
+  MicroNutrients clone() {
+    return MicroNutrients(
+      vitaminA:  this.vitaminA,
+      vitaminC:  this.vitaminC,
+      vitaminD:  this.vitaminD,
+      vitaminE:  this.vitaminE,
+      vitaminK:  this.vitaminK,
+      thiamin:  this.thiamin,
+      riboflavin:  this.riboflavin,
+      niacin:  this.niacin,
+      vitaminB6:  this.vitaminB6,
+      folate:  this.folate,
+      vitaminB12:  this.vitaminB12,
+      pantothenicAcid:  this.pantothenicAcid,
+      biotin:  this.biotin,
+      calcium:  this.calcium,
+      iron:  this.iron,
+      magnesium:  this.magnesium,
+      phosphorus:  this.phosphorus,
+      potassium:  this.potassium,
+      sodium:  this.sodium,
+      zinc:  this.zinc,
+      copper:  this.copper,
+      manganese:  this.manganese,
+      selenium:  this.selenium,
+      iodine:  this.iodine,
+      chromium:  this.chromium,
+      molybdenum:  this.molybdenum,
+      fluoride:  this.fluoride,
+      chloride:  this.chloride,
+    );
+  }
 }
 
 class MeasuredUnit {
   double value;
   String unit;
   MeasuredUnit({required this.value, required this.unit});
+
+  MeasuredUnit clone() {
+    return MeasuredUnit(value:  this.value, unit:  this.unit);
+  }
 }

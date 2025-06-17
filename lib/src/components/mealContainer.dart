@@ -19,7 +19,8 @@ class _MealContainerState extends State<MealContainer> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text(widget.meal.mealName),IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage(meal: widget.meal,)));}, icon: Icon(Icons.add))],
+            children: [Text(widget.meal.mealName),IconButton(
+              onPressed: (){handleNavigation();}, icon: Icon(Icons.add))],
           ),
           Container(
             decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(8))),
@@ -27,12 +28,37 @@ class _MealContainerState extends State<MealContainer> {
             constraints: BoxConstraints(minHeight: 80),
             child: Column(
               children: [
-                ...widget.meal.foods.map((food) => Text(food.name ?? '')),
+                ...widget.meal.foods.map((food) => 
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:[ 
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(food.name ?? ''),
+                          Text("${food.quantity.value.round().toString()} ${food.quantity.unit}" ,textAlign: TextAlign.start,),
+                        ],
+                      ),
+                      Text(food.macros.calories.toString())
+                    ]
+                  ),
+                )
+                ),
               ],
             ),
           )
         ],
       ),
     );
+  }
+
+  handleNavigation() async
+  {
+    await Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage(meal: widget.meal,)));
+    setState(() {
+      
+    });
   }
 }

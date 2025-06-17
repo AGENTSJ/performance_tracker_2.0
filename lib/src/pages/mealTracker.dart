@@ -185,6 +185,45 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ),
                 ],
               ),
+              Column(
+                // selected
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Selected'),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: widget.meal.foods.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ElevatedButton(
+                            onPressed: () {
+                              showAddFoodModal(widget.meal.foods[index]);
+                            },
+                            style: foodListStyle,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 5.0,
+                                bottom: 5.0,
+                              ),
+                              child: Text('${widget.meal.foods[index].name}'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ],
         ),
@@ -213,10 +252,14 @@ class _MealTrackerState extends State<MealTrackerPage> {
     });
   }
 
-  showAddFoodModal(Food food) {
-    Navigator.push(
+  showAddFoodModal(Food food) async {
+    var newFood = food.clone();
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood,meal: widget.meal)),
     );
+    setState(() {
+      
+    });
   }
 }
