@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/AddFoodModal.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
@@ -27,13 +29,14 @@ class _MealTrackerState extends State<MealTrackerPage> {
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     elevation: 0,
   );
-  var foodService = FoodService();
+  final foodService = locator<FoodService>();
+  final ai = locator<AiService>();
   List<Food> foods = [];
   List<Food> searchfoods = [];
   var showSearchRes = false;
   var showSuggested = true;
   _MealTrackerState() {
-    this.foods = foodService.getAllFoods();
+    foods = foodService.getAllFoods();
   }
 
   @override
@@ -96,7 +99,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 child: Column(
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {handleCustomFood();},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: PRIMARY,
                         foregroundColor: Colors.white,
@@ -218,5 +221,32 @@ class _MealTrackerState extends State<MealTrackerPage> {
       context,
       MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
     );
+  }
+
+  handleCustomFood() async
+  {
+    // Navigator.push(context, MaterialPageRoute(builder: (context)=>))
+    if(foodNameControl.text.isNotEmpty)
+    {
+      showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(
+              color: PRIMARY,
+            ),
+            SizedBox(width: 20),
+            Text('Wait few seconds...'),
+          ],
+        ),
+      ),
+    );
+    var food = await foodService.AI_CreateFood(foodNameControl.text, '');
+    Navigator.of(context).pop();
+    showAddFoodModal(food);
+    }
+
   }
 }

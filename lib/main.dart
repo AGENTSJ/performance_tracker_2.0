@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/pages/home.page.dart';
 
 void main() {
+  setUpDependencyInjection();
   runApp(const MyApp());
 }
 
