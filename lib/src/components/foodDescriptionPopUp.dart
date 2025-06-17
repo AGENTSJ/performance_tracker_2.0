@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/AddFoodModal.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {
   final String foodName;
+  final Meal meal;
   FoodDescriptionPopUp({
     super.key,
     required this.foodName,
+    required this.meal
   });
   @override
   State<StatefulWidget> createState()=> _FoodDescriptionPopupState();
@@ -71,7 +74,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+        MaterialPageRoute(builder: (context) => AddFoodModal(food: food, meal:widget.meal)),
       );
     }else
     {

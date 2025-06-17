@@ -275,7 +275,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
+        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,meal: widget.meal,)
       );
     }
   }
