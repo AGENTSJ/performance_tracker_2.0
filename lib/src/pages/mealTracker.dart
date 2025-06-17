@@ -275,11 +275,17 @@ class _MealTrackerState extends State<MealTrackerPage> {
   {
     if(foodNameControl.text.isNotEmpty)
     {
-      showDialog(
+      var returnedFood = await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
       );
+      if(returnedFood!=null)
+      {
+        setState(() {        
+          widget.meal.foods.add(returnedFood);
+        });
+      }
     }
   }
 

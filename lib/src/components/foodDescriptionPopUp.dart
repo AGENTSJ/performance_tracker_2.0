@@ -66,13 +66,14 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     setState(() {
       this.isGenerating= false;
     });
-    Navigator.of(context).pop();
+    
     if(food!=null)
     {
-      Navigator.push(
+      var returnedFood =  await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
       );
+      Navigator.of(context).pop(returnedFood);
     }else
     {
       Fluttertoast.showToast(
