@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/AddFoodModal.dart';
+import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
@@ -230,22 +232,28 @@ class _MealTrackerState extends State<MealTrackerPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(
-                color: PRIMARY,
-              ),
-              SizedBox(width: 20),
-              Text('Wait few seconds...'),
-            ],
-          ),
-        ),
+        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
       );
-      var food = await foodService.AI_CreateFood(foodNameControl.text, '');
-      Navigator.of(context).pop();
-      showAddFoodModal(food);
     }
+  }
 
+  generateFood(String foodName, String description) async
+  {
+    var food = await foodService.AI_CreateFood(foodNameControl.text, description);
+    Navigator.of(context).pop();
+    if(food!=null)
+    {
+      showAddFoodModal(food);
+    }else
+    {
+      Fluttertoast.showToast(
+        msg: "Mysterious food indeed !!, Try again.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        webBgColor: "white",
+      );
+    }
   }
 }

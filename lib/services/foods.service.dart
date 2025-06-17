@@ -27,31 +27,38 @@ class FoodService
     return foods;
   }
 
-  Future<Food> AI_CreateFood(String name , String? description) async
+  Future<Food?> AI_CreateFood(String name , String? description) async
   {
-    String promt = "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
-    String jsonResponseStructure = '''
+    try
     {
-      "protein":"double value",
-      "fat":"double value",
-      "carbohydrate":"double value",
-      "fiber":"double value",
-      "calories":"double value"
-    }
-    ''';
-    String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
 
-    var body = await  ai.getResponse(promt , instructions);
-    var resString = body['candidates'][0]['content']['parts'][0]['text']; 
-    var res = jsonDecode(resString);
-    this.body = double.parse(res["protein"] ?? "");
-    var prot = double.parse( res["protein"]);
-    var carb = double.parse( res["carbohydrate"]);
-    var fat = double.parse( res["fat"]);
-    var fib = double.parse( res["fiber"]);
-    var cal = double.parse( res["calories"]);
-    var macro = MacroNutrients(prot,carb,fat,fib,cal);
-    var food = Food(name: name,macros: macro, micros: MicroNutrients(), quantity: MeasuredUnit(unit: 'g',value: 100));
-    return food;
+      String promt = "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
+      String jsonResponseStructure = '''
+      {
+        "protein":"double value",
+        "fat":"double value",
+        "carbohydrate":"double value",
+        "fiber":"double value",
+        "calories":"double value"
+      }
+      ''';
+      String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing. if the name of the food doesn't make sense you can return the text error without json";
+
+      var body = await  ai.getResponse(promt , instructions);
+      var resString = body['candidates'][0]['content']['parts'][0]['text']; 
+      var res = jsonDecode(resString);
+      this.body = double.parse(res["protein"] ?? "");
+      var prot = double.parse( res["protein"]);
+      var carb = double.parse( res["carbohydrate"]);
+      var fat = double.parse( res["fat"]);
+      var fib = double.parse( res["fiber"]);
+      var cal = double.parse( res["calories"]);
+      var macro = MacroNutrients(prot,carb,fat,fib,cal);
+      var food = Food(name: name,macros: macro, micros: MicroNutrients(), quantity: MeasuredUnit(unit: 'g',value: 100));
+      return food;
+    }
+    catch (e) {
+      return null;
+    }
   }
 }
