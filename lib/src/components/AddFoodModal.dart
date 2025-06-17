@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:performance_tracker/constants.dart';
-import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class AddFoodModal extends StatefulWidget {
   final Food food;
-  final Meal meal;
-  const AddFoodModal({super.key, required this.food, required this.meal});
+  const AddFoodModal({super.key, required this.food});
   @override
   State<StatefulWidget> createState() => _AddFoodModalState();
 }
@@ -277,8 +275,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
 
   addFood()
   {
-    widget.meal.foods.add(widget.food);
-    Navigator.pop(context);
+    Navigator.pop(context , widget.food);
     // Navigator.pop(context);
   }
 

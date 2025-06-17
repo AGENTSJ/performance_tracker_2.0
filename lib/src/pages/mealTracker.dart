@@ -259,12 +259,15 @@ class _MealTrackerState extends State<MealTrackerPage> {
 
   showAddFoodModal(Food food) async {
     var newFood = food.clone();
-    await Navigator.push(
+    var returnedFood = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood,meal: widget.meal)),
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood)),
     );
     setState(() {
-      
+      if(returnedFood!=null)
+      {
+        widget.meal.foods.add(returnedFood);
+      }
     });
   }
 
@@ -275,7 +278,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,meal: widget.meal,)
+        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
       );
     }
   }
