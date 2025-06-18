@@ -6,14 +6,14 @@ class DayService
 {
   final _dayRepo = locator<DayRepository>();
  
-  Future<Day?> getCurrentDayData() async
+  Future<Day?> getDayDataByDate(DateTime date) async
   {
-    var day =  _dayRepo.getDayData(DateTime.now());
+    var day =  _dayRepo.getDayData(date);
     if(day!=null)
     {
       return day;
     }
-    Day? newDay = Day(dayTime: DateTime.now());
+    Day? newDay = Day(dayTime: date);
     newDay = await _dayRepo.addDayData(newDay);    
     return newDay;
   }
@@ -23,11 +23,11 @@ class DayService
     await _dayRepo.updateDayData(day);
   }
 
-  // String _getDateString(DateTime date)
-  // {
-  //   var year = date.year;
-  //   var month = date.month;
-  //   var dayOfMonth = date.day;
-  //   return "$year-$month-$dayOfMonth"; 
-  // }
+  String getDateString(DateTime date)
+  {
+    var year = date.year;
+    var month = date.month;
+    var dayOfMonth = date.day;
+    return "$year-$month-$dayOfMonth"; 
+  }
 }

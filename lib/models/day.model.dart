@@ -41,3 +41,13 @@ class Meal extends HiveObject {
 
   Meal({required this.mealName, required this.foods, this.calories});
 }
+
+enum Weekday {
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+  Sunday,
+}

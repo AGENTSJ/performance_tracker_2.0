@@ -45,7 +45,6 @@ class FoodRepository
       for (var food in foods) {
         addFood(food);
       }
-      print('added');
     }
   }
 }
