@@ -7,7 +7,7 @@ class FoodRepository
 {
   late final foodBox = Hive.box<Food>(Collections.foods.value);
 
-  getAllFoods()
+  List<Food> getAllFoods()
   {
     List<Food> allFoods = foodBox.values.toList();
     return allFoods;
@@ -31,13 +31,21 @@ class FoodRepository
     return filtered;
   }
   
+  updateFood(Food food)
+  {
+    throw UnimplementedError();
+  }
+  
   test()
   {
-    var foods = availableFoods;
-    for (var food in foods) {
-      addFood(food);
+    var foods1 = getAllFoods();
+    if(foods1.isEmpty)
+    {
+      var foods = availableFoods;
+      for (var food in foods) {
+        addFood(food);
+      }
+      print('added');
     }
-    print('added');
-    return;
   }
 }

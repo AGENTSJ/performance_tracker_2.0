@@ -4,13 +4,13 @@ import 'package:performance_tracker/services/rest.service.dart';
 
 class AiService
 {
-  late final AI_Provider provider;
-  final restService = locator<RestService>();
+  late final AI_Provider _provider;
+  final _restService = locator<RestService>();
   AiService() 
   {
     var API_KEY = 'AIzaSyD6G15zpLNW9OtnDKveFIG9vZM8jw1yO5E';
     var modelName = "gemini-2.0-flash";
-    provider = AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY");
+    _provider = AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY");
   } 
 
   getResponse(String promt , String? instructions) async 
@@ -33,7 +33,7 @@ class AiService
         }
       ]
     };
-    var response = await restService.POST(provider.endpoint, payload);
+    var response = await _restService.POST(_provider.endpoint, payload);
     var body = jsonDecode(response.body);
     return body;
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/pages/AddFood.page.dart';
 import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
@@ -11,12 +11,14 @@ import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
   final Meal meal;
-  const MealTrackerPage({super.key, required this.meal});
+  final Day? day;
+  const MealTrackerPage({super.key, required this.meal,required this.day});
   @override
   State<MealTrackerPage> createState() => _MealTrackerState();
 }
 
 class _MealTrackerState extends State<MealTrackerPage> {
+  var dayService = locator<DayService>();
   TextEditingController foodNameControl = TextEditingController();
   var inputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(10),
@@ -255,7 +257,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     setState(() {
       showSearchRes = foodNameControl.text.isNotEmpty;
       if (showSearchRes) {
-        this.searchfoods = this.foodService.searchFood(str);
+        searchfoods = foodService.searchFood(str);
       }
     });
   }
@@ -270,6 +272,10 @@ class _MealTrackerState extends State<MealTrackerPage> {
       if(returnedFood!=null)
       {
         widget.meal.foods.add(returnedFood);
+        if(widget.day!=null)
+        {
+          dayService.updateDayData(widget.day!);
+        }
       }
       foodNameControl.text = '';
       showSearchRes = false;
@@ -283,6 +289,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       context,
       MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
     );
+    dayService.updateDayData(widget.day!);
     setState(() {
     });
   }
@@ -300,6 +307,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       {
         setState(() {        
           widget.meal.foods.add(returnedFood);
+          dayService.updateDayData(widget.day!);
           foodNameControl.text = '';
           showSearchRes = false;
           searchfoods = [];

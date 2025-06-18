@@ -4,7 +4,8 @@ import 'package:performance_tracker/src/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
   final Meal meal;
-  const MealContainer({super.key, required this.meal});
+  final Day day;
+  const MealContainer({super.key, required this.meal,required this.day});
 
   @override
   State<MealContainer> createState() => _MealContainerState();
@@ -56,9 +57,9 @@ class _MealContainerState extends State<MealContainer> {
 
   handleNavigation() async
   {
-    await Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage(meal: widget.meal,)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context)=>MealTrackerPage(meal: widget.meal,day: widget.day,)));
+    if (!mounted) return;
     setState(() {
-      
     });
   }
 }

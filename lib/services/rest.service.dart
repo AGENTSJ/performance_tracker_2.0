@@ -4,11 +4,11 @@ import 'package:http/http.dart' ;
 
 class RestService
 {
-  var headers = {'Content-Type': 'application/json'};
+  final _headers = {'Content-Type': 'application/json'};
   
   GET(String url) 
   {
-    final response = get(Uri.parse(url),headers: {'Content-Type': 'application/json'},); 
+    final response = get(Uri.parse(url),headers:_headers,); 
     return response;
   }
   
@@ -17,7 +17,7 @@ class RestService
     final response = post(
       Uri.parse(url),
       body: jsonEncode(payload),
-      headers: headers
+      headers: _headers
     );
     return response;
   }

@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
-class HomePage extends StatelessWidget {
-  final Day today = Day();
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  
+  const HomePage({super.key});
+  @override
+  State<StatefulWidget> createState()=>HomePageState();
+
+}
+
+class HomePageState extends State<HomePage>
+{
+  final dayService  = locator<DayService>();
+  late Day? today;
+
+  @override
+  void initState() {
+    super.initState();
+    dayService.getCurrentDayData().then((day)=>{
+      setState(() {
+        today = day;
+      })
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,12 +42,11 @@ class HomePage extends StatelessWidget {
         body: ListView(
           scrollDirection: Axis.vertical,
           children: [
-            ...today.meals!.map((meal)=>MealContainer(meal: meal))
+            if(today!=null)...today!.meals!.map((meal)=>MealContainer(meal: meal,day: today!,))
           ],
         ),
         bottomNavigationBar: BottomBar()
       ),
-      
     );
   }
 }

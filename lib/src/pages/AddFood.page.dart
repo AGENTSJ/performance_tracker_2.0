@@ -276,7 +276,6 @@ class _AddFoodModalState extends State<AddFoodModal> {
   addFood()
   {
     Navigator.pop(context , widget.food);
-    // Navigator.pop(context);
   }
 
   getStandardFood(Food food) {

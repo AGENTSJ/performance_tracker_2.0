@@ -1,34 +1,32 @@
 import 'dart:convert';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/repository/food.repository.dart';
-import 'package:performance_tracker/repository/foods.data.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 
 class FoodService
 {
-  var foods = availableFoods;
-  var ai = locator<AiService>();
-  var foodRepo = locator<FoodRepository>();
+  final _ai = locator<AiService>();
+  final _foodRepo = locator<FoodRepository>();
 
   List<Food> searchFood(String key)
   {
-    return foodRepo.searchFoodByName(key);
+    return _foodRepo.searchFoodByName(key);
   }
 
   List<Food> getAllFoods()
   {
-    return foodRepo.getAllFoods();
+    return _foodRepo.getAllFoods();
   }
 
   List<Food> suggestFoods()
   {
-    return foodRepo.getAllFoods();
+    return _foodRepo.getAllFoods();
   }
 
   addFoodToMeal(Food food)
   {
-    foodRepo.addFood(food); 
+    _foodRepo.addFood(food); 
   }
 
   Future<Food?> AI_CreateFood(String name , String? description) async
@@ -47,7 +45,7 @@ class FoodService
       String promt = "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
       const String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing. if the name of the food doesn't make sense you can return the text error without json";
 
-      var body = await  ai.getResponse(promt , instructions);
+      var body = await  _ai.getResponse(promt , instructions);
       var resString = body['candidates'][0]['content']['parts'][0]['text']; 
       var res = jsonDecode(resString);
       var prot = double.parse( res["protein"]);
