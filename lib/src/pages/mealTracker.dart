@@ -5,7 +5,7 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/src/components/AddFoodModal.dart';
+import 'package:performance_tracker/src/pages/AddFood.page.dart';
 import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
@@ -38,7 +38,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
   var showSearchRes = false;
   var showSuggested = true;
   _MealTrackerState() {
-    foods = foodService.getAllFoods();
+    foods = foodService.suggestFoods();
   }
 
   @override

@@ -1,7 +1,19 @@
+import 'package:hive/hive.dart';
+
+part 'food.model.g.dart';
+
+@HiveType(typeId: 0)
 class Food {
+  @HiveField(0)
   final String? name;
+  
+  @HiveField(1)
   final MacroNutrients macros;
+  
+  @HiveField(2)
   final MicroNutrients micros;
+  
+  @HiveField(3)
   final MeasuredUnit quantity;
 
   Food({
@@ -25,13 +37,23 @@ class Food {
     );
   }
 }
-
+@HiveType(typeId: 1)
 class MacroNutrients {
+  @HiveField(0)
   double protein;
+  
+  @HiveField(1)
   double fat;
+  
+  @HiveField(2)
   double carbohydrate;
+  
+  @HiveField(3)
   double fiber;
+  
+  @HiveField(4)
   late double calories;
+  
   MacroNutrients(
     this.protein,
     this.carbohydrate,
@@ -53,36 +75,94 @@ class MacroNutrients {
   }
 }
 
+@HiveType(typeId: 2)
 class MicroNutrients {
+  @HiveField(0)
   MeasuredUnit? vitaminA;
-  MeasuredUnit? vitaminC;
-  MeasuredUnit? vitaminD;
-  MeasuredUnit? vitaminE;
-  MeasuredUnit? vitaminK;
-  MeasuredUnit? thiamin; // Vitamin B1
-  MeasuredUnit? riboflavin; // Vitamin B2
-  MeasuredUnit? niacin; // Vitamin B3
-  MeasuredUnit? vitaminB6;
-  MeasuredUnit? folate; // Vitamin B9
-  MeasuredUnit? vitaminB12;
-  MeasuredUnit? pantothenicAcid; // Vitamin B5
-  MeasuredUnit? biotin; // Vitamin B7
 
+  @HiveField(1)
+  MeasuredUnit? vitaminC;
+
+  @HiveField(2)
+  MeasuredUnit? vitaminD;
+
+  @HiveField(3)
+  MeasuredUnit? vitaminE;
+
+  @HiveField(4)
+  MeasuredUnit? vitaminK;
+
+  @HiveField(5)
+  MeasuredUnit? thiamin; // Vitamin B1
+
+  @HiveField(6)
+  MeasuredUnit? riboflavin; // Vitamin B2
+
+  @HiveField(7)
+  MeasuredUnit? niacin;// Vitamin B3
+
+  @HiveField(8)
+  MeasuredUnit? vitaminB6;
+
+  @HiveField(9)
+  MeasuredUnit? folate;// Vitamin B9
+
+  @HiveField(10)
+  MeasuredUnit? vitaminB12;
+
+  @HiveField(11)
+  MeasuredUnit? pantothenicAcid;// Vitamin B5
+
+  @HiveField(12)
+  MeasuredUnit? biotin;// Vitamin B7
+
+  
+  @HiveField(13)
   MeasuredUnit? calcium;
+
+  @HiveField(14)
   MeasuredUnit? iron;
+
+  @HiveField(15)
   MeasuredUnit? magnesium;
+
+  @HiveField(16)
   MeasuredUnit? phosphorus;
+
+  @HiveField(17)
   MeasuredUnit? potassium;
+
+  @HiveField(18)
   MeasuredUnit? sodium;
+
+  @HiveField(19)
   MeasuredUnit? zinc;
+
+  @HiveField(20)
   MeasuredUnit? copper;
+
+  @HiveField(21)
   MeasuredUnit? manganese;
+
+  @HiveField(22)
   MeasuredUnit? selenium;
+
+  @HiveField(23)
   MeasuredUnit? iodine;
+
+  @HiveField(24)
   MeasuredUnit? chromium;
+
+  @HiveField(25)
   MeasuredUnit? molybdenum;
+
+  @HiveField(26)
   MeasuredUnit? fluoride;
+
+  @HiveField(27)
   MeasuredUnit? chloride;
+
+
   late Map<String, MeasuredUnit?> microMap;
 
   MicroNutrients({
@@ -179,9 +259,14 @@ class MicroNutrients {
   }
 }
 
+@HiveType(typeId: 3)
 class MeasuredUnit {
+  @HiveField(0)
   double value;
+  
+  @HiveField(1)
   String unit;
+
   MeasuredUnit({required this.value, required this.unit});
 
   MeasuredUnit clone() {

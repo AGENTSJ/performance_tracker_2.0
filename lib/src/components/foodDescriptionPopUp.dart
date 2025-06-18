@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/src/components/AddFoodModal.dart';
+import 'package:performance_tracker/src/pages/AddFood.page.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {

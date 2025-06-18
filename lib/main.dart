@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/src/pages/home.page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   setUpDependencyInjection();
+  await setupHiveDb();
   runApp(const MyApp());
 }
 

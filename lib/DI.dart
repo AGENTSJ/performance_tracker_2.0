@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:performance_tracker/repository/food.repository.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
@@ -10,4 +11,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<FoodService>(()=>FoodService());
   locator.registerLazySingleton<RestService>(()=>RestService());
   locator.registerLazySingleton<AiService>(()=>AiService());
+
+  // Repo
+  locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());
 }
