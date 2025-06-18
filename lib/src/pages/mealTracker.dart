@@ -96,36 +96,39 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   },
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: PRIMARY,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+              Visibility(
+                visible: searchfoods.isEmpty,
+                child: Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: PRIMARY,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          minimumSize: Size(double.infinity, 40),
                         ),
-                        minimumSize: Size(double.infinity, 40),
+                        child: Text('Custom'),
                       ),
-                      child: Text('Custom'),
-                    ),
-                    SizedBox(height: 5),
-                    ElevatedButton(
-                      onPressed: () {handleCustomFood();},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: PRIMARY,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      SizedBox(height: 5),
+                      ElevatedButton(
+                        onPressed: () {handleAICustomFood();},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: PRIMARY,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          minimumSize: Size(double.infinity, 40),
                         ),
-                        minimumSize: Size(double.infinity, 40),
+                        child: Text('AI Create'),
                       ),
-                      child: Text('AI Create'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ] else ...[
@@ -212,7 +215,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                         itemBuilder: (BuildContext context, int index) {
                           return ElevatedButton(
                             onPressed: () {
-                              showAddFoodModal(widget.meal.foods[index]);
+                              showAddFoodModalUpdateMode(widget.meal.foods[index]);
                             },
                             style: foodListStyle,
                             child: Padding(
@@ -268,10 +271,23 @@ class _MealTrackerState extends State<MealTrackerPage> {
       {
         widget.meal.foods.add(returnedFood);
       }
+      foodNameControl.text = '';
+      showSearchRes = false;
+      searchfoods = [];
     });
   }
 
-  handleCustomFood() async
+  showAddFoodModalUpdateMode(Food food) async
+  {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+    );
+    setState(() {
+    });
+  }
+
+  handleAICustomFood() async
   {
     if(foodNameControl.text.isNotEmpty)
     {
@@ -284,28 +300,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
       {
         setState(() {        
           widget.meal.foods.add(returnedFood);
+          foodNameControl.text = '';
+          showSearchRes = false;
+          searchfoods = [];
         });
       }
-    }
-  }
-
-  generateFood(String foodName, String description) async
-  {
-    var food = await foodService.AI_CreateFood(foodNameControl.text, description);
-    Navigator.of(context).pop();
-    if(food!=null)
-    {
-      showAddFoodModal(food);
-    }else
-    {
-      Fluttertoast.showToast(
-        msg: "Mysterious food indeed !!, Try again.",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: Colors.white,
-        textColor: Colors.black,
-        webBgColor: "white",
-      );
     }
   }
 }

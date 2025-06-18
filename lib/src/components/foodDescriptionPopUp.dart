@@ -7,7 +7,7 @@ import 'package:performance_tracker/src/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {
   final String foodName;
-  FoodDescriptionPopUp({
+  const FoodDescriptionPopUp({
     super.key,
     required this.foodName,
   });

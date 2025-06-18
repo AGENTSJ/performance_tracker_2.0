@@ -26,9 +26,9 @@ class FoodService
     return foodRepo.getAllFoods();
   }
 
-  List<Food> addFoodToMeal()
+  addFoodToMeal(Food food)
   {
-    throw Exception();
+    foodRepo.addFood(food); 
   }
 
   Future<Food?> AI_CreateFood(String name , String? description) async
@@ -57,6 +57,7 @@ class FoodService
       var cal = double.parse( res["calories"]);
       var macro = MacroNutrients(prot,carb,fat,fib,cal);
       var food = Food(name: name,macros: macro, micros: MicroNutrients(), quantity: MeasuredUnit(unit: 'g',value: 100));
+      addFoodToMeal(food);
       return food;
     }
     catch (e) {

@@ -249,7 +249,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
                 ),
-                child: Text('Add Food'),
+                child: Text('Save'),
               ),
             )
           ],
