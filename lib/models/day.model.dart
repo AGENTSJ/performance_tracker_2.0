@@ -12,7 +12,13 @@ class Day extends HiveObject {
   late Meal lunch;
 
   @HiveField(2)
+  late Meal morningSnacks;
+  
+  @HiveField(3)
   late Meal dinner;
+
+  @HiveField(4)
+  late Meal eveningSnacks;
 
   @HiveField(3)
   List<Meal>? meals;
@@ -21,8 +27,10 @@ class Day extends HiveObject {
   DateTime dayTime;
 
   Day({required this.dayTime}) {
-    breakFast = Meal(mealName: 'Break Fast', foods: []);
+    breakFast = Meal(mealName: 'Breakfast', foods: []);
+    morningSnacks = Meal(mealName: 'Morning Snacks', foods: []);
     lunch = Meal(mealName: 'Lunch', foods: []);
+    eveningSnacks = Meal(mealName: 'Evening Snacks', foods: []);
     dinner = Meal(mealName: 'Dinner', foods: []);
     meals = [breakFast, lunch, dinner];
   }
@@ -50,4 +58,19 @@ enum Weekday {
   Friday,
   Saturday,
   Sunday,
+}
+
+enum Months {
+  January,
+  February,
+  March,
+  April,
+  May,
+  June,
+  July,
+  August,
+  September,
+  October,
+  November,
+  December,
 }

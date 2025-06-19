@@ -28,7 +28,10 @@ class _HomePageState extends State<HomePage> {
       (day) => {
         currentDay = day,
         _setCurrentDayMarker(),
-        setCaloriesInDay()
+        setCaloriesInDay(),
+        setState(() {
+          
+        })
       },
     );
   }
@@ -135,6 +138,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       this.showDateSelector = false;
       _setCurrentDayMarker();
+      setCaloriesInDay();
     });
   }
   setCaloriesInDay()
