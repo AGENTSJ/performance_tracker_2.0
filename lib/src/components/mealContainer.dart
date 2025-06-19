@@ -10,8 +10,9 @@ import 'package:performance_tracker/src/pages/mealTracker.dart';
 class MealContainer extends StatefulWidget {
   final Meal meal;
   final Day day;
+  final ValueChanged onMealUpdated;
 
-  const MealContainer({super.key, required this.meal, required this.day});
+  const MealContainer({super.key, required this.meal, required this.day,required this.onMealUpdated});
 
   @override
   State<MealContainer> createState() => _MealContainerState();
@@ -20,10 +21,11 @@ class MealContainer extends StatefulWidget {
 class _MealContainerState extends State<MealContainer> {
   late double caloriesInMeal = 0;
   var dayService = locator<DayService>();
+  
   @override
   void initState() {
     super.initState();
-    this.setCalories();
+    setCalories(false);
   }
   
   @override
@@ -178,7 +180,7 @@ class _MealContainerState extends State<MealContainer> {
     );
     if (!mounted) return;
     setState(() {
-      setCalories();
+      setCalories(true);
     });
   }
 
@@ -187,14 +189,18 @@ class _MealContainerState extends State<MealContainer> {
     setState(() {
       widget.meal.foods = widget.meal.foods.where((e)=>e!=food).toList();
       dayService.updateDayData(widget.day);
-      setCalories();
+      setCalories(true);
     });
   }
 
-  setCalories() {  
+  setCalories(bool emit) {  
     caloriesInMeal = 0;
     for (var food in widget.meal.foods) {
       caloriesInMeal += food.macros.calories;
+    }
+    if(emit)
+    {
+      widget.onMealUpdated(null);
     }
   }
 
@@ -206,6 +212,7 @@ class _MealContainerState extends State<MealContainer> {
       MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: false,)),
     );
     dayService.updateDayData(widget.day);
+    setCalories(true);
     setState(() {
     });
   }

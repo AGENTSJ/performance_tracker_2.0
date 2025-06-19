@@ -27,6 +27,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(backgroundColor: BACKGROUND),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -53,7 +54,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage('assets/food-template.png'),
+                                  image: AssetImage('assets/food-template2.png'),
                                   fit: BoxFit.fitWidth,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
@@ -90,11 +91,17 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                   Column(
                                     children: [
                                       SizedBox(
-                                        width: 80,
+                                        width: 100,
                                         child: Center(
-                                          child: Text(
-                                            widget.food.quantity.unit,
-                                            style: TextStyle(),
+                                          child: Row(
+                                            children: [
+                                              Text('Measure :',style: TextStyle(color: Colors.grey),),
+                                              SizedBox(width: 10,),
+                                              Text(
+                                                widget.food.quantity.unit,
+                                                style: TextStyle(fontWeight: FontWeight.w600),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -105,36 +112,32 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                     children: [
                                       Container(
                                         width: 80,
+                                        height: 35,
                                         decoration: BoxDecoration(
                                           color: Colors.grey[200],
                                           borderRadius: BorderRadius.circular(10),
                                         ),
-                                        child: Center(
-                                          child: TextField(
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                            ],
-                                            decoration: InputDecoration(
-                                              constraints: BoxConstraints(
-                                                maxHeight: 40,
-                                              ),
-                                              border: InputBorder.none,
-                                              enabledBorder: InputBorder.none,
-                                              focusedBorder: InputBorder.none,
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                            controller: caloriesController,
-                                            onChanged: (str) {
-                                              handleQuantityChange(str);
-                                            },
+                                        child: TextField(
+                                          textAlignVertical: TextAlignVertical.center,
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(borderSide: BorderSide.none),
+
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 0,
+                                                ),
                                           ),
+                                          controller: caloriesController,
+                                          onChanged: (str) {
+                                            handleQuantityChange(str);
+                                          },
                                         ),
                                       ),
                                     ],
@@ -160,7 +163,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Macro nutrients breakdown',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w600),),
+                      child: Text('Macro nutrients',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
                     ),
                     SizedBox(height: 10),
                     Padding(
@@ -171,7 +174,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Protein'),
-                              Text(widget.food.macros.protein.round().toString()),
+                              Text("${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}"),
                             ],
                           ),
                           Row(
@@ -179,9 +182,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             children: [
                               Text('Carbohydrate'),
                               Text(
-                                widget.food.macros.carbohydrate
-                                    .round()
-                                    .toString(),
+                                "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
                               ),
                             ],
                           ),
@@ -189,14 +190,14 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Fat'),
-                              Text(widget.food.macros.fat.round().toString()),
+                              Text("${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}"),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Fiber'),
-                              Text(widget.food.macros.fiber.round().toString()),
+                              Text("${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}"),
                             ],
                           ),
                           Row(
@@ -204,7 +205,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             children: [
                               Text('Calories'),
                               Text(
-                                widget.food.macros.calories.round().toString(),
+                                "${widget.food.macros.calories.round().toString()} ${widget.food.quantity.unit}",
                               ),
                             ],
                           ),
@@ -216,7 +217,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
               ),
             ),
             SizedBox(height: 10),
-            Align(alignment: Alignment.centerLeft,child: Text('Micro nutrients breakdown',style: TextStyle(fontWeight: FontWeight.w600),)),
+            Align(alignment: Alignment.centerLeft,child: Text('Micro nutrients',style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),)),
             SizedBox(height: 10),
             // micro
             Expanded(
@@ -226,32 +227,33 @@ class _AddFoodModalState extends State<AddFoodModal> {
                 child: ListView(
                   children: widget.food.micros.microMap.entries.map((entry) {
                     final microNutrient = entry.value;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(entry.key),
-                        Text(
-                          microNutrient != null
-                              ? '${microNutrient.value} ${microNutrient.unit}'
-                              : '-',
-                        ),
-                      ],
+                    return Padding(
+                      padding: const EdgeInsets.only(top:2.0,bottom: 2.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(entry.key),
+                          Text(
+                            microNutrient != null
+                                ? '${microNutrient.value} ${microNutrient.unit}'
+                                : '-',
+                          ),
+                        ],
+                      ),
                     );
                   }).toList(),
                 ),
               ),
             ),
-            Container(
-              child: ElevatedButton(
-                onPressed: (){addFood();},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: PRIMARY,
-                  minimumSize: Size(double.infinity, 50),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
-                ),
-                child: Text(widget.isCreateMode? "Add to meal" : "Update food"),
+            ElevatedButton(
+              onPressed: (){addFood();},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PRIMARY,
+                minimumSize: Size(double.infinity, 50),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
               ),
+              child: Text(widget.isCreateMode? "Add To Meal" : "Update Food"),
             )
           ],
         ),

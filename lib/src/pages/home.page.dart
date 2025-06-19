@@ -26,10 +26,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     dayService.getDayDataByDate(DateTime.now()).then(
       (day) => {
-        setState(() {
-          currentDay = day;
-          _setCurrentDayMarker();
-        }),
+        currentDay = day,
+        _setCurrentDayMarker(),
+        setCaloriesInDay()
       },
     );
   }
@@ -77,13 +76,14 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.restaurant_menu_sharp ,color: PRIMARY,),
-                                  SizedBox(width: 30,),
-                                  Text("${consumedCalForToday.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
-                                ],
+                              Container(
+                                decoration: BoxDecoration(shape: BoxShape.circle,border: Border.all(color: PRIMARY,width: 2),),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(Icons.restaurant_menu_sharp ,color: PRIMARY,),
+                                )
                               ),
+                              Text("${consumedCalForToday.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
                               IconButton(onPressed: (){}, icon: Icon(Icons.bar_chart_outlined,color: PRIMARY,)) 
                             ],
                           ),
@@ -94,7 +94,9 @@ class _HomePageState extends State<HomePage> {
                         (meal) => Padding(
                           key: ValueKey("$dayMarker ${meal.mealName}"),
                           padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
-                          child: MealContainer(meal: meal, day: currentDay!),
+                          child: MealContainer(meal: meal, day: currentDay!,onMealUpdated: (value){setState(() {
+                            setCaloriesInDay();
+                          });},),
                         ),
                       ),
                   ],
@@ -134,5 +136,15 @@ class _HomePageState extends State<HomePage> {
       this.showDateSelector = false;
       _setCurrentDayMarker();
     });
+  }
+  setCaloriesInDay()
+  {
+    var total = 0.0;
+    for (var meal in this.currentDay!.meals!) {
+      for (var food in meal.foods) {
+        total+=food.macros.calories;    
+      }
+    }
+    this.consumedCalForToday = total;
   }
 }
