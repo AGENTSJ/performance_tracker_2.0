@@ -7,7 +7,6 @@ import 'package:performance_tracker/src/components/dateSelector.dart';
 import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,9 +37,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey,
       theme: ThemeData(
-        primaryColor: PRIMARY,
+        colorSchemeSeed: PRIMARY,
         scaffoldBackgroundColor: BACKGROUND,
       ),
       home: Scaffold(
@@ -73,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                       Container(
                         decoration: BoxDecoration(color: const Color.fromARGB(255, 255, 255, 255),borderRadius: BorderRadius.all(Radius.circular(8))),
                         width: double.infinity,
-                        constraints: BoxConstraints(minHeight: 90),
+                        constraints: BoxConstraints(minHeight: 110),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20,right: 20,top: 8,bottom: 8),
                           child: Row(
@@ -83,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   Icon(Icons.restaurant_menu_sharp ,color: PRIMARY,),
                                   SizedBox(width: 30,),
-                                  Text("$consumedCalForToday of $totalCalorieForToday Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
+                                  Text("${consumedCalForToday.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
                                 ],
                               ),
                               IconButton(onPressed: (){}, icon: Icon(Icons.bar_chart_outlined,color: PRIMARY,)) 
@@ -94,6 +92,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: 20,),
                       ...currentDay!.meals!.map(
                         (meal) => Padding(
+                          key: ValueKey("$dayMarker ${meal.mealName}"),
                           padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
                           child: MealContainer(meal: meal, day: currentDay!),
                         ),

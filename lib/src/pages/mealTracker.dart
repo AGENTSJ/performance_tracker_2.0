@@ -266,7 +266,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     var newFood = food.clone();
     var returnedFood = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood)),
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood,isCreateMode: true,)),
     );
     setState(() {
       if(returnedFood!=null)
@@ -287,7 +287,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
   {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+      MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: false,)),
     );
     dayService.updateDayData(widget.day!);
     setState(() {

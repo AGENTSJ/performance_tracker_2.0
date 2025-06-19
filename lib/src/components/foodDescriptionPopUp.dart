@@ -71,7 +71,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     {
       var returnedFood =  await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddFoodModal(food: food)),
+        MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: true,)),
       );
       Navigator.of(context).pop(returnedFood);
     }else

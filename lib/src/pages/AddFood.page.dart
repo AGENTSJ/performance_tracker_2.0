@@ -6,7 +6,8 @@ import 'package:performance_tracker/src/constants.ui.dart';
 
 class AddFoodModal extends StatefulWidget {
   final Food food;
-  const AddFoodModal({super.key, required this.food});
+  final bool isCreateMode;
+  const AddFoodModal({super.key, required this.food,required this.isCreateMode});
   @override
   State<StatefulWidget> createState() => _AddFoodModalState();
 }
@@ -249,7 +250,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
                 ),
-                child: Text('Save'),
+                child: Text(widget.isCreateMode? "Add to meal" : "Update food"),
               ),
             )
           ],
