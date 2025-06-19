@@ -20,7 +20,8 @@ class _HomePageState extends State<HomePage> {
   late Day? currentDay = null;
   String dayMarker = '';
   bool showDateSelector = false;
-
+  double totalCalorieForToday = 2000;
+  double consumedCalForToday = 0;
   @override
   void initState() {
     super.initState();
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   toggleDateSelector();
                 },
-                child: Icon(Icons.arrow_drop_down, size: 19),
+                child: Icon(Icons.arrow_drop_down, size: 30,color: Colors.black,),
               ),
             ],
           ),
@@ -63,15 +64,44 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Stack(
           children: [
-            ListView(
-              scrollDirection: Axis.vertical,
-              children: [
-                if (currentDay != null)
-                  ...currentDay!.meals!.map(
-                    (meal) => MealContainer(meal: meal, day: currentDay!),
-                  ),
-              ],
-            ),
+            if (currentDay != null)...[
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: [
+                      Container(
+                        decoration: BoxDecoration(color: const Color.fromARGB(255, 255, 255, 255),borderRadius: BorderRadius.all(Radius.circular(8))),
+                        width: double.infinity,
+                        constraints: BoxConstraints(minHeight: 90),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20,right: 20,top: 8,bottom: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.restaurant_menu_sharp ,color: PRIMARY,),
+                                  SizedBox(width: 30,),
+                                  Text("$consumedCalForToday of $totalCalorieForToday Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
+                                ],
+                              ),
+                              IconButton(onPressed: (){}, icon: Icon(Icons.bar_chart_outlined,color: PRIMARY,)) 
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      ...currentDay!.meals!.map(
+                        (meal) => Padding(
+                          padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
+                          child: MealContainer(meal: meal, day: currentDay!),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             if (showDateSelector) ...[Positioned(child: DateSelector(selectedDate: currentDay!.dayTime,onDateChanged:(value){handleDateChange(value);},))],
           ],
         ),

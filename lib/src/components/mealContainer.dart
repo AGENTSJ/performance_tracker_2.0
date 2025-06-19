@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/src/constants.ui.dart';
 import 'package:performance_tracker/src/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
@@ -14,44 +15,61 @@ class MealContainer extends StatefulWidget {
 class _MealContainerState extends State<MealContainer> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text(widget.meal.mealName),IconButton(
-              onPressed: (){handleNavigation();}, icon: Icon(Icons.add))],
-          ),
-          Container(
-            decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(8))),
-            width: double.infinity,
-            constraints: BoxConstraints(minHeight: 80),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(widget.meal.mealName,style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
+            Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: PRIMARY
+                  ),
+                  width: 25,
+                  height: 25,
+                ),
+                Positioned( bottom:-8,left: -7,  child: IconButton(onPressed: (){handleNavigation();}, icon: Icon(Icons.add,color: const Color.fromARGB(255, 255, 255, 255),size: 20,)))
+              ],
+            )
+            ],
+        ),
+        SizedBox(height: 20,),
+        Container(
+          decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(8))),
+          width: double.infinity,
+          constraints: BoxConstraints(minHeight: 80),
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
             child: Column(
               children: [
                 ...widget.meal.foods.map((food) => 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:[ 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(food.name ?? ''),
-                          Text("${food.quantity.value.round().toString()} ${food.quantity.unit}" ,textAlign: TextAlign.start,),
-                        ],
-                      ),
-                      Text(food.macros.calories.toString())
-                    ]
-                  ),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children:[ 
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 200, child: Text(food.name ?? '' ,style: TextStyle(fontSize: 15),)),
+                            Text("${food.quantity.value.round().toString()} ${food.quantity.unit}" ,textAlign: TextAlign.start,style: TextStyle(color: const Color.fromARGB(255, 109, 109, 109),fontSize: 14),),
+                          ],
+                        ),
+                        Text(food.macros.calories.round().toString())
+                      ]
+                    ),
+                    SizedBox(height: 20,)
+                  ],
                 )
                 ),
               ],
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 
