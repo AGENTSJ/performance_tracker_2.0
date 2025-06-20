@@ -6,7 +6,9 @@ import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/dateSelector.dart';
 import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey, 
       theme: ThemeData(
         colorSchemeSeed: PRIMARY,
         scaffoldBackgroundColor: BACKGROUND,
@@ -87,7 +90,11 @@ class _HomePageState extends State<HomePage> {
                                 )
                               ),
                               Text("${consumedCalForToday.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
-                              IconButton(onPressed: (){}, icon: Icon(Icons.bar_chart_outlined,color: PRIMARY,)) 
+                              IconButton(onPressed: (){
+                                navigatorKey.currentState?.push(
+                                  MaterialPageRoute(builder: (_) => NutritionAnalysisPage(day: currentDay!,)),
+                                );
+                              }, icon: Icon(Icons.bar_chart_outlined,color: PRIMARY,)) 
                             ],
                           ),
                         ),
@@ -143,12 +150,6 @@ class _HomePageState extends State<HomePage> {
   }
   setCaloriesInDay()
   {
-    var total = 0.0;
-    for (var meal in this.currentDay!.meals!) {
-      for (var food in meal.foods) {
-        total+=food.macros.calories;    
-      }
-    }
-    this.consumedCalForToday = total;
+    this.consumedCalForToday = dayService.getDaysCalories(this.currentDay!);
   }
 }

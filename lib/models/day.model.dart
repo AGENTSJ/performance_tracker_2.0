@@ -32,7 +32,7 @@ class Day extends HiveObject {
     lunch = Meal(mealName: 'Lunch', foods: []);
     eveningSnacks = Meal(mealName: 'Evening Snacks', foods: []);
     dinner = Meal(mealName: 'Dinner', foods: []);
-    meals = [breakFast, lunch, dinner];
+    meals = [breakFast,morningSnacks, lunch,eveningSnacks ,dinner];
   }
 }
 

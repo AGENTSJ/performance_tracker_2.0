@@ -12,7 +12,7 @@ import 'package:performance_tracker/src/constants.ui.dart';
 class MealTrackerPage extends StatefulWidget {
   final Meal meal;
   final Day? day;
-  const MealTrackerPage({super.key, required this.meal,required this.day});
+  const MealTrackerPage({super.key, required this.meal, required this.day});
   @override
   State<MealTrackerPage> createState() => _MealTrackerState();
 }
@@ -46,12 +46,13 @@ class _MealTrackerState extends State<MealTrackerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18)),
         backgroundColor: BACKGROUND,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           children: [
             TextField(
@@ -118,7 +119,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                       ),
                       SizedBox(height: 5),
                       ElevatedButton(
-                        onPressed: () {handleAICustomFood();},
+                        onPressed: () {
+                          handleAICustomFood();
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: PRIMARY,
                           foregroundColor: Colors.white,
@@ -142,12 +145,15 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Suggested'),
+                      Text(
+                        'Suggested',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       if (showSuggested) ...[
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              this.showSuggested = false;
+                              showSuggested = false;
                             });
                           },
                           icon: const Icon(Icons.close),
@@ -156,10 +162,10 @@ class _MealTrackerState extends State<MealTrackerPage> {
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              this.showSuggested = true;
+                              showSuggested = true;
                             });
                           },
-                          icon: const Icon(Icons.visibility),
+                          icon: const Icon(Icons.visibility, size: 18),
                         ),
                       ],
                     ],
@@ -167,72 +173,67 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   SizedBox(height: 5),
                   Visibility(
                     visible: showSuggested,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: foods.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ElevatedButton(
-                              onPressed: () {
-                                showAddFoodModal(foods[index]);
-                              },
-                              style: foodListStyle,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 5.0,
-                                  bottom: 5.0,
+                    child: SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ...foods.map(
+                              (food) => Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    showAddFoodModal(food);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(children: [Text('${food.name}')]),
+                                  ),
                                 ),
-                                child: Text('${this.foods[index].name}'),
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              Column(
-                // selected
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Selected',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 5),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      Text('Selected'),
+                      ...widget.meal.foods.map(
+                        (food) => Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              showAddFoodModalUpdateMode(food);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(children: [Text('${food.name}')]),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: widget.meal.foods.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              showAddFoodModalUpdateMode(widget.meal.foods[index]);
-                            },
-                            style: foodListStyle,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 5.0,
-                                bottom: 5.0,
-                              ),
-                              child: Text('${widget.meal.foods[index].name}'),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ],
@@ -266,14 +267,14 @@ class _MealTrackerState extends State<MealTrackerPage> {
     var newFood = food.clone();
     var returnedFood = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: newFood,isCreateMode: true,)),
+      MaterialPageRoute(
+        builder: (context) => AddFoodModal(food: newFood, isCreateMode: true),
+      ),
     );
     setState(() {
-      if(returnedFood!=null)
-      {
+      if (returnedFood != null) {
         widget.meal.foods.add(returnedFood);
-        if(widget.day!=null)
-        {
+        if (widget.day != null) {
           dayService.updateDayData(widget.day!);
         }
       }
@@ -283,29 +284,27 @@ class _MealTrackerState extends State<MealTrackerPage> {
     });
   }
 
-  showAddFoodModalUpdateMode(Food food) async
-  {
+  showAddFoodModalUpdateMode(Food food) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: false,)),
+      MaterialPageRoute(
+        builder: (context) => AddFoodModal(food: food, isCreateMode: false),
+      ),
     );
     dayService.updateDayData(widget.day!);
-    setState(() {
-    });
+    setState(() {});
   }
 
-  handleAICustomFood() async
-  {
-    if(foodNameControl.text.isNotEmpty)
-    {
+  handleAICustomFood() async {
+    if (foodNameControl.text.isNotEmpty) {
       var returnedFood = await showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => FoodDescriptionPopUp(foodName: foodNameControl.text,)
+        builder: (context) =>
+            FoodDescriptionPopUp(foodName: foodNameControl.text),
       );
-      if(returnedFood!=null)
-      {
-        setState(() {        
+      if (returnedFood != null) {
+        setState(() {
           widget.meal.foods.add(returnedFood);
           dayService.updateDayData(widget.day!);
           foodNameControl.text = '';

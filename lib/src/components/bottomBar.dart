@@ -1,3 +1,4 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
@@ -5,24 +6,16 @@ class BottomBar extends StatelessWidget {
   const BottomBar({super.key});
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
+    return CurvedNavigationBar(
       color: PRIMARY,
-      child: IconTheme(
-        data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            ),
-            IconButton(tooltip: 'Search', icon: const Icon(Icons.search), onPressed: () {}),
-            IconButton(tooltip: 'Favorite', icon: const Icon(Icons.favorite), onPressed: () {}),
-          ],
-        ),
-      ),
+      backgroundColor: Colors.transparent,
+      animationDuration: Duration(milliseconds: 200),
+      items: [
+        Icon(Icons.food_bank ,color: Colors.white,),
+        Icon(Icons.directions_bike ,color: Colors.white,),
+        Icon(Icons.directions_run,color: Colors.white,),
+        Icon(Icons.chat,color: Colors.white,),
+      ],
     );
   }
 }

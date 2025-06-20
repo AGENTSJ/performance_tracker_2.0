@@ -30,4 +30,15 @@ class DayService
     var dayOfMonth = date.day;
     return "$dayOfMonth ${Months.values[month-1].name.substring(0,3)} $year"; 
   }
+
+  double getDaysCalories(Day day)
+  {
+    var total = 0.0;
+    for (var meal in day.meals!) {
+      for (var food in meal.foods) {
+        total+=food.macros.calories;    
+      }
+    }
+    return total;
+  }
 }

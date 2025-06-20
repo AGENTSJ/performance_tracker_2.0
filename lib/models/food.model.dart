@@ -257,6 +257,40 @@ class MicroNutrients {
       chloride:  this.chloride,
     );
   }
+
+  static final Map<String, Map<String, dynamic>> microRDA = {
+  // Vitamins
+  'Vitamin A': {'value': 900.0, 'unit': 'mcg'},
+  'Vitamin C': {'value': 90.0, 'unit': 'mg'},
+  'Vitamin D': {'value': 15.0, 'unit': 'mcg'},
+  'Vitamin E': {'value': 15.0, 'unit': 'mg'},
+  'Vitamin K': {'value': 120.0, 'unit': 'mcg'},
+  'Thiamin': {'value': 1.2, 'unit': 'mg'},
+  'Riboflavin': {'value': 1.3, 'unit': 'mg'},
+  'Niacin': {'value': 16.0, 'unit': 'mg'},
+  'Vitamin B6': {'value': 1.3, 'unit': 'mg'},
+  'Folate': {'value': 400.0, 'unit': 'mcg'}, 
+  'Vitamin B12': {'value': 2.4, 'unit': 'mcg'},
+  'Pantothenic Acid': {'value': 5.0, 'unit': 'mg'},
+  'Biotin': {'value': 30.0, 'unit': 'mcg'},
+
+  // Minerals
+  'Calcium': {'value': 1000.0, 'unit': 'mg'},
+  'Iron': {'value': 8.0, 'unit': 'mg'}, 
+  'Magnesium': {'value': 400.0, 'unit': 'mg'},
+  'Phosphorus': {'value': 700.0, 'unit': 'mg'},
+  'Potassium': {'value': 4700.0, 'unit': 'mg'},
+  'Sodium': {'value': 1500.0, 'unit': 'mg'}, 
+  'Zinc': {'value': 11.0, 'unit': 'mg'},
+  'Copper': {'value': 0.9, 'unit': 'mg'},
+  'Manganese': {'value': 2.3, 'unit': 'mg'}, 
+  'Selenium': {'value': 55.0, 'unit': 'mcg'},
+  'Iodine': {'value': 150.0, 'unit': 'mcg'},
+  'Chromium': {'value': 35.0, 'unit': 'mcg'}, 
+  'Molybdenum': {'value': 45.0, 'unit': 'mcg'},
+  'Fluoride': {'value': 4.0, 'unit': 'mg'}, 
+  'Chloride': {'value': 2300.0, 'unit': 'mg'}, 
+};
 }
 
 @HiveType(typeId: 3)

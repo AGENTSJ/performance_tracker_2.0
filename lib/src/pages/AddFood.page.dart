@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class AddFoodModal extends StatefulWidget {
@@ -15,6 +17,8 @@ class AddFoodModal extends StatefulWidget {
 class _AddFoodModalState extends State<AddFoodModal> {
   var caloriesController = TextEditingController();
   Food? standard;
+  var commonService = locator<CommonService>();
+
   @override
   void initState() {
     super.initState();
@@ -163,7 +167,13 @@ class _AddFoodModalState extends State<AddFoodModal> {
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text('Macro nutrients',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Macro nutrients',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
+                          Text("${widget.food.macros.calories.round().toString()} Cal",style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 10),
                     Padding(
@@ -200,15 +210,6 @@ class _AddFoodModalState extends State<AddFoodModal> {
                               Text("${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}"),
                             ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Calories'),
-                              Text(
-                                "${widget.food.macros.calories.round().toString()} ${widget.food.quantity.unit}",
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
@@ -232,11 +233,24 @@ class _AddFoodModalState extends State<AddFoodModal> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(entry.key),
-                          Text(
-                            microNutrient != null
-                                ? '${microNutrient.value} ${microNutrient.unit}'
-                                : '-',
+                          SizedBox(width: 120, child: Text(entry.key,textAlign: TextAlign.left,)),
+                          SizedBox(
+                            width: 70,
+                            child: Text(
+                              microNutrient != null
+                                  ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]?['value'],microNutrient.value).round()}%'
+                                  : '-',
+                                  textAlign: TextAlign.left,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 70,
+                            child: Text(
+                              microNutrient != null
+                                  ? '${microNutrient.value} ${microNutrient.unit}'
+                                  : '-',
+                              textAlign: TextAlign.right,
+                            ),
                           ),
                         ],
                       ),
