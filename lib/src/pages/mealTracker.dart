@@ -83,21 +83,42 @@ class _MealTrackerState extends State<MealTrackerPage> {
               ),
               Expanded(
                 flex: 4,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: searchfoods.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        showAddFoodModal(searchfoods[index]);
-                      },
-                      style: foodListStyle,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                        child: Text('${searchfoods[index].name}'),
+                child: Column(
+                  children: [
+                    if(fetching)...[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            SizedBox(width: 30,),
+                            Text('Fetching....',style: TextStyle(fontWeight: FontWeight.w500),)
+                          ],
+                        ),
+                      )
+                    ]
+                    else 
+                    ...searchfoods.map(
+                      (food) => Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            showAddFoodModal(food);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(children: [Text('${food.name}')]),
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
               Visibility(
@@ -188,7 +209,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Row(children: [Text('${food.name}')]),
+                                    child: Row(
+                                      children: [Text('${food.name}')],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -202,7 +225,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
               ),
               SizedBox(height: 5),
               Padding(
-                padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -218,6 +241,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      if(searchfoods.isEmpty)
                       ...widget.meal.foods.map(
                         (food) => Material(
                           color: Colors.transparent,
@@ -256,28 +280,29 @@ class _MealTrackerState extends State<MealTrackerPage> {
   }
 
   Timer? fetchFoodsData;
+  bool fetching = false;
   handleSearchChange(String str) async {
     showSearchRes = foodNameControl.text.isNotEmpty;
-    setState(() {
-      
-    });
+    searchfoods = [];
+    setState(() {});
     if (!showSearchRes) {
       return;
     }
-    if(fetchFoodsData==null)
-    {
-      fetchFoodsData = Timer(Duration(seconds: 2),() async {
+    fetching = true;
+    if (fetchFoodsData == null) {
+      fetchFoodsData = Timer(Duration(seconds: 2), () async {
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
-        setState((){});
+        fetching = false;
+        setState(() {});
       });
-    }else
-    {
+    } else {
       fetchFoodsData!.cancel();
-      fetchFoodsData = Timer(Duration(seconds: 2),() async {
+      fetchFoodsData = Timer(Duration(seconds: 2), () async {
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
-        setState((){});
+        fetching = false;
+        setState(() {});
       });
     }
   }

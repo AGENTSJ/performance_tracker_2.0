@@ -168,7 +168,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                       Expanded(
                         child: ListView(
                           children: totalConsumed.entries.map((entry) {
-                            final microNutrient = entry.value;
+                            final MeasuredUnit? microNutrient = entry.value;
                             return Padding(
                               padding: const EdgeInsets.only(
                                 top: 2.0,
@@ -223,7 +223,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(
         value: 0,
-        unit: micro.value!.unit,
+        unit: micro.value.unit,
       );
     }
 

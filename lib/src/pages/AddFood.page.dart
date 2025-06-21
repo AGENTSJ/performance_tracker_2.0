@@ -247,7 +247,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             width: 70,
                             child: Text(
                               microNutrient != null
-                                  ? '${microNutrient.value} ${microNutrient.unit}'
+                                  ? '${microNutrient.value.round()} ${microNutrient.unit}'
                                   : '-',
                               textAlign: TextAlign.right,
                             ),
