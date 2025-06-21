@@ -100,25 +100,6 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   },
                 ),
               ),
-              // Expanded(
-              //   flex: 4,
-              //   child: ListView.builder(
-              //     padding: const EdgeInsets.all(8),
-              //     itemCount: searchfoods.length,
-              //     itemBuilder: (BuildContext context, int index) {
-              //       return ElevatedButton(
-              //         onPressed: () {
-              //           showAddFoodModal(searchfoods[index]);
-              //         },
-              //         style: foodListStyle,
-              //         child: Padding(
-              //           padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-              //           child: Text('${searchfoods[index].name}'),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
               Visibility(
                 visible: searchfoods.isEmpty,
                 child: Expanded(
