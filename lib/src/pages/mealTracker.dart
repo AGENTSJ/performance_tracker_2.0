@@ -74,7 +74,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Search results'),
+                  Text('Search results',style: TextStyle(fontWeight: FontWeight.w600),),
                   IconButton(
                     onPressed: handleSearchClose,
                     icon: Icon(Icons.close),
