@@ -6,13 +6,13 @@ part 'food.model.g.dart';
 class Food {
   @HiveField(0)
   final String? name;
-  
+
   @HiveField(1)
   final MacroNutrients macros;
-  
+
   @HiveField(2)
   final MicroNutrients micros;
-  
+
   @HiveField(3)
   final MeasuredUnit quantity;
 
@@ -29,7 +29,7 @@ class Food {
     MicroNutrients? micros,
     MeasuredUnit? quantity,
   }) {
-    return  Food(
+    return Food(
       name: name ?? this.name,
       macros: macros ?? this.macros.clone(),
       micros: micros ?? this.micros.clone(),
@@ -37,23 +37,24 @@ class Food {
     );
   }
 }
+
 @HiveType(typeId: 1)
 class MacroNutrients {
   @HiveField(0)
   double protein;
-  
+
   @HiveField(1)
   double fat;
-  
+
   @HiveField(2)
   double carbohydrate;
-  
+
   @HiveField(3)
   double fiber;
-  
+
   @HiveField(4)
   late double calories;
-  
+
   MacroNutrients(
     this.protein,
     this.carbohydrate,
@@ -99,24 +100,23 @@ class MicroNutrients {
   MeasuredUnit? riboflavin; // Vitamin B2
 
   @HiveField(7)
-  MeasuredUnit? niacin;// Vitamin B3
+  MeasuredUnit? niacin; // Vitamin B3
 
   @HiveField(8)
   MeasuredUnit? vitaminB6;
 
   @HiveField(9)
-  MeasuredUnit? folate;// Vitamin B9
+  MeasuredUnit? folate; // Vitamin B9
 
   @HiveField(10)
   MeasuredUnit? vitaminB12;
 
   @HiveField(11)
-  MeasuredUnit? pantothenicAcid;// Vitamin B5
+  MeasuredUnit? pantothenicAcid; // Vitamin B5
 
   @HiveField(12)
-  MeasuredUnit? biotin;// Vitamin B7
+  MeasuredUnit? biotin; // Vitamin B7
 
-  
   @HiveField(13)
   MeasuredUnit? calcium;
 
@@ -161,7 +161,6 @@ class MicroNutrients {
 
   @HiveField(27)
   MeasuredUnit? chloride;
-
 
   late Map<String, MeasuredUnit?> microMap;
 
@@ -227,83 +226,84 @@ class MicroNutrients {
 
   MicroNutrients clone() {
     return MicroNutrients(
-      vitaminA:  this.vitaminA,
-      vitaminC:  this.vitaminC,
-      vitaminD:  this.vitaminD,
-      vitaminE:  this.vitaminE,
-      vitaminK:  this.vitaminK,
-      thiamin:  this.thiamin,
-      riboflavin:  this.riboflavin,
-      niacin:  this.niacin,
-      vitaminB6:  this.vitaminB6,
-      folate:  this.folate,
-      vitaminB12:  this.vitaminB12,
-      pantothenicAcid:  this.pantothenicAcid,
-      biotin:  this.biotin,
-      calcium:  this.calcium,
-      iron:  this.iron,
-      magnesium:  this.magnesium,
-      phosphorus:  this.phosphorus,
-      potassium:  this.potassium,
-      sodium:  this.sodium,
-      zinc:  this.zinc,
-      copper:  this.copper,
-      manganese:  this.manganese,
-      selenium:  this.selenium,
-      iodine:  this.iodine,
-      chromium:  this.chromium,
-      molybdenum:  this.molybdenum,
-      fluoride:  this.fluoride,
-      chloride:  this.chloride,
+      vitaminA: this.vitaminA,
+      vitaminC: this.vitaminC,
+      vitaminD: this.vitaminD,
+      vitaminE: this.vitaminE,
+      vitaminK: this.vitaminK,
+      thiamin: this.thiamin,
+      riboflavin: this.riboflavin,
+      niacin: this.niacin,
+      vitaminB6: this.vitaminB6,
+      folate: this.folate,
+      vitaminB12: this.vitaminB12,
+      pantothenicAcid: this.pantothenicAcid,
+      biotin: this.biotin,
+      calcium: this.calcium,
+      iron: this.iron,
+      magnesium: this.magnesium,
+      phosphorus: this.phosphorus,
+      potassium: this.potassium,
+      sodium: this.sodium,
+      zinc: this.zinc,
+      copper: this.copper,
+      manganese: this.manganese,
+      selenium: this.selenium,
+      iodine: this.iodine,
+      chromium: this.chromium,
+      molybdenum: this.molybdenum,
+      fluoride: this.fluoride,
+      chloride: this.chloride,
     );
   }
 
-  static final Map<String, Map<String, dynamic>> microRDA = {
-  // Vitamins
-  'Vitamin A': {'value': 900.0, 'unit': 'mcg'},
-  'Vitamin C': {'value': 90.0, 'unit': 'mg'},
-  'Vitamin D': {'value': 15.0, 'unit': 'mcg'},
-  'Vitamin E': {'value': 15.0, 'unit': 'mg'},
-  'Vitamin K': {'value': 120.0, 'unit': 'mcg'},
-  'Thiamin': {'value': 1.2, 'unit': 'mg'},
-  'Riboflavin': {'value': 1.3, 'unit': 'mg'},
-  'Niacin': {'value': 16.0, 'unit': 'mg'},
-  'Vitamin B6': {'value': 1.3, 'unit': 'mg'},
-  'Folate': {'value': 400.0, 'unit': 'mcg'}, 
-  'Vitamin B12': {'value': 2.4, 'unit': 'mcg'},
-  'Pantothenic Acid': {'value': 5.0, 'unit': 'mg'},
-  'Biotin': {'value': 30.0, 'unit': 'mcg'},
+  static final Map<String, MeasuredUnit> microRDA = {
+    // Vitamins
+    'Vitamin A': MeasuredUnit(value: 900.0, unit: 'mcg'),
+    'Vitamin C': MeasuredUnit(value: 90.0, unit: 'mg'),
+    'Vitamin D': MeasuredUnit(value: 15.0, unit: 'mcg'),
+    'Vitamin E': MeasuredUnit(value: 15.0, unit: 'mg'),
+    'Vitamin K': MeasuredUnit(value: 120.0, unit: 'mcg'),
+    'Thiamin': MeasuredUnit(value: 1.2, unit: 'mg'),
+    'Riboflavin': MeasuredUnit(value: 1.3, unit: 'mg'),
+    'Niacin': MeasuredUnit(value: 16.0, unit: 'mg'),
+    'Vitamin B6': MeasuredUnit(value: 1.3, unit: 'mg'),
+    'Folate': MeasuredUnit(value: 400.0, unit: 'mcg'),
+    'Vitamin B12': MeasuredUnit(value: 2.4, unit: 'mcg'),
+    'Pantothenic Acid': MeasuredUnit(value: 5.0, unit: 'mg'),
+    'Biotin': MeasuredUnit(value: 30.0, unit: 'mcg'),
 
-  // Minerals
-  'Calcium': {'value': 1000.0, 'unit': 'mg'},
-  'Iron': {'value': 8.0, 'unit': 'mg'}, 
-  'Magnesium': {'value': 400.0, 'unit': 'mg'},
-  'Phosphorus': {'value': 700.0, 'unit': 'mg'},
-  'Potassium': {'value': 4700.0, 'unit': 'mg'},
-  'Sodium': {'value': 1500.0, 'unit': 'mg'}, 
-  'Zinc': {'value': 11.0, 'unit': 'mg'},
-  'Copper': {'value': 0.9, 'unit': 'mg'},
-  'Manganese': {'value': 2.3, 'unit': 'mg'}, 
-  'Selenium': {'value': 55.0, 'unit': 'mcg'},
-  'Iodine': {'value': 150.0, 'unit': 'mcg'},
-  'Chromium': {'value': 35.0, 'unit': 'mcg'}, 
-  'Molybdenum': {'value': 45.0, 'unit': 'mcg'},
-  'Fluoride': {'value': 4.0, 'unit': 'mg'}, 
-  'Chloride': {'value': 2300.0, 'unit': 'mg'}, 
-};
+    // Minerals
+    'Calcium': MeasuredUnit(value: 1000.0, unit: 'mg'),
+    'Iron': MeasuredUnit(value: 8.0, unit: 'mg'),
+    'Magnesium': MeasuredUnit(value: 400.0, unit: 'mg'),
+    'Phosphorus': MeasuredUnit(value: 700.0, unit: 'mg'),
+    'Potassium': MeasuredUnit(value: 4700.0, unit: 'mg'),
+    'Sodium': MeasuredUnit(value: 1500.0, unit: 'mg'),
+    'Zinc': MeasuredUnit(value: 11.0, unit: 'mg'),
+    'Copper': MeasuredUnit(value: 0.9, unit: 'mg'),
+    'Manganese': MeasuredUnit(value: 2.3, unit: 'mg'),
+    'Selenium': MeasuredUnit(value: 55.0, unit: 'mcg'),
+    'Iodine': MeasuredUnit(value: 150.0, unit: 'mcg'),
+    'Chromium': MeasuredUnit(value: 35.0, unit: 'mcg'),
+    'Molybdenum': MeasuredUnit(value: 45.0, unit: 'mcg'),
+    'Fluoride': MeasuredUnit(value: 4.0, unit: 'mg'),
+    'Chloride': MeasuredUnit(value: 2300.0, unit: 'mg'),
+  };
+  
 }
 
 @HiveType(typeId: 3)
 class MeasuredUnit {
   @HiveField(0)
   double value;
-  
+
   @HiveField(1)
   String unit;
 
   MeasuredUnit({required this.value, required this.unit});
 
   MeasuredUnit clone() {
-    return MeasuredUnit(value:  this.value, unit:  this.unit);
+    return MeasuredUnit(value: this.value, unit: this.unit);
   }
 }

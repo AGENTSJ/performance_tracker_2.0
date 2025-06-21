@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -99,6 +100,25 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   },
                 ),
               ),
+              // Expanded(
+              //   flex: 4,
+              //   child: ListView.builder(
+              //     padding: const EdgeInsets.all(8),
+              //     itemCount: searchfoods.length,
+              //     itemBuilder: (BuildContext context, int index) {
+              //       return ElevatedButton(
+              //         onPressed: () {
+              //           showAddFoodModal(searchfoods[index]);
+              //         },
+              //         style: foodListStyle,
+              //         child: Padding(
+              //           padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+              //           child: Text('${searchfoods[index].name}'),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
               Visibility(
                 visible: searchfoods.isEmpty,
                 child: Expanded(
@@ -254,13 +274,31 @@ class _MealTrackerState extends State<MealTrackerPage> {
     });
   }
 
-  handleSearchChange(String str) {
+  Timer? fetchFoodsData;
+  handleSearchChange(String str) async {
+    showSearchRes = foodNameControl.text.isNotEmpty;
     setState(() {
-      showSearchRes = foodNameControl.text.isNotEmpty;
-      if (showSearchRes) {
-        searchfoods = foodService.searchFood(str);
-      }
+      
     });
+    if (!showSearchRes) {
+      return;
+    }
+    if(fetchFoodsData==null)
+    {
+      fetchFoodsData = Timer(Duration(seconds: 2),() async {
+        searchfoods = await foodService.searchFood(str);
+        fetchFoodsData = null;
+        setState((){});
+      });
+    }else
+    {
+      fetchFoodsData!.cancel();
+      fetchFoodsData = Timer(Duration(seconds: 2),() async {
+        searchfoods = await foodService.searchFood(str);
+        fetchFoodsData = null;
+        setState((){});
+      });
+    }
   }
 
   showAddFoodModal(Food food) async {

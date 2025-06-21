@@ -3,15 +3,27 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/repository/food.repository.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
+import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
+
 
 class FoodService
 {
   final _ai = locator<AiService>();
   final _foodRepo = locator<FoodRepository>();
-
-  List<Food> searchFood(String key)
+  final nutriApi = locator<NutritionServiceProvider>();
+  
+  Future<List<Food>> searchFood(String key) async
   {
-    return _foodRepo.searchFoodByName(key);
+    
+    var foods = _foodRepo.searchFoodByName(key);
+    if(foods.isEmpty)
+    {
+      foods = await nutriApi.getFoodByNameAPI(key);
+      for (var food in foods) {
+        _foodRepo.addFood(food);
+      }
+    }
+    return foods;
   }
 
   List<Food> getAllFoods()

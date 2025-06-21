@@ -18,7 +18,7 @@ class FoodRepository
     foodBox.add(food);
   }
 
-  searchFoodByName(String name)
+  List<Food> searchFoodByName(String name)
   {
     List<Food> allFoods = foodBox.values.toList();
     List<Food> filtered = [];

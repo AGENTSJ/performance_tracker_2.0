@@ -12,12 +12,12 @@ class RestService
     return response;
   }
   
-  Future<Response> POST(url,payload) 
-  {
+  Future<Response> POST(String url, dynamic payload, {Map<String, String>? headers}) 
+  { 
     final response = post(
       Uri.parse(url),
       body: jsonEncode(payload),
-      headers: _headers
+      headers: headers??_headers
     );
     return response;
   }

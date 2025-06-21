@@ -238,7 +238,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                             width: 70,
                             child: Text(
                               microNutrient != null
-                                  ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]?['value'],microNutrient.value).round()}%'
+                                  ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value,microNutrient.value).round()}%'
                                   : '-',
                                   textAlign: TextAlign.left,
                             ),
