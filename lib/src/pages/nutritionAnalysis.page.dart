@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -51,7 +50,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
                 ),
-                constraints: BoxConstraints(maxHeight: 290),
+                constraints: BoxConstraints(maxHeight: 300),
                 child: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Column(
@@ -74,16 +73,10 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              // border: BoxBorder.all(color: Colors.grey, width: 2),
-                            ),
-                            child: Icon(
-                              FontAwesomeIcons.solidFaceSmileWink,
-                              color: Colors.grey,
-                              size: 70,
-                            ),
+                          Icon(
+                            FontAwesomeIcons.solidFaceSmileWink,
+                            color: Colors.grey,
+                            size: 70,
                           ),
                           Expanded(
                             child: Column(
@@ -99,7 +92,14 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 SizedBox(
                                   height: 1,
                                   width: double.infinity,
-                                  child: AnimatedProgressBar(value: (commonService.getPercentage(totalCalLimit, totalCalConsumed)/100),)
+                                  child: AnimatedProgressBar(
+                                    value:
+                                        (commonService.getPercentage(
+                                          totalCalLimit,
+                                          totalCalConsumed,
+                                        ) /
+                                        100),
+                                  ),
                                 ),
                               ],
                             ),
@@ -116,7 +116,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -128,9 +128,9 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                   children: [
                                     Icon(
                                       FontAwesomeIcons.drumstickBite,
-                                      size: 15,
+                                      size: 16,
                                     ),
-                                    SizedBox(width: 10),
+                                    SizedBox(width: 20),
                                     Text(
                                       'Protein',
                                       style: TextStyle(
@@ -145,14 +145,14 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.breadSlice, size: 15),
-                                    SizedBox(width: 10),
+                                    Icon(FontAwesomeIcons.breadSlice, size: 16),
+                                    SizedBox(width: 20),
                                     Text(
                                       'Carbohydrate',
                                       style: TextStyle(
@@ -167,14 +167,14 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.cheese, size: 15),
-                                    SizedBox(width: 10),
+                                    Icon(FontAwesomeIcons.cheese, size: 16),
+                                    SizedBox(width: 20),
                                     Text(
                                       'Fat',
                                       style: TextStyle(
@@ -189,14 +189,14 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.wheatAwn, size: 15),
-                                    SizedBox(width: 10),
+                                    Icon(FontAwesomeIcons.wheatAwn, size: 16),
+                                    SizedBox(width: 20),
                                     Text(
                                       'Fiber',
                                       style: TextStyle(
@@ -306,42 +306,6 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-              ),
-
-              SizedBox(
-                height: 500,
-                width: double.infinity,
-                child: RotatedBox(
-                  quarterTurns: 1,
-                  child: BarChart(
-                    BarChartData(
-                      alignment: BarChartAlignment.spaceEvenly,
-                      maxY: 1,
-                      minY: 0,
-                      barGroups: [
-                        BarChartGroupData(
-                          x: 0,
-                          barRods: [
-                            BarChartRodData(
-                              toY: 0.5,
-                              width: 5,
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(10),
-                              backDrawRodData: BackgroundBarChartRodData(
-                                show: true,
-                                toY: 1,
-                                color: Colors.grey.shade300,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      titlesData: FlTitlesData(show: false),
-                      borderData: FlBorderData(show: false),
-                      gridData: FlGridData(show: false),
-                    ),
                   ),
                 ),
               ),

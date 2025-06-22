@@ -66,7 +66,9 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTi
           titlesData: FlTitlesData(show: false),
           borderData: FlBorderData(show: false),
           gridData: FlGridData(show: false),
+          barTouchData: BarTouchData(enabled: false)
         ),
+
       ),
     );
   }
