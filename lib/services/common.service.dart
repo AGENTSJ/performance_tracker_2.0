@@ -1,6 +1,6 @@
 class CommonService {
 
-  getPercentage(double total ,double part)
+  double getPercentage(double total ,double part)
   {
     if(total==0)
     {

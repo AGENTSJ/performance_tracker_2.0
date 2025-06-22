@@ -12,7 +12,7 @@ import 'package:performance_tracker/src/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
   final Meal meal;
-  final Day? day;
+  final Day day;
   const MealTrackerPage({super.key, required this.meal, required this.day});
   @override
   State<MealTrackerPage> createState() => _MealTrackerState();
@@ -25,29 +25,33 @@ class _MealTrackerState extends State<MealTrackerPage> {
     borderRadius: BorderRadius.circular(10),
     borderSide: BorderSide(color: PRIMARY, width: 1),
   );
-  var foodListStyle = ElevatedButton.styleFrom(
-    backgroundColor: BACKGROUND,
-    foregroundColor: Colors.black,
-    alignment: Alignment.centerLeft,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-    minimumSize: Size(double.infinity, 20),
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    elevation: 0,
-  );
   final foodService = locator<FoodService>();
   final ai = locator<AiService>();
-  List<Food> foods = [];
+  List<Food> suggestedFoods = [];
   List<Food> searchfoods = [];
   var showSearchRes = false;
   var showSuggested = true;
-  _MealTrackerState() {
-    foods = foodService.suggestFoods();
-  }
+
+  @override
+  void initState() {
+    super.initState();
+    foodService.suggestFoods(widget.meal,widget.day).then(
+      (
+        suggestions
+      ){
+        suggestedFoods = suggestions;
+        setState(() {
+          
+        });
+      }
+    );
+  } 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: BACKGROUND,
       appBar: AppBar(
         title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18)),
         backgroundColor: BACKGROUND,
@@ -68,13 +72,31 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 handleSearchChange(str);
               },
             ),
+            SizedBox(height: 10,),
+            ElevatedButton(
+              onPressed: () {
+                handleAICustomFood();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PRIMARY,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                minimumSize: Size(double.infinity, 45),
+              ),
+              child: Text('AI Create'),
+            ),
             if (showSearchRes) ...[
               // search
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Search results',style: TextStyle(fontWeight: FontWeight.w600),),
+                  Text(
+                    'Search results',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   IconButton(
                     onPressed: handleSearchClose,
                     icon: Icon(Icons.close),
@@ -85,7 +107,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 flex: 4,
                 child: Column(
                   children: [
-                    if(fetching)...[
+                    if (fetching) ...[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -93,69 +115,36 @@ class _MealTrackerState extends State<MealTrackerPage> {
                             SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
-                            SizedBox(width: 30,),
-                            Text('Fetching....',style: TextStyle(fontWeight: FontWeight.w500),)
+                            SizedBox(width: 30),
+                            Text(
+                              'Fetching....',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ],
                         ),
-                      )
-                    ]
-                    else 
-                    ...searchfoods.map(
-                      (food) => Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            showAddFoodModal(food);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(children: [Text('${food.name}')]),
+                      ),
+                    ] else
+                    if(searchfoods.isEmpty) ...[
+                      EmptyResultsWidget(insideText:  "No food with such name found..")
+                    ] 
+                    else
+                      ...searchfoods.map(
+                        (food) => Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              showAddFoodModal(food);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(children: [Text('${food.name}')]),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
-                ),
-              ),
-              Visibility(
-                visible: searchfoods.isEmpty,
-                child: Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: PRIMARY,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          minimumSize: Size(double.infinity, 40),
-                        ),
-                        child: Text('Custom'),
-                      ),
-                      SizedBox(height: 5),
-                      ElevatedButton(
-                        onPressed: () {
-                          handleAICustomFood();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: PRIMARY,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          minimumSize: Size(double.infinity, 40),
-                        ),
-                        child: Text('AI Create'),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ] else ...[
@@ -200,7 +189,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            ...foods.map(
+                            if(suggestedFoods.isEmpty) ...[
+                              EmptyResultsWidget(insideText:  "No suggestions found")
+                            ]
+                            else
+                            ...suggestedFoods.map(
                               (food) => Material(
                                 color: Colors.transparent,
                                 child: InkWell(
@@ -241,21 +234,24 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      if(searchfoods.isEmpty)
-                      ...widget.meal.foods.map(
-                        (food) => Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              showAddFoodModalUpdateMode(food);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(children: [Text('${food.name}')]),
+                      if (widget.meal.foods.isNotEmpty)
+                        ...widget.meal.foods.map(
+                          (food) => Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                showAddFoodModalUpdateMode(food);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(children: [Text('${food.name}')]),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      if(widget.meal.foods.isEmpty) ...[
+                        EmptyResultsWidget(insideText:  "No foods are selected")
+                      ]
                     ],
                   ),
                 ),
@@ -290,7 +286,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     }
     fetching = true;
     if (fetchFoodsData == null) {
-      fetchFoodsData = Timer(Duration(seconds: 2), () async {
+      fetchFoodsData = Timer(Duration(milliseconds:500 ), () async {
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
         fetching = false;
@@ -298,7 +294,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       });
     } else {
       fetchFoodsData!.cancel();
-      fetchFoodsData = Timer(Duration(seconds: 2), () async {
+      fetchFoodsData = Timer(Duration(milliseconds:500 ), () async {
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
         fetching = false;
@@ -357,5 +353,34 @@ class _MealTrackerState extends State<MealTrackerPage> {
         });
       }
     }
+  }
+}
+
+class EmptyResultsWidget extends StatelessWidget
+{
+  final String insideText;
+  const EmptyResultsWidget({super.key,required this.insideText});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 100,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.sentiment_neutral,size: 30,),
+            SizedBox(height: 10,),
+            Text(insideText,style: TextStyle(fontWeight: FontWeight.w500),),
+          ],
+        ),
+      ),
+    );
   }
 }

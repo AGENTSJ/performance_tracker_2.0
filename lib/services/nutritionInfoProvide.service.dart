@@ -10,7 +10,6 @@ class NutritionServiceProvider {
   final String _app_id = '8fd178f4';
   final String _provider_url =
       'https://trackapi.nutritionix.com/v2/natural/nutrients';
-  var header;
   static final codeToNameUnit = {
     320: {"name": "Vitamin A", "unit": "mcg"},
     401: {"name": "Vitamin C", "unit": "mg"},
@@ -36,9 +35,10 @@ class NutritionServiceProvider {
     317: {"name": "Selenium", "unit": "mcg"},
     313: {"name": "Fluoride", "unit": "mcg"},
   };
+  late dynamic _header;
 
   NutritionServiceProvider() {
-    header = {
+    _header = {
       'Content-Type': 'application/json',
       'x-app-id': _app_id,
       'x-app-key': _api_key,
@@ -47,7 +47,7 @@ class NutritionServiceProvider {
   Future<List<Food>> getFoodByNameAPI(String foodName) async {
     var res = await restService.POST(_provider_url, {
       'query': foodName,
-    }, headers: header);
+    }, headers: _header);
     if (res.statusCode != 200) {
       return [];
     }

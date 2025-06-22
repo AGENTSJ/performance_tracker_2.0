@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/repository/food.repository.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
 
 
@@ -11,6 +13,7 @@ class FoodService
   final _ai = locator<AiService>();
   final _foodRepo = locator<FoodRepository>();
   final nutriApi = locator<NutritionServiceProvider>();
+  final dayService = locator<DayService>();
   
   Future<List<Food>> searchFood(String key) async
   {
@@ -31,9 +34,37 @@ class FoodService
     return _foodRepo.getAllFoods();
   }
 
-  List<Food> suggestFoods()
+  Future<List<Food>> suggestFoods(Meal meal ,Day day) async
   {
-    return _foodRepo.getAllFoods();
+    var currentDay = day;
+    const context_liit_in_days = 5;
+    Set<String> selectedFoodNames = {};
+    List<Food> selectedFoods = [];
+
+    for (var i = 1 ;i<=context_liit_in_days;i++) {
+      var date  = currentDay.dayTime.subtract(Duration(days: i));
+      var dayObject = await dayService.getDayDataByDate(date);
+
+      for(var currDayMeal in dayObject!.meals!)
+      {
+        if(currDayMeal.mealName == meal.mealName)
+        {
+          for (var food in currDayMeal.foods) {
+            
+            if(!selectedFoodNames.contains(food.name))
+            {
+              selectedFoodNames.add(food.name!);
+              selectedFoods.add(food);
+            }
+          }
+        }
+      }
+    }
+    if(selectedFoods.isEmpty)
+    {
+      selectedFoods = this.getAllFoods();
+    }
+    return selectedFoods;
   }
 
   addFoodToMeal(Food food)
