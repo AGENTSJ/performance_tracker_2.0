@@ -17,13 +17,13 @@ class Day extends HiveObject {
   @HiveField(3)
   late Meal dinner;
 
-  @HiveField(4)
+  @HiveField(5)
   late Meal eveningSnacks;
 
-  @HiveField(3)
+  @HiveField(6)
   List<Meal>? meals;
 
-  @HiveField(4)
+  @HiveField(7)
   DateTime dayTime;
 
   Day({required this.dayTime}) {

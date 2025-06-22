@@ -119,7 +119,7 @@ class _MealContainerState extends State<MealContainer> {
                                     SizedBox(
                                       width: 180,
                                       child: Text(
-                                        food.name ?? '',
+                                        food.name,
                                         style: TextStyle(fontSize: 15),
                                       ),
                                     ),

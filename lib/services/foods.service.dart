@@ -53,7 +53,7 @@ class FoodService
             
             if(!selectedFoodNames.contains(food.name))
             {
-              selectedFoodNames.add(food.name!);
+              selectedFoodNames.add(food.name);
               selectedFoods.add(food);
             }
           }

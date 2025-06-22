@@ -17,27 +17,33 @@ class DayAdapter extends TypeAdapter<Day> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Day(
-      dayTime: fields[4] as DateTime,
+      dayTime: fields[7] as DateTime,
     )
       ..breakFast = fields[0] as Meal
       ..lunch = fields[1] as Meal
-      ..dinner = fields[2] as Meal
-      ..meals = (fields[3] as List?)?.cast<Meal>();
+      ..morningSnacks = fields[2] as Meal
+      ..dinner = fields[3] as Meal
+      ..eveningSnacks = fields[5] as Meal
+      ..meals = (fields[6] as List?)?.cast<Meal>();
   }
 
   @override
   void write(BinaryWriter writer, Day obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.breakFast)
       ..writeByte(1)
       ..write(obj.lunch)
       ..writeByte(2)
-      ..write(obj.dinner)
+      ..write(obj.morningSnacks)
       ..writeByte(3)
+      ..write(obj.dinner)
+      ..writeByte(5)
+      ..write(obj.eveningSnacks)
+      ..writeByte(6)
       ..write(obj.meals)
-      ..writeByte(4)
+      ..writeByte(7)
       ..write(obj.dayTime);
   }
 

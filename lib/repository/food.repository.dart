@@ -23,7 +23,7 @@ class FoodRepository
     List<Food> allFoods = foodBox.values.toList();
     List<Food> filtered = [];
     for (var food in allFoods) {
-      if(food.name!.toLowerCase().startsWith(name.toLowerCase()))
+      if(food.name.toLowerCase().startsWith(name.toLowerCase()))
       {
         filtered.add(food);
       }

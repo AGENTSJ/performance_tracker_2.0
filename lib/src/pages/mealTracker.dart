@@ -315,7 +315,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       if (returnedFood != null) {
         widget.meal.foods.add(returnedFood);
         if (widget.day != null) {
-          dayService.updateDayData(widget.day!);
+          dayService.updateDayData(widget.day);
         }
       }
       foodNameControl.text = '';

@@ -5,7 +5,7 @@ part 'food.model.g.dart';
 @HiveType(typeId: 0)
 class Food {
   @HiveField(0)
-  final String? name;
+  final String name;
 
   @HiveField(1)
   final MacroNutrients macros;
@@ -15,12 +15,16 @@ class Food {
 
   @HiveField(3)
   final MeasuredUnit quantity;
-
+  
+  @HiveField(4)
+  final String? imageUrl;
+  
   Food({
-    this.name,
+    required this.name,
     required this.macros,
     required this.micros,
     required this.quantity,
+    this.imageUrl
   });
 
   Food clone({
@@ -34,6 +38,7 @@ class Food {
       macros: macros ?? this.macros.clone(),
       micros: micros ?? this.micros.clone(),
       quantity: quantity ?? this.quantity.clone(),
+      imageUrl: imageUrl 
     );
   }
 }

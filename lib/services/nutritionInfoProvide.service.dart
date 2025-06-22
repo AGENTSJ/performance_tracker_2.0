@@ -61,6 +61,7 @@ class NutritionServiceProvider {
     for (var food in foodsFromResponse) {
       var foodName = food["food_name"];
       var nutrients = food["full_nutrients"];
+      var imageUrl = food["photo"]["thumb"];
       var quantity = MeasuredUnit(
         value: double.parse(food["serving_weight_grams"].toString()),
         unit: 'g',
@@ -112,6 +113,7 @@ class NutritionServiceProvider {
           macros: macros,
           micros: micros,
           quantity: quantity,
+          imageUrl:imageUrl
         ),
       );
     }

@@ -56,23 +56,39 @@ class _AddFoodModalState extends State<AddFoodModal> {
                         flex: 3,
                         child: Stack(
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('assets/food-template2.png'),
-                                  fit: BoxFit.fitWidth,
+                            // if(widget.food.imageUrl==null) ...[ // when image looks good
+
+                              Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage('assets/food-template2.png'),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                borderRadius: BorderRadius.circular(10),
+                                width: double.infinity,
+                                height: double.infinity,
                               ),
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
+                            // ]
+                            // else ...[
+                            //   Container(
+                            //     decoration: BoxDecoration(
+                            //       image: DecorationImage(
+                            //         image: NetworkImage(widget.food.imageUrl!),
+                            //         fit: BoxFit.fitWidth,
+                            //       ),
+                            //       borderRadius: BorderRadius.circular(10),
+                            //     ),
+                            //     width: double.infinity,
+                            //     height: double.infinity,
+                            //   ),
+                            // ],
                             Positioned(
                               bottom: 0,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  widget.food.name ?? '',
+                                  widget.food.name,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -333,6 +349,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
     var baseQuant = food.quantity.value;
 
     var newFood = Food(
+      name: food.name,
       macros: MacroNutrients(
         (food.macros.protein / baseQuant),
         (food.macros.carbohydrate / baseQuant),

@@ -17,17 +17,18 @@ class FoodAdapter extends TypeAdapter<Food> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Food(
-      name: fields[0] as String?,
+      name: fields[0] as String,
       macros: fields[1] as MacroNutrients,
       micros: fields[2] as MicroNutrients,
       quantity: fields[3] as MeasuredUnit,
+      imageUrl: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Food obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class FoodAdapter extends TypeAdapter<Food> {
       ..writeByte(2)
       ..write(obj.micros)
       ..writeByte(3)
-      ..write(obj.quantity);
+      ..write(obj.quantity)
+      ..writeByte(4)
+      ..write(obj.imageUrl);
   }
 
   @override
