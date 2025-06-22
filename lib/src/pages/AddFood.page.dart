@@ -10,7 +10,11 @@ import 'package:performance_tracker/src/constants.ui.dart';
 class AddFoodModal extends StatefulWidget {
   final Food food;
   final bool isCreateMode;
-  const AddFoodModal({super.key, required this.food,required this.isCreateMode});
+  const AddFoodModal({
+    super.key,
+    required this.food,
+    required this.isCreateMode,
+  });
   @override
   State<StatefulWidget> createState() => _AddFoodModalState();
 }
@@ -23,9 +27,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
   @override
   void initState() {
     super.initState();
-    caloriesController.text = widget.food.quantity.value
-        .round()
-        .toString();
+    caloriesController.text = widget.food.quantity.value.round().toString();
     standard = getStandardFood(widget.food);
   }
 
@@ -34,34 +36,33 @@ class _AddFoodModalState extends State<AddFoodModal> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(backgroundColor: BACKGROUND),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // measure container
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                width: double.infinity,
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Stack(
-                          children: [
-                            // if(widget.food.imageUrl==null) ...[ // when image looks good
-
+      body: Container(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 130,
+                          child: Stack(
+                            children: [
+                              // if(widget.food.imageUrl==null) ...[ // when image looks good
                               Container(
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: AssetImage('assets/food-template2.png'),
+                                    image: AssetImage(
+                                      'assets/food-template2.png',
+                                    ),
                                     fit: BoxFit.fitWidth,
                                   ),
                                   borderRadius: BorderRadius.circular(10),
@@ -69,257 +70,356 @@ class _AddFoodModalState extends State<AddFoodModal> {
                                 width: double.infinity,
                                 height: double.infinity,
                               ),
-                            // ]
-                            // else ...[
-                            //   Container(
-                            //     decoration: BoxDecoration(
-                            //       image: DecorationImage(
-                            //         image: NetworkImage(widget.food.imageUrl!),
-                            //         fit: BoxFit.fitWidth,
-                            //       ),
-                            //       borderRadius: BorderRadius.circular(10),
-                            //     ),
-                            //     width: double.infinity,
-                            //     height: double.infinity,
-                            //   ),
-                            // ],
-                            Positioned(
-                              bottom: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  widget.food.name,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
+                              // ]
+                              // else ...[
+                              //   Container(
+                              //     decoration: BoxDecoration(
+                              //       image: DecorationImage(
+                              //         image: NetworkImage(widget.food.imageUrl!),
+                              //         fit: BoxFit.fitWidth,
+                              //       ),
+                              //       borderRadius: BorderRadius.circular(10),
+                              //     ),
+                              //     width: double.infinity,
+                              //     height: double.infinity,
+                              //   ),
+                              // ],
+                              Positioned(
+                                bottom: 0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    widget.food.name,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
                                   ),
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          height: 40,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      SizedBox(
+                                        width: 100,
+                                        child: Center(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Measure :',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                widget.food.quantity.unit,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 80,
+                                        height: 35,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: TextField(
+                                          textAlignVertical:
+                                              TextAlignVertical.center,
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 0,
+                                                ),
+                                          ),
+                                          controller: caloriesController,
+                                          onChanged: (str) {
+                                            handleQuantityChange(str);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Macros
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Macro nutrients',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              "${widget.food.macros.calories.round().toString()} Cal",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10,),
-                      Expanded(
-                        flex: 1,
-                        child: SingleChildScrollView(
-                          child: SizedBox(
-                            height: 40,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: Center(
-                                            child: Row(
-                                              children: [
-                                                Text('Measure :',style: TextStyle(color: Colors.grey),),
-                                                SizedBox(width: 10,),
-                                                Text(
-                                                  widget.food.quantity.unit,
-                                                  style: TextStyle(fontWeight: FontWeight.w600),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                      SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        FontAwesomeIcons.drumstickBite,
+                                        size: 15,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Protein',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 80,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: TextField(
-                                            textAlignVertical: TextAlignVertical.center,
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                            ],
-                                            decoration: InputDecoration(
-                                              border: OutlineInputBorder(borderSide: BorderSide.none),
-                            
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 0,
-                                                  ),
-                                            ),
-                                            controller: caloriesController,
-                                            onChanged: (str) {
-                                              handleQuantityChange(str);
-                                            },
-                                          ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        FontAwesomeIcons.breadSlice,
+                                        size: 15,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Carbohydrate',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(FontAwesomeIcons.cheese, size: 15),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Fat',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(FontAwesomeIcons.wheatAwn, size: 15),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Fiber',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    "${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            // macro
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Macro nutrients',textAlign:TextAlign.left,style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),),
-                        Text("${widget.food.macros.calories.round().toString()} Cal",style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.drumstickBite , size: 15,),
-                                  SizedBox(width: 10,),
-                                  Text('Protein', style: TextStyle(fontWeight: FontWeight.w500),),
-                                ],
-                              ),
-                              Text("${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",style: TextStyle(fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          SizedBox(height: 12,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.breadSlice , size: 15,),
-                                  SizedBox(width: 10,),
-                                  Text('Carbohydrate', style: TextStyle(fontWeight: FontWeight.w500),),
-                                ],
-                              ),
-                              Text("${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",style: TextStyle(fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          SizedBox(height: 12,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.cheese , size: 15,),
-                                  SizedBox(width: 10,),
-                                  Text('Fat', style: TextStyle(fontWeight: FontWeight.w500),),
-                                ],
-                              ),
-                              Text("${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",style: TextStyle(fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                          SizedBox(height: 12,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.wheatAwn , size: 15,),
-                                  SizedBox(width: 10,),
-                                  Text('Fiber', style: TextStyle(fontWeight: FontWeight.w500),),
-                                ],
-                              ),
-                              Text("${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",style: TextStyle(fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Align(alignment: Alignment.centerLeft,child: Text('Micro nutrients',style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),)),
-            SizedBox(height: 10),
-            // micro
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: ListView(
-                    children: widget.food.micros.microMap.entries.map((entry) {
-                      final microNutrient = entry.value;
-                      return Padding(
-                        padding: const EdgeInsets.only(top:3.0,bottom: 3.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(width: 120, child: Text(entry.key,textAlign: TextAlign.left,style: TextStyle(fontWeight: FontWeight.w500),)),
-                            SizedBox(
-                              width: 70,
-                              child: Text(
-                                microNutrient != null
-                                    ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value,microNutrient.value).round()}%'
-                                    : '-',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontWeight: FontWeight.w500)
-                              ),
-                            ),
-                            SizedBox(
-                              width: 70,
-                              child: Text(
-                                microNutrient != null
-                                    ? '${microNutrient.value.round()} ${microNutrient.unit}'
-                                    : '-',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(fontWeight: FontWeight.w500)
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                SizedBox(height: 10),
+                // Micro
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Micro nutrients',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                 ),
-              ),
+                SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  height: 300,
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: ListView(
+                      children: widget.food.micros.microMap.entries.map((
+                        entry,
+                      ) {
+                        final microNutrient = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 3.0, bottom: 3.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                child: Text(
+                                  entry.key,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 70,
+                                child: Text(
+                                  microNutrient != null
+                                      ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
+                                      : '-',
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 70,
+                                child: Text(
+                                  microNutrient != null
+                                      ? '${microNutrient.value.round()} ${microNutrient.unit}'
+                                      : '-',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: (){addFood();},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: PRIMARY,
-                minimumSize: Size(double.infinity, 50),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(5))
-              ),
-              child: Text(widget.isCreateMode? "Add To Meal" : "Update Food"),
-            )
-          ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: () {
+            addFood();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: PRIMARY,
+            minimumSize: Size(double.infinity, 50),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(5),
+            ),
+          ),
+          child: Text(widget.isCreateMode ? "Add To Meal" : "Update Food"),
         ),
       ),
     );
@@ -340,9 +440,8 @@ class _AddFoodModalState extends State<AddFoodModal> {
     });
   }
 
-  addFood()
-  {
-    Navigator.pop(context , widget.food);
+  addFood() {
+    Navigator.pop(context, widget.food);
   }
 
   getStandardFood(Food food) {
