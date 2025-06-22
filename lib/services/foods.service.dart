@@ -17,7 +17,6 @@ class FoodService
   
   Future<List<Food>> searchFood(String key) async
   {
-    
     var foods = _foodRepo.searchFoodByName(key);
     if(foods.isEmpty)
     {

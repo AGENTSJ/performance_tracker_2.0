@@ -127,7 +127,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                       ),
                     ] else
                     if(searchfoods.isEmpty) ...[
-                      EmptyResultsWidget(insideText:  "No food with such name found..")
+                      EmptyResultsWidget(insideText:  "No food with such name was found..")
                     ] 
                     else
                       ...searchfoods.map(
@@ -280,13 +280,14 @@ class _MealTrackerState extends State<MealTrackerPage> {
   handleSearchChange(String str) async {
     showSearchRes = foodNameControl.text.isNotEmpty;
     searchfoods = [];
-    setState(() {});
-    if (!showSearchRes) {
-      return;
-    }
     fetching = true;
+    setState(() {});
     if (fetchFoodsData == null) {
-      fetchFoodsData = Timer(Duration(milliseconds:500 ), () async {
+      fetchFoodsData = Timer(Duration(milliseconds:1000 ), () async {
+        if(foodNameControl.text.isEmpty)
+        {
+          return;
+        }
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
         fetching = false;
@@ -294,7 +295,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
       });
     } else {
       fetchFoodsData!.cancel();
-      fetchFoodsData = Timer(Duration(milliseconds:500 ), () async {
+      fetchFoodsData = Timer(Duration(milliseconds:1000 ), () async {
+        if(foodNameControl.text.isEmpty)
+        {
+          return;
+        }
         searchfoods = await foodService.searchFood(str);
         fetchFoodsData = null;
         fetching = false;
@@ -331,7 +336,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
         builder: (context) => AddFoodModal(food: food, isCreateMode: false),
       ),
     );
-    dayService.updateDayData(widget.day!);
+    dayService.updateDayData(widget.day);
     setState(() {});
   }
 
@@ -346,7 +351,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       if (returnedFood != null) {
         setState(() {
           widget.meal.foods.add(returnedFood);
-          dayService.updateDayData(widget.day!);
+          dayService.updateDayData(widget.day);
           foodNameControl.text = '';
           showSearchRes = false;
           searchfoods = [];
