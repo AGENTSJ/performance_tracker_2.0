@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/dateSelector.dart';
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final dayService = locator<DayService>();
+  final commentService = locator<CommentsService>();
   late Day? currentDay = null;
   late MacroNutrients daysMacro;
   String dayMarker = '';
@@ -32,6 +34,11 @@ class _HomePageState extends State<HomePage> {
         currentDay = day,
         _setCurrentDayMarker(),
         setCaloriesInDay(),
+        // commentService.setDietComments(day!).then(
+        //   (data)=>{
+        //     // print("${data.comment}")
+        //   }
+        // ),
         setState(() {
           
         })

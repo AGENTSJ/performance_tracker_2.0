@@ -79,6 +79,14 @@ class MacroNutrients {
       this.calories,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'protein': protein,
+    'fat': fat,
+    'carbohydrate': carbohydrate,
+    'fiber': fiber,
+    'calories': calories,
+  };
 }
 
 @HiveType(typeId: 2)

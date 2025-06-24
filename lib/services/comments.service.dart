@@ -13,7 +13,6 @@ class CommentsService {
   Future<GeneratedComment> setDietComments(Day day) async
   {
     var previousComment = day.comments?.overallDietComments;
-    
     if(previousComment == null)
     {
       var genComment =  await _generateDietComment(day);
@@ -38,16 +37,18 @@ class CommentsService {
     }
   }
 
+
   Future<GeneratedComment> _generateDietComment(Day day) async
   {
     const CONTEXT_LIMIT_DAYS = 7;
     String contextInformation = '';
-    var currMacroStructure = dayService.getDaysCalories(day);
+    var currMacro = dayService.getDaysCalories(day);
+    var currMacroStructure = currMacro.toJson();
     String todayMacroStructure = "${dayService.getDateString(day.dayTime)} : ${jsonEncode(currMacroStructure)}";
     for(var i = 1;i<CONTEXT_LIMIT_DAYS;i++)
     {
       Day? currDay = await dayService.getDayDataByDate(day.dayTime.subtract(Duration(days: i)));
-      String macroStructureOnTheDay = jsonEncode(dayService.getDaysCalories(currDay!));
+      String macroStructureOnTheDay = jsonEncode(dayService.getDaysCalories(currDay!).toJson());
       contextInformation+="${dayService.getDateString(currDay.dayTime)} : ${macroStructureOnTheDay}";
     }
     const String instructions = 'You are a diet coach your responsibility is to help user to be healthy and helping them acheiving theri goals by means of nutrition the data can conatin last 7 days of data this application is an calorie counter app and some times the user can be new or the user can forget to log data on some days so respond apt for both see';
@@ -55,7 +56,7 @@ class CommentsService {
 
     var response = await aiService.getResponse(prompt, instructions);
     var resString = response['candidates'][0]['content']['parts'][0]['text']; 
-    GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currMacroStructure);
+    GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currMacro);
     return genComment;
   }
 }

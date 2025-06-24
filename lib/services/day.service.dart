@@ -34,17 +34,23 @@ class DayService
 
   MacroNutrients getDaysCalories(Day day)
   {
-    MacroNutrients macrosForDay = MacroNutrients(0, 0, 0, 0, 0);
-
+    
+    var total = 0.0;
+    var protein = 0.0;
+    var fats = 0.0;
+    var carbs = 0.0;
+    var fiber = 0.0;
     for (var meal in day.meals!) {
       for (var food in meal.foods) {
-        macrosForDay.calories+=food.macros.calories;    
-        macrosForDay.protein+=food.macros.protein;
-        macrosForDay.fat+=food.macros.fat;
-        macrosForDay.carbohydrate+=food.macros.carbohydrate;
-        macrosForDay.fiber+=food.macros.fiber;
+        total+=food.macros.calories;    
+        protein+=food.macros.protein;
+        fats+=food.macros.fat;
+        carbs+=food.macros.carbohydrate;
+        fiber+=food.macros.fiber;
       }
     }
+    MacroNutrients macrosForDay = MacroNutrients(protein, carbs, fats, fiber, total);
+
     return macrosForDay;
   }
 }
