@@ -60,11 +60,11 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   generateFood() async
   {
     setState(() {
-      this.isGenerating = true;
+      isGenerating = true;
     });
     var food = await foodService.AI_CreateFood(widget.foodName, descriptionController.text);
     setState(() {
-      this.isGenerating= false;
+      isGenerating= false;
     });
     
     if(food!=null)

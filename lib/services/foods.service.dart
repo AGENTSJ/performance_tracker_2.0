@@ -36,11 +36,11 @@ class FoodService
   Future<List<Food>> suggestFoods(Meal meal ,Day day) async
   {
     var currentDay = day;
-    const context_liit_in_days = 5;
+    const contextLimitInDays = 5;
     Set<String> selectedFoodNames = {};
     List<Food> selectedFoods = [];
 
-    for (var i = 1 ;i<=context_liit_in_days;i++) {
+    for (var i = 1 ;i<=contextLimitInDays;i++) {
       var date  = currentDay.dayTime.subtract(Duration(days: i));
       var dayObject = await dayService.getDayDataByDate(date);
 
@@ -61,7 +61,7 @@ class FoodService
     }
     if(selectedFoods.isEmpty)
     {
-      selectedFoods = this.getAllFoods();
+      selectedFoods = getAllFoods();
     }
     return selectedFoods;
   }
@@ -84,10 +84,10 @@ class FoodService
         "calories":"double value"
       }
       ''';
-      String promt = "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
+      String prompt = "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
       const String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing. if the name of the food doesn't make sense you can return the text error without json";
 
-      var body = await  _ai.getResponse(promt , instructions);
+      var body = await  _ai.getResponse(prompt , instructions);
       var resString = body['candidates'][0]['content']['parts'][0]['text']; 
       var res = jsonDecode(resString);
       var prot = double.parse( res["protein"]);

@@ -6,9 +6,9 @@ import 'package:performance_tracker/services/rest.service.dart';
 
 class NutritionServiceProvider {
   var restService = locator<RestService>();
-  final String _api_key = '950de7964804f554959b558127663d61';
-  final String _app_id = '8fd178f4';
-  final String _provider_url =
+  final String _apiKey = '950de7964804f554959b558127663d61';
+  final String _appId = '8fd178f4';
+  final String _providerUrl =
       'https://trackapi.nutritionix.com/v2/natural/nutrients';
   static final codeToNameUnit = {
     320: {"name": "Vitamin A", "unit": "mcg"},
@@ -40,12 +40,12 @@ class NutritionServiceProvider {
   NutritionServiceProvider() {
     _header = {
       'Content-Type': 'application/json',
-      'x-app-id': _app_id,
-      'x-app-key': _api_key,
+      'x-app-id': _appId,
+      'x-app-key': _apiKey,
     };
   }
   Future<List<Food>> getFoodByNameAPI(String foodName) async {
-    var res = await restService.POST(_provider_url, {
+    var res = await restService.POST(_providerUrl, {
       'query': foodName,
     }, headers: _header);
     if (res.statusCode != 200) {

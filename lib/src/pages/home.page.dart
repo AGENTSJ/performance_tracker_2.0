@@ -141,15 +141,15 @@ class _HomePageState extends State<HomePage> {
   }
   handleDateChange(DateTime value)async
   {
-    this.currentDay = await dayService.getDayDataByDate(value);
+    currentDay = await dayService.getDayDataByDate(value);
     setState(() {
-      this.showDateSelector = false;
+      showDateSelector = false;
       _setCurrentDayMarker();
       setCaloriesInDay();
     });
   }
   setCaloriesInDay()
   {
-    this.consumedCalForToday = dayService.getDaysCalories(this.currentDay!);
+    consumedCalForToday = dayService.getDaysCalories(currentDay!);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -5,6 +6,7 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/src/components/macroPieChart.dart';
 import 'package:performance_tracker/src/components/AnimatedProgressBar.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
@@ -26,6 +28,11 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   double totalCalLimit = 2000;
   double totalCalConsumed = 0.0;
   var commonService = locator<CommonService>();
+  late List<PieChartSectionData> pieChartData = [];
+  final Color proteinColor = Color(0xFF42A5F5); // Blue
+  final Color fatColor = Color(0xFFFFA726); // Orange
+  final Color carbohydrateColor = Color(0xFF66BB6A); // Green
+  final Color fiberColor = Color(0xFFAB47BC);
 
   @override
   void initState() {
@@ -50,7 +57,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
                 ),
-                constraints: BoxConstraints(maxHeight: 300),
+                constraints: BoxConstraints(maxHeight: 310),
                 child: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Column(
@@ -71,47 +78,65 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                       // calories
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(
-                            FontAwesomeIcons.solidFaceSmileWink,
-                            color: Colors.grey,
-                            size: 70,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            width: 90,
+                            height: 90,
+                            child: MacroPieChart(
+                              totalCalories: totalCalConsumed,
+                              fats: fat,
+                              carbs: carbohydrate,
+                              protein: protein,
+                            ),
                           ),
+                          SizedBox(width: 10),
                           Expanded(
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "${totalCalConsumed.round()} / ${totalCalLimit.round()} Cal",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 18,
+                                    fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(height: 20),
-                                SizedBox(
-                                  height: 1,
-                                  width: double.infinity,
-                                  child: AnimatedProgressBar(
-                                    value:
-                                        (commonService.getPercentage(
-                                          totalCalLimit,
-                                          totalCalConsumed,
-                                        ) /
-                                        100),
-                                  ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: SizedBox(
+                                        height: 1,
+                                        width: double.infinity,
+                                        child: AnimatedProgressBar(
+                                          value:
+                                              (commonService.getPercentage(
+                                                totalCalLimit,
+                                                totalCalConsumed,
+                                              ) /
+                                              100),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Text(
+                                        "${commonService.getPercentage(totalCalLimit, totalCalConsumed).round()} %",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            child: Text(
-                              "${commonService.getPercentage(totalCalLimit, totalCalConsumed).round()} %",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 22,
-                              ),
                             ),
                           ),
                         ],
@@ -127,7 +152,8 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 Row(
                                   children: [
                                     Icon(
-                                      FontAwesomeIcons.drumstickBite,
+                                      Icons.circle,
+                                      color: proteinColor,
                                       size: 16,
                                     ),
                                     SizedBox(width: 20),
@@ -145,13 +171,17 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 5),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.breadSlice, size: 16),
+                                    Icon(
+                                      Icons.circle,
+                                      color: carbohydrateColor,
+                                      size: 16,
+                                    ),
                                     SizedBox(width: 20),
                                     Text(
                                       'Carbohydrate',
@@ -167,13 +197,17 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 5),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.cheese, size: 16),
+                                    Icon(
+                                      Icons.circle,
+                                      color: fatColor,
+                                      size: 16,
+                                    ),
                                     SizedBox(width: 20),
                                     Text(
                                       'Fat',
@@ -189,13 +223,17 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 5),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.wheatAwn, size: 16),
+                                    Icon(
+                                      Icons.circle,
+                                      color: fiberColor,
+                                      size: 16,
+                                    ),
                                     SizedBox(width: 20),
                                     Text(
                                       'Fiber',
@@ -259,22 +297,31 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
+                                  onTap: (){},
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        width: 120,
-                                        child: Text(
-                                          entry.key,
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
+
+                                      Row(
+                                        children: [
+                                          Icon(Icons.circle,color: Colors.grey,size: 14,),
+                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width: 110,
+                                            child: Text(
+                                              entry.key,
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                       SizedBox(
-                                        width: 70,
+                                        width: 40,
                                         child: Text(
                                           microNutrient != null
                                               ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
@@ -286,15 +333,21 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                         ),
                                       ),
                                       SizedBox(
-                                        width: 70,
-                                        child: Text(
-                                          microNutrient != null
-                                              ? '${microNutrient.value.toStringAsFixed(1)}  ${microNutrient.unit}'
-                                              : '-',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                        width: 100,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              microNutrient != null
+                                                  ? '${microNutrient.value.toStringAsFixed(1)} '
+                                                  : '-',
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Text(microNutrient!.unit,style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),)
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -317,7 +370,6 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   }
 
   setTotalConsumed() {
-    // totalCalConsumed = dayService.getDaysCalories(widget.day);
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(value: 0, unit: micro.value.unit);
     }

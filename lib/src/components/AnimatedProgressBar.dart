@@ -4,15 +4,11 @@ import 'package:performance_tracker/src/constants.ui.dart';
 
 class AnimatedProgressBar extends StatefulWidget {
   final double value;
-  Color color = const Color.fromRGBO(62, 142, 126, 1); 
-  double width = 5;
+  final Color color; 
+  final double? width;
   @override
   State<StatefulWidget> createState() => _AnimatedProgressBarState();
-  AnimatedProgressBar({super.key,required this.value ,Color? color, double? width})
-  {
-    this.color = color ?? PRIMARY;
-    this.width = width ?? 5;
-  }
+  const AnimatedProgressBar({super.key,required this.value ,this.color =PRIMARY, this.width = 5});
 }
 
 class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTickerProviderStateMixin{

@@ -4,7 +4,7 @@ import 'package:performance_tracker/models/day.model.dart';
 
 class DayRepository 
 {
-  var _dayBox = Hive.box<Day>(Collections.days.value);
+  final _dayBox = Hive.box<Day>(Collections.days.value);
   
   Future<Day?>addDayData(Day day) async
   {
