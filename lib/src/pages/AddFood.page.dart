@@ -5,6 +5,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class AddFoodModal extends StatefulWidget {
@@ -186,157 +187,152 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   ),
                 ),
                 // Macros
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Macro nutrients',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          "${widget.food.macros.calories.round().toString()} Cal",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
                           children: [
-                            Text(
-                              'Macro nutrients',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      FontAwesomeIcons.drumstickBite,color:PROTEIN_COLOR,
+                                      size: 15,
+                                    ),
+                                    SizedBox(width: 20),
+                                    Text(
+                                      'Protein',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "${widget.food.macros.calories.round().toString()} Cal",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                              ),
+                            SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      FontAwesomeIcons.breadSlice,color:CARBS_COLOR,
+                                      size: 15,
+                                    ),
+                                    SizedBox(width: 20),
+                                    Text(
+                                      'Carbohydrate',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(FontAwesomeIcons.cheese,color:FAT_COLOR, size: 15),
+                                    SizedBox(width: 20),
+                                    Text(
+                                      'Fat',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(FontAwesomeIcons.wheatAwn,color:FIBER_COLOR, size: 15),
+                                    SizedBox(width: 20),
+                                    Text(
+                                      'Fiber',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        FontAwesomeIcons.drumstickBite,
-                                        size: 15,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Protein',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        FontAwesomeIcons.breadSlice,
-                                        size: 15,
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Carbohydrate',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(FontAwesomeIcons.cheese, size: 15),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Fat',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(FontAwesomeIcons.wheatAwn, size: 15),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Fiber',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    "${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
                 // Micro
                 Align(
                   alignment: Alignment.centerLeft,
@@ -345,7 +341,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -354,50 +350,8 @@ class _AddFoodModalState extends State<AddFoodModal> {
                   height: 300,
                   width: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: ListView(
-                      children: widget.food.micros.microMap.entries.map((
-                        entry,
-                      ) {
-                        final microNutrient = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 3.0, bottom: 3.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                child: Text(
-                                  entry.key,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  microNutrient != null
-                                      ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
-                                      : '-',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  microNutrient != null
-                                      ? '${microNutrient.value.round()} ${microNutrient.unit}'
-                                      : '-',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                    padding: const EdgeInsets.only(top: 20,bottom: 20,left: 12,right: 12),
+                    child: microNutrientList(totalConsumed: widget.food.micros.microMap),
                   ),
                 ),
               ],

@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/src/constants.ui.dart';
 
 class MacroPieChart extends StatefulWidget {
   final double totalCalories;
   final double protein;
   final double carbs;
   final double fats;
-  final Color proteinColor = Color(0xFF42A5F5);      // Blue
-  final Color fatColor = Color(0xFFFFA726);         // Orange
-  final Color carbohydrateColor = Color(0xFF66BB6A);// Green
-  final Color fiberColor = Color(0xFFAB47BC); 
+  
   MacroPieChart({super.key, required this.totalCalories, required this.protein,required this.carbs,required this.fats});
   @override
   MacroPieChartState createState() => MacroPieChartState();
@@ -40,7 +38,7 @@ class MacroPieChartState extends State<MacroPieChart> {
         sections: [
           // protein
             PieChartSectionData(
-            color: widget.proteinColor,
+            color: PROTEIN_COLOR,
             value: proteinPercent,
             title: '',
             radius: radius,
@@ -50,7 +48,7 @@ class MacroPieChartState extends State<MacroPieChart> {
             ),
             // Carbs
             PieChartSectionData(
-            color: widget.carbohydrateColor,
+            color: CARBS_COLOR,
             value: carbsPercent,
             title: '',
             radius: radius,
@@ -60,7 +58,7 @@ class MacroPieChartState extends State<MacroPieChart> {
             ),
             // Fats
             PieChartSectionData(
-            color: widget.fatColor,
+            color: FAT_COLOR,
             value: fatPercent,
             title: '',
             radius: radius,

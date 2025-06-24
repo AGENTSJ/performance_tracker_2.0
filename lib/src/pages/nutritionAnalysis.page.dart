@@ -8,6 +8,7 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/macroPieChart.dart';
 import 'package:performance_tracker/src/components/AnimatedProgressBar.dart';
+import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class NutritionAnalysisPage extends StatefulWidget {
@@ -29,10 +30,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   double totalCalConsumed = 0.0;
   var commonService = locator<CommonService>();
   late List<PieChartSectionData> pieChartData = [];
-  final Color proteinColor = Color(0xFF42A5F5); // Blue
-  final Color fatColor = Color(0xFFFFA726); // Orange
-  final Color carbohydrateColor = Color(0xFF66BB6A); // Green
-  final Color fiberColor = Color(0xFFAB47BC);
+
 
   @override
   void initState() {
@@ -153,7 +151,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: proteinColor,
+                                      color: PROTEIN_COLOR,
                                       size: 16,
                                     ),
                                     SizedBox(width: 20),
@@ -179,7 +177,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: carbohydrateColor,
+                                      color: CARBS_COLOR,
                                       size: 16,
                                     ),
                                     SizedBox(width: 20),
@@ -205,7 +203,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: fatColor,
+                                      color: FAT_COLOR,
                                       size: 16,
                                     ),
                                     SizedBox(width: 20),
@@ -231,7 +229,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: fiberColor,
+                                      color: FIBER_COLOR,
                                       size: 16,
                                     ),
                                     SizedBox(width: 20),
@@ -284,79 +282,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                       ),
                       SizedBox(height: 20),
                       Expanded(
-                        child: ListView(
-                          children: totalConsumed.entries.map((entry) {
-                            final MeasuredUnit? microNutrient = entry.value;
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                top: 3.0,
-                                bottom: 3.0,
-                                left: 8,
-                                right: 8,
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){},
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-
-                                      Row(
-                                        children: [
-                                          Icon(Icons.circle,color: Colors.grey,size: 14,),
-                                          SizedBox(width: 10,),
-                                          SizedBox(
-                                            width: 110,
-                                            child: Text(
-                                              entry.key,
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 40,
-                                        child: Text(
-                                          microNutrient != null
-                                              ? '${commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
-                                              : '-',
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 100,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              microNutrient != null
-                                                  ? '${microNutrient.value.toStringAsFixed(1)} '
-                                                  : '-',
-                                              textAlign: TextAlign.right,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(microNutrient!.unit,style: TextStyle(color: const Color.fromARGB(255, 131, 131, 131)),)
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                        child: microNutrientList(totalConsumed: totalConsumed,),
                       ),
                     ],
                   ),
@@ -394,3 +320,4 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
     }
   }
 }
+
