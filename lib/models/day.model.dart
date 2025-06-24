@@ -74,3 +74,12 @@ enum Months {
   November,
   December,
 }
+
+class DayComments
+{
+  DateTime? dayOfComment;
+  MacroNutrients? macrosAtGenTime;
+  String? macroNutrientsComments;
+  String? microNutrientsComments;
+  String? overallFoodComments;
+}
