@@ -54,8 +54,8 @@ class _MealContainerState extends State<MealContainer> {
                       height: 25,
                     ),
                     Positioned(
-                      bottom: -11,
-                      left: -11,
+                      bottom: -11.5,
+                      left: -11.5,
                       child: IconButton(
                         onPressed: () {
                           handleNavigation();

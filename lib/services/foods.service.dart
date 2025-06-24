@@ -18,11 +18,12 @@ class FoodService
   Future<List<Food>> searchFood(String key) async
   {
     var foods = _foodRepo.searchFoodByName(key);
-    if(foods.isEmpty)
-    {
-      foods = await nutriApi.getFoodByNameAPI(key);
-      for (var food in foods) {
+    var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
+    for (var food in foodsFromApi) {
+      if(!_foodRepo.foodExist(food.name))
+      {
         _foodRepo.addFood(food);
+        foods.add(food);
       }
     }
     return foods;
@@ -66,9 +67,14 @@ class FoodService
     return selectedFoods;
   }
 
-  addFoodToMeal(Food food)
+  addFood(Food food)
   {
     _foodRepo.addFood(food); 
+  }
+
+  bool foodExist(String name)
+  {
+    return _foodRepo.foodExist(name);
   }
 
   Future<Food?> AI_CreateFood(String name , String? description) async
@@ -97,7 +103,7 @@ class FoodService
       var cal = double.parse( res["calories"]);
       var macro = MacroNutrients(prot,carb,fat,fib,cal);
       var food = Food(name: name,macros: macro, micros: MicroNutrients(), quantity: MeasuredUnit(unit: 'g',value: 100));
-      addFoodToMeal(food);
+      addFood(food);
       return food;
     }
     catch (e) {

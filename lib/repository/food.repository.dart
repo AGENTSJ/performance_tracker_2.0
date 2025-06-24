@@ -22,10 +22,15 @@ class FoodRepository
   {
     List<Food> allFoods = foodBox.values.toList();
     List<Food> filtered = [];
+    var inpLowCaseFoodName = name.toLowerCase();
+
     for (var food in allFoods) {
-      if(food.name.toLowerCase().startsWith(name.toLowerCase()))
+      var currFoodNameInLowCase = food.name.toLowerCase();
+
+      if(currFoodNameInLowCase.startsWith(inpLowCaseFoodName))
       {
         filtered.add(food);
+        continue;
       }
     }
     return filtered;
@@ -35,7 +40,18 @@ class FoodRepository
   {
     throw UnimplementedError();
   }
-  
+
+  bool foodExist(String name)
+  {
+    for (var food in foodBox.values) {
+      if(food.name==name)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   test()
   {
     var foods1 = getAllFoods();
