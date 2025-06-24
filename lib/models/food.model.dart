@@ -292,7 +292,7 @@ class MicroNutrients {
     'Iodine': MeasuredUnit(value: 150.0, unit: 'mcg'),
     'Chromium': MeasuredUnit(value: 35.0, unit: 'mcg'),
     'Molybdenum': MeasuredUnit(value: 45.0, unit: 'mcg'),
-    'Fluoride': MeasuredUnit(value: 4.0, unit: 'mg'),
+    'Fluoride': MeasuredUnit(value: 4000.0, unit: 'mcg'),
     'Chloride': MeasuredUnit(value: 2300.0, unit: 'mg'),
   };
   
