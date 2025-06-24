@@ -16,19 +16,31 @@ class MacroPieChart extends StatefulWidget {
   MacroPieChartState createState() => MacroPieChartState();
 }
 
-class MacroPieChartState extends State<MacroPieChart> {
+class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderStateMixin {
   double radius = 50;
   final commonService = locator<CommonService>();
   late double proteinPercent = 0;
   late double carbsPercent = 0;
   late double fatPercent = 0;
   final minBadgeWidgetVal = 1.0;
+  
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
     proteinPercent = commonService.getPercentage(widget.totalCalories, widget.protein*4);
     carbsPercent = commonService.getPercentage(widget.totalCalories, widget.carbs*4);
     fatPercent = commonService.getPercentage(widget.totalCalories, widget.fats*9);
+
+    _controller = AnimationController(duration: const Duration(milliseconds: 700), vsync: this);
+    _animation = Tween<double>(begin: 0, end: carbsPercent).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ))
+      ..addListener(() => setState(() {}));
+    _controller.forward();
   }
 
   @override
@@ -49,7 +61,7 @@ class MacroPieChartState extends State<MacroPieChart> {
             // Carbs
             PieChartSectionData(
             color: CARBS_COLOR,
-            value: carbsPercent,
+            value: _animation.value,
             title: '',
             radius: radius,
             titleStyle: TextStyle(fontSize: 16, color: Colors.white),
@@ -71,5 +83,11 @@ class MacroPieChartState extends State<MacroPieChart> {
         centerSpaceRadius: 0, // for donut effect, increase this
       ),
     );
+  }
+
+   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

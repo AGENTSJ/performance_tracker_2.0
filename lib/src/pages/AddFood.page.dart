@@ -592,4 +592,10 @@ class _AddFoodModalState extends State<AddFoodModal> {
     // Update baseUnit directly
     widget.food.quantity.value = newQuant;
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    caloriesController.dispose();
+  }
 }
