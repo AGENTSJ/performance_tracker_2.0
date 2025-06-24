@@ -26,6 +26,9 @@ class Day extends HiveObject {
   @HiveField(7)
   DateTime dayTime;
 
+  @HiveField(8)
+  DayComments? comments;
+
   Day({required this.dayTime}) {
     breakFast = Meal(mealName: 'Breakfast', foods: []);
     morningSnacks = Meal(mealName: 'Morning Snacks', foods: []);
@@ -77,9 +80,19 @@ enum Months {
 
 class DayComments
 {
-  DateTime? dayOfComment;
-  MacroNutrients? macrosAtGenTime;
-  String? macroNutrientsComments;
-  String? microNutrientsComments;
-  String? overallFoodComments;
+  GeneratedComment? macroNutrientsComments;
+  GeneratedComment? microNutrientsComments;
+  GeneratedComment? overallDietComments;
+}
+class GeneratedComment
+{
+  String comment;
+  DateTime timeOfGeneration;
+  MacroNutrients macrosAtGenTime;
+
+  GeneratedComment({
+    required this.comment,
+    required this.timeOfGeneration,
+    required this.macrosAtGenTime,
+    });
 }

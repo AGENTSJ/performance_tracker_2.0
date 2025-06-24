@@ -1,5 +1,6 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/repository/day.repository.dart';
 
 class DayService
@@ -31,14 +32,19 @@ class DayService
     return "$dayOfMonth ${Months.values[month-1].name.substring(0,3)} $year"; 
   }
 
-  double getDaysCalories(Day day)
+  MacroNutrients getDaysCalories(Day day)
   {
-    var total = 0.0;
+    MacroNutrients macrosForDay = MacroNutrients(0, 0, 0, 0, 0);
+
     for (var meal in day.meals!) {
       for (var food in meal.foods) {
-        total+=food.macros.calories;    
+        macrosForDay.calories+=food.macros.calories;    
+        macrosForDay.protein+=food.macros.protein;
+        macrosForDay.fat+=food.macros.fat;
+        macrosForDay.carbohydrate+=food.macros.carbohydrate;
+        macrosForDay.fiber+=food.macros.fiber;
       }
     }
-    return total;
+    return macrosForDay;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/dateSelector.dart';
@@ -19,10 +20,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final dayService = locator<DayService>();
   late Day? currentDay = null;
+  late MacroNutrients daysMacro;
   String dayMarker = '';
   bool showDateSelector = false;
   double totalCalorieForToday = 2000;
-  double consumedCalForToday = 0;
   @override
   void initState() {
     super.initState();
@@ -89,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Icon(Icons.restaurant_menu_sharp ,color: PRIMARY,),
                                 )
                               ),
-                              Text("${consumedCalForToday.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
+                              Text("${daysMacro.calories.round()} of ${totalCalorieForToday.round()} Cal" ,style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,letterSpacing: 1.0),),
                               IconButton(onPressed: (){
                                 navigatorKey.currentState?.push(
                                   MaterialPageRoute(builder: (_) => NutritionAnalysisPage(day: currentDay!,)),
@@ -133,12 +134,14 @@ class _HomePageState extends State<HomePage> {
       dayMarker = currentDateMarker;
     }
   }
+  
   toggleDateSelector()
   {
     setState(() {
       showDateSelector = !showDateSelector;
     });
   }
+
   handleDateChange(DateTime value)async
   {
     currentDay = await dayService.getDayDataByDate(value);
@@ -148,8 +151,9 @@ class _HomePageState extends State<HomePage> {
       setCaloriesInDay();
     });
   }
+
   setCaloriesInDay()
   {
-    consumedCalForToday = dayService.getDaysCalories(currentDay!);
+    daysMacro = dayService.getDaysCalories(currentDay!);
   }
 }
