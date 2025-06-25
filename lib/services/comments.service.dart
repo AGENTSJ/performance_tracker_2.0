@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
@@ -12,8 +11,9 @@ class CommentsService {
   final dayService = locator<DayService>();
   final userGoalService = locator<UserGoalsService>();
   final TIME_DIFF_TRIGGER_MINUTES = 60;
+  final CAL_DIFF_TRIGGER = 500;
   final CONTEXT_LIMIT_DAYS = 7;
-  late final String UserGoalDescription;
+  String UserGoalDescription = "";
 
   Map<String,dynamic>? userGoals ;
   CommentsService()
@@ -51,11 +51,13 @@ class CommentsService {
     {
       MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
       MacroNutrients prevMacroStructure = previousComment.macrosAtGenTime;
-      String currentMacroSignature = jsonEncode(currentMacroStructure);
-      String prevMacroSignature = jsonEncode(prevMacroStructure);
+      // String currentMacroSignature = jsonEncode(currentMacroStructure);
+      // String prevMacroSignature = jsonEncode(prevMacroStructure);
       Duration timeDiff = DateTime.now().difference(previousComment.timeOfGeneration);
 
-      if(currentMacroSignature == prevMacroSignature || timeDiff.inHours < TIME_DIFF_TRIGGER_MINUTES)
+      double calDiff = (currentMacroStructure.calories - prevMacroStructure.calories).abs();
+
+      if(calDiff < CAL_DIFF_TRIGGER && timeDiff.inMinutes < TIME_DIFF_TRIGGER_MINUTES)
       {
         return previousComment;
       }
@@ -94,7 +96,8 @@ class CommentsService {
   Future<GeneratedComment?> setMacroComments(Day day) async
   {
     var previousComment = day.comments?.macroNutrientsComments;
-    
+    previousComment = null;
+
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
@@ -132,16 +135,104 @@ class CommentsService {
 
   Future<GeneratedComment> _generateMacroComment(Day day) async
   {
-    const String instruction = '''You are a diet coach you must you are given the macro nutrient distribution of the the user that your should observe the values and suggest user how he can improve his diet if there is room for improvement to attain his or her goals if they are good compliment them too keep your output short and but if long is necessary considering the situation feel free to do so avoid markdown notation''';
+    const String instruction = '''
+    You are a diet coach. You are given the user's macronutrient distribution for the day.
+    Review the values and suggest how the user can improve their diet to better achieve their goals.
+    If their macronutrient intake is good, compliment them.
+    Keep your response short, unless a longer explanation is necessary for the situation.
+    Do NOT use markdown notations (such as ** **).
+    Write your response as if you are talking to the user.
+    Use emojis if appropriate, and use line breaks where it improves readability, but do not overdo it.
+    You do not need to repeat the user's current status, as it is visible in the UI.
+    ''';
     MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
     String currentMacroSignature = jsonEncode(currentMacroStructure);
     String prompt = '''
     Users goal is ${UserGoalDescription},
     User has an macro structure as follows $currentMacroSignature 
+    Suggest user foods that help them to acheive their goal and health
     ''';
     var responseObject = await aiService.getResponse(prompt, instruction);
     var resString = responseObject['candidates'][0]['content']['parts'][0]['text']; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
     return genComment;
+  }
+
+  Future<GeneratedComment?> setMicroComments(Day day,Map<String, MeasuredUnit> microMap) async
+  {
+    var previousComment = day.comments?.microNutrientsComments;
+    previousComment = null;
+
+    if(previousComment == null)
+    {
+      if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
+      {
+        return null;
+      }
+      var genComment =  await _generateMicroComment(day,microMap);
+      day.comments ??=  DayComments();
+      day.comments!.microNutrientsComments = genComment;
+      dayService.updateDayData(day);
+      return genComment;
+    }
+    else
+    {
+      MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
+      MacroNutrients prevMacroStructure = previousComment.macrosAtGenTime;
+      String currentMacroSignature = jsonEncode(currentMacroStructure);
+      String prevMacroSignature = jsonEncode(prevMacroStructure);
+      // Duration timeDiff = DateTime.now().difference(previousComment.timeOfGeneration);
+
+      if(currentMacroSignature == prevMacroSignature)
+      {
+        return previousComment;
+      }
+      else
+      {
+        var genComment = await _generateMacroComment(day);
+        day.comments!.macroNutrientsComments = genComment;
+        dayService.updateDayData(day);
+        return genComment;
+
+      }
+    }
+  }
+
+   Future<GeneratedComment> _generateMicroComment(Day day , Map<String, MeasuredUnit> microMap) async
+  {
+    const String instruction = '''
+    You are a diet coach. You are given the user's micronutrient distribution. 
+    Review the values and suggest how the user can improve their diet to better achieve their goals. 
+    If their micronutrient intake is good, compliment them. 
+    Keep your response short, unless a longer explanation is necessary for the situation. 
+    Do NOT use markdown notations (such as ** **). 
+    Write your response as if you are talking to the user. 
+    Use emojis if appropriate, and use line breaks where it improves readability, but do not overdo it. 
+    You do not need to repeat the user's current status, as it is visible in the UI.
+    ''';
+    MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
+
+    String currentMicroSignature = _convertMicroMapToString(microMap);
+    
+    String prompt = '''
+    Users goal is ${UserGoalDescription},
+    User has an micro structure as follows $currentMicroSignature 
+    Suggest user foods that help them to acheive their goal and health
+    ''';
+    var responseObject = await aiService.getResponse(prompt, instruction);
+    var resString = responseObject['candidates'][0]['content']['parts'][0]['text']; 
+    GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
+    return genComment;
+  }
+
+
+  _convertMicroMapToString(Map<String, MeasuredUnit> microMap)
+  {
+    String res= '';
+
+    for (var micro in microMap.entries) {
+      res+='''${micro.key}:{ value:${micro.value.value},unit:${micro.value.unit}}\n,''';
+    }
+    return res;
   }
 }

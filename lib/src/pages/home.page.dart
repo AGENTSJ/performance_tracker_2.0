@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -10,7 +9,7 @@ import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/dateSelector.dart';
 import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
-import 'package:performance_tracker/src/pages/nutritionAnalysis.page.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/mainNutritionAnalysis.page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -32,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   double totalCalorieForToday = 2000;
   @override
   void initState() {
+    print('nuti-home-init-ran');
     super.initState();
     dayService
         .getDayDataByDate(DateTime.now())
@@ -41,16 +41,12 @@ class _HomePageState extends State<HomePage> {
               currentDay = day;
               _setCurrentDayMarker();
               setCaloriesInDay();
-              commentService
-              .setDietComments(currentDay!)
-              .then((comment) => {setState(() {})});
             }),
           },
         );
   }
 
   handleGreetingContainerChange() {
-    print('clicked');
     this.showWholeGreetings = !showWholeGreetings;
     setState(() {});
   }
@@ -95,98 +91,7 @@ class _HomePageState extends State<HomePage> {
                   scrollDirection: Axis.vertical,
                   children: [
                     // Greetings
-                    GestureDetector(
-                      onTap: (){handleGreetingContainerChange();},
-                      child: AnimatedContainer(
-                        key: ValueKey(currentDay!.dayTime),
-                        duration: Duration(
-                          milliseconds: 500,
-                        ), // Animation duration
-                        curve: Curves.easeInOut,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        width: double.infinity,
-                        constraints: showWholeGreetings
-                            ? BoxConstraints(minHeight: 110, maxHeight: 300)
-                            : BoxConstraints(minHeight: 110, maxHeight: 110),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: Center(
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        bottom: -20,
-                                        left: 0,
-                                        child: Container(
-                                          width: 75,
-                                          height: 75,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: const Color.fromARGB(
-                                              190,
-                                              45,
-                                              150,
-                                              129,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      avatarService.getGreetingAvatar(
-                                        width: 80,
-                                        height: 80,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: InkWell(
-                                        onTap: () {
-                                          handleGreetingContainerChange();
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: IgnorePointer(
-                                            child: AnimatedTextKit(
-                                              animatedTexts: [
-                                                TyperAnimatedText(currentDay
-                                                      ?.comments
-                                                      ?.overallDietComments
-                                                      ?.comment ??
-                                                  'Hmmmm... \nDid you forget to track your calories today?',
-                                                  textStyle: TextStyle(height: 1.5)
-                                                )
-                                              ],
-                                              isRepeatingAnimation: false,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    GreetingsWidget(day: currentDay,key: ValueKey(daysMacro.calories),),
                     SizedBox(height: 20),
                     // Total calories
                     Container(
@@ -308,5 +213,116 @@ class _HomePageState extends State<HomePage> {
 
   setCaloriesInDay() {
     daysMacro = dayService.getDaysCalories(currentDay!);
+  }
+}
+
+class GreetingsWidget extends StatefulWidget {
+
+  final Day? day;
+  const GreetingsWidget({super.key,required this.day});
+
+  @override
+  State<StatefulWidget> createState() => GreetingsWidgetState();
+}
+
+class GreetingsWidgetState extends State<GreetingsWidget> {
+  bool showWholeGreetings = false;
+  final avatarService = locator<AvatarService>();
+  final commentService = locator<CommentsService>();
+
+  handleGreetingContainerChange() {
+    showWholeGreetings = !showWholeGreetings;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    print('grreting state ran');
+    super.initState();
+    commentService
+                .setDietComments(widget.day!)
+                .then((comment) => {setState(() {})});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        handleGreetingContainerChange();
+      },
+      child: AnimatedContainer(
+        key: ValueKey(widget.day!.dayTime),
+        duration: Duration(milliseconds: 250), // Animation duration
+        curve: Curves.decelerate,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        width: double.infinity,
+        constraints: showWholeGreetings
+            ? BoxConstraints(minHeight: 110, maxHeight: 300)
+            : BoxConstraints(minHeight: 110, maxHeight: 110),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: Center(
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        bottom: -20,
+                        left: 0,
+                        child: Container(
+                          width: 75,
+                          height: 75,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color.fromARGB(190, 45, 150, 129),
+                          ),
+                        ),
+                      ),
+                      avatarService.getGreetingAvatar(width: 80, height: 80),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(8),
+                      child: InkWell(
+                        onTap: () {
+                          handleGreetingContainerChange();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.day
+                                    ?.comments
+                                    ?.overallDietComments
+                                    ?.comment ??
+                                'Hmmmm\n\nLooks like you forgot to track your calories this day.',
+                            style: TextStyle(height: 1.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
