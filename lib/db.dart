@@ -22,6 +22,8 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(MeasuredUnitAdapter());
   Hive.registerAdapter(DayAdapter());
   Hive.registerAdapter(MealAdapter());
+  Hive.registerAdapter(DayCommentsAdapter());
+  Hive.registerAdapter(GeneratedCommentAdapter());
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);
   // await Hive.deleteBoxFromDisk(Collections.foods.value);

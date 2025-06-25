@@ -22,7 +22,7 @@ class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderS
   late double proteinPercent = 0;
   late double carbsPercent = 0;
   late double fatPercent = 0;
-  final minBadgeWidgetVal = 1.0;
+  final minBadgeWidgetVal = 10.0;
   
   late AnimationController _controller;
   late Animation<double> _animation;

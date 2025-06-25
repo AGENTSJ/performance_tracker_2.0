@@ -24,13 +24,14 @@ class DayAdapter extends TypeAdapter<Day> {
       ..morningSnacks = fields[2] as Meal
       ..dinner = fields[3] as Meal
       ..eveningSnacks = fields[5] as Meal
-      ..meals = (fields[6] as List?)?.cast<Meal>();
+      ..meals = (fields[6] as List?)?.cast<Meal>()
+      ..comments = fields[8] as DayComments?;
   }
 
   @override
   void write(BinaryWriter writer, Day obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.breakFast)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class DayAdapter extends TypeAdapter<Day> {
       ..writeByte(6)
       ..write(obj.meals)
       ..writeByte(7)
-      ..write(obj.dayTime);
+      ..write(obj.dayTime)
+      ..writeByte(8)
+      ..write(obj.comments);
   }
 
   @override
@@ -94,6 +97,85 @@ class MealAdapter extends TypeAdapter<Meal> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MealAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class DayCommentsAdapter extends TypeAdapter<DayComments> {
+  @override
+  final int typeId = 7;
+
+  @override
+  DayComments read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return DayComments()
+      ..macroNutrientsComments = fields[0] as GeneratedComment?
+      ..microNutrientsComments = fields[1] as GeneratedComment?
+      ..overallDietComments = fields[2] as GeneratedComment?;
+  }
+
+  @override
+  void write(BinaryWriter writer, DayComments obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.macroNutrientsComments)
+      ..writeByte(1)
+      ..write(obj.microNutrientsComments)
+      ..writeByte(2)
+      ..write(obj.overallDietComments);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DayCommentsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class GeneratedCommentAdapter extends TypeAdapter<GeneratedComment> {
+  @override
+  final int typeId = 8;
+
+  @override
+  GeneratedComment read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return GeneratedComment(
+      comment: fields[0] as String,
+      timeOfGeneration: fields[1] as DateTime,
+      macrosAtGenTime: fields[2] as MacroNutrients,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, GeneratedComment obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.comment)
+      ..writeByte(1)
+      ..write(obj.timeOfGeneration)
+      ..writeByte(2)
+      ..write(obj.macrosAtGenTime);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GeneratedCommentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

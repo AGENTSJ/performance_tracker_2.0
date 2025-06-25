@@ -78,21 +78,32 @@ enum Months {
   December,
 }
 
-class DayComments
-{
+@HiveType(typeId: 7)
+class DayComments extends HiveObject {
+  @HiveField(0)
   GeneratedComment? macroNutrientsComments;
+
+  @HiveField(1)
   GeneratedComment? microNutrientsComments;
+
+  @HiveField(2)
   GeneratedComment? overallDietComments;
 }
-class GeneratedComment
-{
+
+@HiveType(typeId: 8)
+class GeneratedComment extends HiveObject {
+  @HiveField(0)
   String comment;
+
+  @HiveField(1)
   DateTime timeOfGeneration;
+
+  @HiveField(2)
   MacroNutrients macrosAtGenTime;
 
   GeneratedComment({
     required this.comment,
     required this.timeOfGeneration,
     required this.macrosAtGenTime,
-    });
+  });
 }
