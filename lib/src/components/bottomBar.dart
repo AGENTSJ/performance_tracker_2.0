@@ -8,6 +8,7 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
       color: PRIMARY,
+      height: 60,
       backgroundColor: Colors.transparent,
       animationDuration: Duration(milliseconds: 200),
       items: [

@@ -30,7 +30,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   double totalCalConsumed = 0.0;
   var commonService = locator<CommonService>();
   late List<PieChartSectionData> pieChartData = [];
-
+  bool allowMicroScroll = false;
 
   @override
   void initState() {
@@ -282,8 +282,10 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                       ),
                       SizedBox(height: 20),
                       Expanded(
-                        child: microNutrientList(totalConsumed: totalConsumed,),
+                        child: microNutrientList(totalConsumed: totalConsumed,allowScroll: allowMicroScroll,),
                       ),
+                      if(!allowMicroScroll)
+                      TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show more',style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
                     ],
                   ),
                 ),
@@ -293,6 +295,14 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
         ),
       ),
     );
+  }
+
+  handleMicroScrollEnable()
+  {
+    this.allowMicroScroll = true;
+    setState(() {
+      
+    });
   }
 
   setTotalConsumed() {

@@ -24,7 +24,7 @@ class _AddFoodModalState extends State<AddFoodModal> {
   var caloriesController = TextEditingController();
   Food? standard;
   var commonService = locator<CommonService>();
-
+  bool allowMicroScroll = false;
   @override
   void initState() {
     super.initState();
@@ -347,11 +347,19 @@ class _AddFoodModalState extends State<AddFoodModal> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  height: 300,
                   width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20,bottom: 20,left: 12,right: 12),
-                    child: microNutrientList(totalConsumed: widget.food.micros.microMap),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 300,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20,bottom: 0,left: 12,right: 12),
+                          child: microNutrientList(totalConsumed: widget.food.micros.microMap,allowScroll: allowMicroScroll,),
+                        ),
+                      ),
+                      if(!allowMicroScroll)
+                      TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show More' ,style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
+                    ],
                   ),
                 ),
               ],
@@ -597,5 +605,12 @@ class _AddFoodModalState extends State<AddFoodModal> {
   void dispose() {
     super.dispose();
     caloriesController.dispose();
+  }
+
+  handleMicroScrollEnable()
+  {
+    this.allowMicroScroll = true;
+    setState(() {
+    });
   }
 }

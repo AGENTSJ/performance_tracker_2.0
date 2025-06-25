@@ -8,14 +8,17 @@ class microNutrientList extends StatelessWidget {
   microNutrientList({
     super.key,
     required this.totalConsumed,
+    required this.allowScroll,
   });
 
   final Map<String, MeasuredUnit?> totalConsumed;
+  final bool allowScroll;
   final CommonService _commonService = locator<CommonService>();
 
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: allowScroll ? AlwaysScrollableScrollPhysics() :NeverScrollableScrollPhysics(),
       children: totalConsumed.entries.map((entry) {
         final MeasuredUnit? microNutrient = entry.value;
         return Padding(
