@@ -11,7 +11,7 @@ class MacroAnalysisWidget extends StatelessWidget {
   final MacroNutrients macros;
   final double totalCalLimit;
   final commonService = locator<CommonService>();
-  String unit = 'g';
+  final String unit = 'g';
 
   MacroAnalysisWidget({
     super.key,

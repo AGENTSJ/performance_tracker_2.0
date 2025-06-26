@@ -129,12 +129,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             IconButton(
                               onPressed: () {
-                                navigatorKey.currentState?.push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        NutritionAnalysisPage(day: currentDay!),
-                                  ),
-                                );
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>NutritionAnalysisPage(day: currentDay!)));
                               },
                               icon: Icon(
                                 Icons.bar_chart_outlined,
