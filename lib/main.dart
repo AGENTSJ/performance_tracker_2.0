@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/db.dart';
 // import 'package:performance_tracker/repository/food.repository.dart';
-import 'package:performance_tracker/src/pages/home.page.dart';
+import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionHome.page/home.page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

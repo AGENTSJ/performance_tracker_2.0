@@ -1,15 +1,15 @@
 import 'package:get_it/get_it.dart';
-import 'package:performance_tracker/repository/day.repository.dart';
-import 'package:performance_tracker/repository/food.repository.dart';
-import 'package:performance_tracker/services/ai.service.dart';
-import 'package:performance_tracker/services/avatar.service.dart';
-import 'package:performance_tracker/services/comments.service.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/services/rest.service.dart';
-import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
-import 'package:performance_tracker/services/userGoals.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/repository/day.repository.dart';
+import 'package:performance_tracker/modules/nutritionModule/repository/food.repository.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/ai.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/avatar.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/common.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/foods.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/rest.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/nutritionInfoProvide.service.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/userGoals.service.dart';
 
 final GetIt locator = GetIt.instance;
 
