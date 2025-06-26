@@ -8,9 +8,9 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
-import 'package:performance_tracker/src/pages/nutritionAnalysis.page/macroAnalysisWidget.dart';
-import 'package:performance_tracker/src/pages/nutritionAnalysis.page/macroCommentsWidget.dart';
-import 'package:performance_tracker/src/pages/nutritionAnalysis.page/microCommentsWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/macroAnalysisWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/macroCommentsWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/microCommentsWidget.dart';
 
 class NutritionAnalysisPage extends StatefulWidget {
   final Day day;

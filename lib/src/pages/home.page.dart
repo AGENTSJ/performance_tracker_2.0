@@ -9,7 +9,7 @@ import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/components/dateSelector.dart';
 import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
-import 'package:performance_tracker/src/pages/nutritionAnalysis.page/mainNutritionAnalysis.page.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ],
         ),
-        bottomNavigationBar: BottomBar(),
+        bottomNavigationBar: !showDateSelector? BottomBar() :null,
       ),
     );
   }

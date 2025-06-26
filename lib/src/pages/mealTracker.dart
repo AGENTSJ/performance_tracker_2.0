@@ -7,7 +7,7 @@ import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/src/pages/AddFood.page.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
 import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
@@ -310,7 +310,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     var returnedFood = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddFoodModal(food: newFood, isCreateMode: true),
+        builder: (context) => FoodEntryPage(food: newFood, isCreateMode: true),
       ),
     );
     setState(() {
@@ -328,7 +328,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddFoodModal(food: food, isCreateMode: false),
+        builder: (context) => FoodEntryPage(food: food, isCreateMode: false),
       ),
     );
     dayService.updateDayData(widget.day);

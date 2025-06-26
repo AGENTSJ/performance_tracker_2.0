@@ -23,6 +23,10 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
     if (showMacroAnalysis) {
       showMacroAnalysis = false;
     } else {
+      if(isCommentGenerating)
+      {
+        return;
+      }
       isCommentGenerating = true;
       showMacroAnalysis = true;
       setState(() {});

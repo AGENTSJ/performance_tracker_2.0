@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/src/pages/AddFood.page.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {
@@ -71,7 +71,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     {
       var returnedFood =  await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: true,)),
+        MaterialPageRoute(builder: (context) => FoodEntryPage(food: food,isCreateMode: true,)),
       );
       Navigator.of(context).pop(returnedFood);
     }else

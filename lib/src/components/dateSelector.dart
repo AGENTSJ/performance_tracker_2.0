@@ -34,6 +34,9 @@ class _DateSelectorState extends State<DateSelector> {
               },))],
             ),
           ),
+          Expanded(child: GestureDetector(
+            onTap: (){widget.onDateChanged(widget.selectedDate);},
+          ))
         ],
       ),
     );

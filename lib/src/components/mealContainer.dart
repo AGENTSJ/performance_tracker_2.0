@@ -4,7 +4,7 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
-import 'package:performance_tracker/src/pages/AddFood.page.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
 import 'package:performance_tracker/src/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
@@ -209,7 +209,7 @@ class _MealContainerState extends State<MealContainer> {
     await Future.delayed(Duration(milliseconds: 150));
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFoodModal(food: food,isCreateMode: false,)),
+      MaterialPageRoute(builder: (context) => FoodEntryPage(food: food,isCreateMode: false,)),
     );
     dayService.updateDayData(widget.day);
     setCalories(true);

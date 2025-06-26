@@ -25,6 +25,10 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
     if (showMicroAnalysis) {
       showMicroAnalysis = false;
     } else {
+      if(isCommentGenerating)
+      {
+        return;
+      }
       isCommentGenerating = true;
       showMicroAnalysis = true;
       setState(() {});

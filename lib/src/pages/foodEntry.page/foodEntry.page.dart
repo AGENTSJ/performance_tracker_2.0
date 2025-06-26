@@ -8,19 +8,19 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/src/constants.ui.dart';
 
-class AddFoodModal extends StatefulWidget {
+class FoodEntryPage extends StatefulWidget {
   final Food food;
   final bool isCreateMode;
-  const AddFoodModal({
+  const FoodEntryPage({
     super.key,
     required this.food,
     required this.isCreateMode,
   });
   @override
-  State<StatefulWidget> createState() => _AddFoodModalState();
+  State<StatefulWidget> createState() => _FoodEntryPageState();
 }
 
-class _AddFoodModalState extends State<AddFoodModal> {
+class _FoodEntryPageState extends State<FoodEntryPage> {
   var caloriesController = TextEditingController();
   Food? standard;
   var commonService = locator<CommonService>();

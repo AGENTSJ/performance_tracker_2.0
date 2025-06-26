@@ -9,7 +9,7 @@ class BottomBar extends StatelessWidget {
     return CurvedNavigationBar(
       color: PRIMARY,
       height: 60,
-      backgroundColor: Colors.transparent,
+      backgroundColor: BACKGROUND,
       animationDuration: Duration(milliseconds: 200),
       items: [
         Icon(Icons.food_bank ,color: Colors.white,),
