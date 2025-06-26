@@ -2,6 +2,13 @@ import 'dart:convert';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/rest.service.dart';
 
+class AiResponse
+{
+  final String message;
+  final bool success;
+
+  const AiResponse({required this.message , required this.success}); 
+}
 class AiService
 {
   late final _AI_Provider _provider;
@@ -13,7 +20,7 @@ class AiService
     _provider = _AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY");
   } 
 
-  getResponse(String promt , String? instructions) async 
+  Future<AiResponse> getResponse(String promt , String? instructions) async 
   {
     dynamic payload = {
       "system_instruction": {
@@ -34,8 +41,14 @@ class AiService
       ]
     };
     var response = await _restService.POST(_provider.endpoint, payload);
+    if(response.statusCode!=200)
+    {
+      return AiResponse(message: '', success: false);
+    }
+
     var body = jsonDecode(response.body);
-    return body;
+    var aiResp = AiResponse(message: body['candidates'][0]['content']['parts'][0]['text'], success: true);
+    return aiResp;
   }
 
 }

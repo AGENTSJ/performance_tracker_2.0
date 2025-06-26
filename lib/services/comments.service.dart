@@ -88,7 +88,7 @@ class CommentsService {
     String prompt = '''${UserGoalDescription} here is todays macros user has added till now time now is ${DateTime.now()} and the day user gave to comment is ${day.dayTime} and macros is $todayMacroStructure And the users past week data is here as follows $contextInformation your response is shown when user logs on the application guide user Greet them and give a tip if they are doing well if not consolidate them keep it short as like a small talk dont include calorie count exact in the response ''';
 
     var response = await aiService.getResponse(prompt, instructions);
-    var resString = response['candidates'][0]['content']['parts'][0]['text']; 
+    var resString = response.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currMacro);
     return genComment;
   }
@@ -151,7 +151,7 @@ class CommentsService {
     Suggest user foods that help them to acheive their goal and health
     ''';
     var responseObject = await aiService.getResponse(prompt, instruction);
-    var resString = responseObject['candidates'][0]['content']['parts'][0]['text']; 
+    var resString = responseObject.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
     return genComment;
   }
@@ -177,7 +177,6 @@ class CommentsService {
       MacroNutrients prevMacroStructure = previousComment.macrosAtGenTime;
       String currentMacroSignature = jsonEncode(currentMacroStructure);
       String prevMacroSignature = jsonEncode(prevMacroStructure);
-      // Duration timeDiff = DateTime.now().difference(previousComment.timeOfGeneration);
 
       if(currentMacroSignature == prevMacroSignature)
       {
@@ -216,7 +215,7 @@ class CommentsService {
     Suggest user foods that help them to acheive their goal and health
     ''';
     var responseObject = await aiService.getResponse(prompt, instruction);
-    var resString = responseObject['candidates'][0]['content']['parts'][0]['text']; 
+    var resString = responseObject.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
     return genComment;
   }

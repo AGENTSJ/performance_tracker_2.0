@@ -94,7 +94,7 @@ class FoodService
       const String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing. if the name of the food doesn't make sense you can return the text error without json";
 
       var body = await  _ai.getResponse(prompt , instructions);
-      var resString = body['candidates'][0]['content']['parts'][0]['text']; 
+      var resString = body.message; 
       var res = jsonDecode(resString);
       var prot = double.parse( res["protein"]);
       var carb = double.parse( res["carbohydrate"]);

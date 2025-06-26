@@ -87,6 +87,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                   ),
                 ),
               ),
+              
               SizedBox(height: 30),
               MicroCommentsWidget(day: widget.day, microMap: totalConsumed)
             ],
