@@ -17,18 +17,20 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   late final TextEditingController descriptionController =
       TextEditingController();
   var foodService = locator<FoodService>();
-  bool isGenerating = false;
+  bool isGenerating = true;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0), 
+      contentPadding: EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(8),
       ),
       title: Text(widget.foodName),
       content: isGenerating
           ? Material(
+              borderRadius: BorderRadiusGeometry.circular(8),
               child: Container(
-                color: SURFACE,
                 height: 200,
                 width: double.infinity,
                 child: Column(
@@ -51,13 +53,22 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
               height: 200,
               width: double.infinity,
               child: Center(
-                child: TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter a description for ${widget.foodName}',
-                    border: OutlineInputBorder(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadiusGeometry.circular(8),
+                    color: Colors.white
                   ),
-                  maxLines: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter a description for ${widget.foodName}',
+                        border: InputBorder.none,
+                      ),
+                      maxLines: 6,
+                    ),
+                  ),
                 ),
               ),
             ),

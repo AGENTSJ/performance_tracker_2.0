@@ -1,7 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/repository/foods.data.dart';
 
 class FoodRepository
 {
@@ -50,17 +49,5 @@ class FoodRepository
       }
     }
     return false;
-  }
-
-  test()
-  {
-    var foods1 = getAllFoods();
-    if(foods1.isEmpty)
-    {
-      var foods = availableFoods;
-      for (var food in foods) {
-        addFood(food);
-      }
-    }
   }
 }

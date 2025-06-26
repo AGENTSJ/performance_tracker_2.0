@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class BottomBar extends StatelessWidget {
@@ -15,8 +16,13 @@ class BottomBar extends StatelessWidget {
         Icon(Icons.food_bank ,color: Colors.white,),
         Icon(Icons.directions_bike ,color: Colors.white,),
         Icon(Icons.directions_run,color: Colors.white,),
-        Icon(Icons.chat,color: Colors.white,),
+        Icon(FontAwesomeIcons.user,color: Colors.white,),
       ],
+      onTap: (index) {
+        if (index == 3) {
+          Navigator.pushNamed(context, '/profile');
+        }
+      },
     );
   }
 }
