@@ -96,8 +96,6 @@ class CommentsService {
   Future<GeneratedComment?> setMacroComments(Day day) async
   {
     var previousComment = day.comments?.macroNutrientsComments;
-    previousComment = null;
-
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
@@ -161,8 +159,6 @@ class CommentsService {
   Future<GeneratedComment?> setMicroComments(Day day,Map<String, MeasuredUnit> microMap) async
   {
     var previousComment = day.comments?.microNutrientsComments;
-    previousComment = null;
-
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
