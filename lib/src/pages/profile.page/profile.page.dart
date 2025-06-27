@@ -6,14 +6,14 @@ import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/pages/profile.page/widgets/goals.widget.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ProfilePageModule extends StatefulWidget {
+  const ProfilePageModule({Key? key}) : super(key: key);
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfilePageModule> createState() => _ProfilePageModuleState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageModuleState extends State<ProfilePageModule> {
   final _formKey = GlobalKey<FormState>();
   final userService = locator<UserService>();
   final avatarService = locator<AvatarService>();
@@ -25,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late Gender _selectedGender = Gender.other;
   User? user;
 
-  _ProfilePageState() {
+  _ProfilePageModuleState() {
     Future.microtask(() async {
       user = await userService.getUserData();
       nameController.text = user!.name;
@@ -94,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 30,
+                      vertical: 15,
                       horizontal: 16,
                     ),
                     child: Column(

@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/':(context)=>HomePage(),
-        '/profile':(context)=>ProfilePage()
+        '/':(context)=>NutritionModule(),
+        '/profile':(context)=>ProfilePageModule()
       },
     );
   }

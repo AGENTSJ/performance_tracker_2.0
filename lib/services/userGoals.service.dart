@@ -18,23 +18,31 @@ class UserGoalsService {
   };
 
   ActivityLevel getActivity(int steps) {
-    switch (steps) {
-      case 3000:
+      if (steps<= 5000)
+      {
         return ActivityLevel.sedentary;
-      case 5000:
+      }
+      if (steps<= 7500)
+      {
         return ActivityLevel.lightlyActive;
-      case 7000:
+      }
+      if(steps<= 10000)
+      {
         return ActivityLevel.moderatelyActive;
-      case 9000:
-      case 11000:
+      }
+      if(steps<=12500)
+      {
         return ActivityLevel.veryActive;
-      default:
-        return ActivityLevel.sedentary;
-    }
+      }
+      if(steps > 12500)
+      {
+        return ActivityLevel.extraActive;
+      }
+      return ActivityLevel.sedentary;
   }
+
   Future<UserGoals> getUserGoals() async {
     var user = await userService.getUserData();
-
     return user.userGoals;
   }
 
@@ -43,7 +51,15 @@ class UserGoalsService {
     var user = await userService.getUserData();
     user.userGoals.stepGoal = STANDARD_STEP_LIMIT;
     user.userGoals.caloricBurn = 200;
-    var maintenanceCalories = FetchMaintenanceCalories(user,steps:user.userGoals.stepGoal);
+
+    await userService.updateUser(user);
+
+    return true;
+  }
+
+  setCaloricLimit(User user)
+  {
+    var maintenanceCalories = fetchMaintenanceCalories(user,steps:user.userGoals.stepGoal);
     if(user.weight > user.userGoals.targetWeight)
     { 
       user.userGoals.calorieLimit = maintenanceCalories- CALORIE_DEFICIT_LIMIT;
@@ -56,10 +72,9 @@ class UserGoalsService {
     {
       user.userGoals.calorieLimit = maintenanceCalories;
     }
-    await userService.updateUser(user);
-    return true;
   }
-  double FetchMaintenanceCalories(User user , {int steps= 3000})
+  
+  double fetchMaintenanceCalories(User user , {int steps= 3000})
   {
     var bmr = _getBmr(user);
     var activityLevel = getActivity(steps);

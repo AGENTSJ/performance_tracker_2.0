@@ -14,13 +14,13 @@ import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionH
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class NutritionModule extends StatefulWidget {
+  const NutritionModule({super.key});
   @override
-  State<StatefulWidget> createState() => _HomePageState();
+  State<StatefulWidget> createState() => _NutritionModuleState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _NutritionModuleState extends State<NutritionModule> {
   final dayService = locator<DayService>();
   final commentService = locator<CommentsService>();
   final avatarService = locator<AvatarService>();

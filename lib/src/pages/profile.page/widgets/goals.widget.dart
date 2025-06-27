@@ -5,20 +5,30 @@ import 'package:performance_tracker/modules/nutritionModule/models/user.model.da
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
-class GoalsWidget extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+class GoalsWidget extends StatefulWidget {
   final User user;
-  final targetWeight = TextEditingController();
-  final targetSteps = TextEditingController();
-  final caloricLimit = TextEditingController();
+  const GoalsWidget({super.key, required this.user});
+  @override
+  State<GoalsWidget> createState() => _GoalsWidgetState();
+}
+
+class _GoalsWidgetState extends State<GoalsWidget> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController targetWeight;
+  late TextEditingController targetSteps;
+  late TextEditingController caloricBurn;
+  late TextEditingController caloricLimit;
   final userService = locator<UserService>();
   final userGoalService = locator<UserGoalsService>();
+  bool formChanged = false;
+
   final elevatedButtonDecor = ElevatedButton.styleFrom(
     backgroundColor: SURFACE,
     elevation: 0,
     minimumSize: Size(double.infinity, 40),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
   );
+
   InputDecoration getInputDecoration(String label) {
     return InputDecoration(
       labelText: label,
@@ -39,8 +49,22 @@ class GoalsWidget extends StatelessWidget {
     );
   }
 
-  GoalsWidget({super.key, required this.user}) {
-    updateFormUi(user);
+  @override
+  void initState() {
+    super.initState();
+    targetWeight = TextEditingController();
+    targetSteps = TextEditingController();
+    caloricLimit = TextEditingController();
+    caloricBurn = TextEditingController();
+    updateFormUi(widget.user);
+  }
+
+  @override
+  void dispose() {
+    targetWeight.dispose();
+    targetSteps.dispose();
+    caloricLimit.dispose();
+    super.dispose();
   }
 
   @override
@@ -52,6 +76,11 @@ class GoalsWidget extends StatelessWidget {
       ),
       width: double.infinity,
       child: Form(
+        onChanged: () {
+          setState(() {
+            formChanged = true;
+          });
+        },
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -73,8 +102,8 @@ class GoalsWidget extends StatelessWidget {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
-                            decoration: getInputDecoration("Target steps"),
-                            controller: targetSteps,
+                            decoration: getInputDecoration("Calorie burn"),
+                            controller: caloricBurn,
                           ),
                         ),
                       ],
@@ -84,42 +113,57 @@ class GoalsWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            decoration: getInputDecoration("Caloric limit"),
-                            controller: targetWeight,
+                            decoration: getInputDecoration("Target steps"),
+                            controller: targetSteps,
                           ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
-                            decoration: getInputDecoration("Calorie burn"),
-                            controller: targetSteps,
+                            decoration: InputDecoration(
+                              labelText: "Your caloric limit",
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            controller: caloricLimit,
+                            readOnly: true,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 10,),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _handleUpdate(context);
-                            },
-                            style: elevatedButtonDecor,
-                            child: Text('Update'),
+                    SizedBox(height: 10),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      height: formChanged ? 60 : 0,
+                      width: double.infinity,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _handleUpdate(context);
+                              },
+                              style: elevatedButtonDecor,
+                              child: Text('Update'),
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 10,),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _handleReset();
-                            },
-                            style: elevatedButtonDecor,
-                            child: Text('Reset'),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _handleReset();
+                              },
+                              style: elevatedButtonDecor,
+                              child: Text('Reset'),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -131,29 +175,36 @@ class GoalsWidget extends StatelessWidget {
     );
   }
 
-  _handleUpdate(BuildContext context)async
-  {
-    user!
-      ..userGoals.stepGoal = int.tryParse(targetSteps.text) ?? user.userGoals.stepGoal
-      ..userGoals.targetWeight = double.tryParse(targetWeight.text) ?? user.userGoals.targetWeight
-      ..userGoals.calorieLimit = double.tryParse(caloricLimit.text) ?? user.userGoals.calorieLimit
-      ..userGoals.calorieLimit = double.tryParse(caloricLimit.text) ?? user.userGoals.caloricBurn;
-    
-    await userService.updateUser(user);
+  Future<void> _handleUpdate(BuildContext context) async {
+    widget.user
+      ..userGoals.stepGoal =
+          int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal
+      ..userGoals.targetWeight =
+          double.tryParse(targetWeight.text) ?? widget.user.userGoals.targetWeight
+      ..userGoals.caloricBurn = double.tryParse(caloricBurn.text) ??  widget.user.userGoals.caloricBurn;
+    userGoalService.setCaloricLimit(widget.user);
+    await userService.updateUser(widget.user);
+    updateFormUi(widget.user);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully!')),
     );
+    this.formChanged = false;
+    setState(() {
+      
+    });
   }
 
-  _handleReset() async
-  {
+  Future<void> _handleReset() async {
     await userGoalService.resetGoals();
-    updateFormUi(user);
+    setState(() {
+      updateFormUi(widget.user);
+    });
   }
-  updateFormUi(User user)
-  {
-    targetWeight.text = user.weight.toString();
-    caloricLimit.text = user.userGoals.calorieLimit.toString();
+
+  void updateFormUi(User user) {
+    targetWeight.text = user.userGoals.targetWeight.toString();
+    caloricLimit.text = user.userGoals.calorieLimit.round().toString();
     targetSteps.text = user.userGoals.stepGoal.toString();
+    caloricBurn.text = user.userGoals.caloricBurn.round().toString();
   }
 }

@@ -19,8 +19,12 @@ class BottomBar extends StatelessWidget {
         Icon(FontAwesomeIcons.user,color: Colors.white,),
       ],
       onTap: (index) {
-        if (index == 3) {
-          Navigator.pushNamed(context, '/profile');
+        // if (index == 3) {
+        //   Navigator.pushNamed(context, '/profile');
+        // }
+        switch (index){
+          case 0:
+            
         }
       },
     );
