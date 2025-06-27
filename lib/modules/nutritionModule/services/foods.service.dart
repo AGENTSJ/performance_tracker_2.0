@@ -3,7 +3,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
 import 'package:performance_tracker/modules/nutritionModule/repository/food.repository.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/sharedModule/services/ai.service.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/nutritionInfoProvide.service.dart';
 

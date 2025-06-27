@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/rest.service.dart';
+import 'package:performance_tracker/services/rest.service.dart';
 
 class NutritionServiceProvider {
   var restService = locator<RestService>();

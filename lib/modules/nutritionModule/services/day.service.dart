@@ -1,7 +1,7 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/repository/day.repository.dart';
+import 'package:performance_tracker/repositories/day.repository.dart';
 
 class DayService
 {

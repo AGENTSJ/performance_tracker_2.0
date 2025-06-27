@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/sharedModule/services/common.service.dart';
+import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class MacroPieChart extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/sharedModule/services/avatar.service.dart';
+import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
 
 class GreetingsWidget extends StatefulWidget {

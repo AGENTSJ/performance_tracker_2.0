@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
-import 'package:performance_tracker/modules/sharedModule/services/user.service.data.dart';
+import 'package:performance_tracker/services/user.service.data.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -14,15 +14,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final userService = locator<UserService>();
-  // Example user data fields
-  // String _name = '';
-  // int _age = 18;
-  // double _weight = 60.0;
-  // double _height = 170.0;
-  // String _gender = 'Male';
   User? user;
 
-  // Simulate loading user data (replace with real data source)
   void _loadUserData() async {
     user =  await userService.getUserData();
     setState(() {

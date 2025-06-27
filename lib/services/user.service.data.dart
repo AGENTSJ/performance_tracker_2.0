@@ -1,6 +1,6 @@
 import "package:performance_tracker/DI.dart";
 import "package:performance_tracker/modules/nutritionModule/models/user.model.dart";
-import "package:performance_tracker/modules/sharedModule/repositories/user.repository.dart";
+import "package:performance_tracker/repositories/user.repository.dart";
 
 
 
