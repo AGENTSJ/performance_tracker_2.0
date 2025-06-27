@@ -3,7 +3,9 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionHome.page/home.page.dart';
+import 'package:performance_tracker/modules/trainingModule/src/pages/tarining.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
+import 'package:performance_tracker/src/pages/activityPage.dart';
 import 'package:performance_tracker/src/pages/profile.page/profile.page.dart';
 
 void main() async {
@@ -48,7 +50,10 @@ class _MainAppEntryState extends State<MainAppEntry> {
     });
   }
   List<Widget> modules = [
-    NutritionModule(), ProfilePageModule()
+    NutritionModule(), 
+    ProfilePageModule(),
+    TrainingModulePage(),
+    ActivityPage()
   ];
 
   @override
