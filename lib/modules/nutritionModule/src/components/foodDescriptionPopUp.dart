@@ -17,7 +17,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   late final TextEditingController descriptionController =
       TextEditingController();
   var foodService = locator<FoodService>();
-  bool isGenerating = true;
+  bool isGenerating = false;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

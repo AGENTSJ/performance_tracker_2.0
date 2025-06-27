@@ -186,8 +186,8 @@ class CommentsService {
       }
       else
       {
-        var genComment = await _generateMacroComment(day);
-        day.comments!.macroNutrientsComments = genComment;
+        var genComment = await _generateMicroComment(day,microMap);
+        day.comments!.microNutrientsComments = genComment;
         dayService.updateDayData(day);
         return genComment;
 

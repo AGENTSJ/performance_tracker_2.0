@@ -4,7 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class BottomBar extends StatelessWidget {
-  const BottomBar({super.key});
+  final ValueChanged<int> onIndexChange;
+  const BottomBar({super.key,required this.onIndexChange});
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
@@ -14,18 +15,12 @@ class BottomBar extends StatelessWidget {
       animationDuration: Duration(milliseconds: 200),
       items: [
         Icon(Icons.food_bank ,color: Colors.white,),
+        Icon(FontAwesomeIcons.user,color: Colors.white,),
         Icon(Icons.directions_bike ,color: Colors.white,),
         Icon(Icons.directions_run,color: Colors.white,),
-        Icon(FontAwesomeIcons.user,color: Colors.white,),
       ],
       onTap: (index) {
-        // if (index == 3) {
-        //   Navigator.pushNamed(context, '/profile');
-        // }
-        switch (index){
-          case 0:
-            
-        }
+        onIndexChange(index);
       },
     );
   }

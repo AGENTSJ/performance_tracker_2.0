@@ -3,6 +3,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionHome.page/home.page.dart';
+import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/src/pages/profile.page/profile.page.dart';
 
 void main() async {
@@ -14,6 +15,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,11 +23,42 @@ class MyApp extends StatelessWidget {
         colorSchemeSeed: PRIMARY,
         scaffoldBackgroundColor: BACKGROUND,
       ),
-      initialRoute: '/',
-      routes: {
-        '/':(context)=>NutritionModule(),
-        '/profile':(context)=>ProfilePageModule()
-      },
+      home: MainAppEntry(),
+    );
+  }
+}
+
+class MainAppEntry extends StatefulWidget {
+  const MainAppEntry({super.key});
+
+  @override
+  State<MainAppEntry> createState() => _MainAppEntryState();
+}
+
+class _MainAppEntryState extends State<MainAppEntry> {
+  int selectedIndex = 0;
+  _handleIndexChange(int index) {
+    if(index>modules.length-1)
+    {
+      return;
+    }
+    selectedIndex = index;
+    setState(() {
+      
+    });
+  }
+  List<Widget> modules = [
+    NutritionModule(), ProfilePageModule()
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: selectedIndex,
+        children: modules,
+      ),
+      bottomNavigationBar: BottomBar(onIndexChange: _handleIndexChange),
     );
   }
 }
