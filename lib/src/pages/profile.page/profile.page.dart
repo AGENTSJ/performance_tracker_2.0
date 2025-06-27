@@ -26,6 +26,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   final heightController = TextEditingController();
   final weightController = TextEditingController();
   late Gender _selectedGender = Gender.other;
+  bool isUserFormUpdated = false;
   User? user;
 
   _ProfilePageModuleState() {
@@ -48,6 +49,10 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       ..weight = double.tryParse(weightController.text) ?? user!.weight
       ..gender = _selectedGender;
     await userService.updateUser(user!);
+    this.isUserFormUpdated = false;
+    setState(() {
+      
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully!')),
     );
@@ -97,6 +102,12 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
           child: Column(
             children: [
               Form(
+                onChanged: (){
+                  isUserFormUpdated = true;
+                  setState(() {
+                    
+                  });
+                },
                 key: _formKey,
                 child: Container(
                   decoration: BoxDecoration(
@@ -222,6 +233,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                             ),
                           ),
                         ),
+                        if(isUserFormUpdated)
                         ElevatedButton(
                           onPressed: () {
                             if(_formKey.currentState!.validate())

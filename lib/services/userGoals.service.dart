@@ -104,7 +104,7 @@ class UserGoalsService {
 
   double getBMI(User user)
   {
-    // BMI = weight (
+    
     double heightInMeters = user.height / 100;
     return user.weight / (heightInMeters * heightInMeters);
   }
