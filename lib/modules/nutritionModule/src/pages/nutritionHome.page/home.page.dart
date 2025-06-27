@@ -172,7 +172,6 @@ class _NutritionModuleState extends State<NutritionModule> {
             ],
           ],
         ),
-        // bottomNavigationBar: !showDateSelector? BottomBar() :null,
       );
   }
 

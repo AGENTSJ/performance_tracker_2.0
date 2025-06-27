@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
@@ -46,6 +48,14 @@ class _GoalsWidgetState extends State<GoalsWidget> {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: PRIMARY, width: 1),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red, width: 0.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red, width: 1),
+      ),
     );
   }
 
@@ -86,7 +96,10 @@ class _GoalsWidgetState extends State<GoalsWidget> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Row(children: [Text('Goals')]),
+              Row(children: [Padding(
+                padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
+                child: Text('Goals',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+              )]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 16),
                 child: Column(
@@ -95,6 +108,15 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d*'),
+                              ),
+                            ],
+                            validator: (value) {
+                              return validateWeight(value);
+                            },
                             decoration: getInputDecoration("Target Weight"),
                             controller: targetWeight,
                           ),
@@ -102,6 +124,12 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d*'),
+                              ),
+                            ],
                             decoration: getInputDecoration("Calorie burn"),
                             controller: caloricBurn,
                           ),
@@ -113,28 +141,55 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             decoration: getInputDecoration("Target steps"),
                             controller: targetSteps,
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: "Your caloric limit",
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            controller: caloricLimit,
-                            readOnly: true,
-                          ),
-                        ),
                       ],
                     ),
+                    SizedBox(height: 10),
+                    if (!formChanged)
+                      Material(
+                        borderRadius: BorderRadius.circular(8),
+                        child: InkWell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.5
+                                ), // default style
+                                children: [
+                                  TextSpan(text: 'Eat '),
+                                  TextSpan(
+                                    text:
+                                        '${widget.user.userGoals.calorieLimit.round()}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ), // bold word
+                                  ),
+                                  TextSpan(
+                                    text: ' and you will reach your goal in ',
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '${userGoalService.getDaysToReachWeightTarget(widget.user)} days',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ), // another bold word
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     SizedBox(height: 10),
                     AnimatedContainer(
                       duration: Duration(milliseconds: 500),
@@ -175,36 +230,51 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     );
   }
 
+  validateWeight(String? value) {
+    double weight = double.tryParse(value ?? '0') ?? 0;
+    if (weight < minimumHumanWeightInKg || weight > maximumHumanWeightInKg) {
+      return 'Invalid weight';
+    }
+  }
+
   Future<void> _handleUpdate(BuildContext context) async {
-    widget.user
-      ..userGoals.stepGoal =
-          int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal
-      ..userGoals.targetWeight =
-          double.tryParse(targetWeight.text) ?? widget.user.userGoals.targetWeight
-      ..userGoals.caloricBurn = double.tryParse(caloricBurn.text) ??  widget.user.userGoals.caloricBurn;
-    userGoalService.setCaloricLimit(widget.user);
-    await userService.updateUser(widget.user);
-    updateFormUi(widget.user);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully!')),
-    );
-    this.formChanged = false;
-    setState(() {
-      
-    });
+    if (_formKey.currentState!.validate()) {
+      widget.user
+        ..userGoals.stepGoal =
+            int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal
+        ..userGoals.targetWeight =
+            double.tryParse(targetWeight.text) ??
+            widget.user.userGoals.targetWeight
+        ..userGoals.caloricChangeGoal =
+            double.tryParse(caloricBurn.text) ??
+            widget.user.userGoals.caloricChangeGoal;
+      userGoalService.setCaloricLimit(widget.user);
+      await userService.updateUser(widget.user);
+      updateFormUi(widget.user);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),
+      );
+      this.formChanged = false;
+      setState(() {});
+    }
   }
 
   Future<void> _handleReset() async {
-    await userGoalService.resetGoals();
-    setState(() {
-      updateFormUi(widget.user);
-    });
+    if (_formKey.currentState!.validate()) {
+      await userGoalService.resetGoals();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),
+      );
+      setState(() {
+        updateFormUi(widget.user);
+      });
+    }
   }
 
   void updateFormUi(User user) {
     targetWeight.text = user.userGoals.targetWeight.toString();
     caloricLimit.text = user.userGoals.calorieLimit.round().toString();
     targetSteps.text = user.userGoals.stepGoal.toString();
-    caloricBurn.text = user.userGoals.caloricBurn.round().toString();
+    caloricBurn.text = user.userGoals.caloricChangeGoal.round().toString();
   }
 }

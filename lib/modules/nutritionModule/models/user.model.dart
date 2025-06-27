@@ -81,12 +81,12 @@ class UserGoals
   double targetWeight;
 
   @HiveField(4)
-  double caloricBurn;
+  double caloricChangeGoal;
   
   UserGoals({
     required this.calorieLimit,
     required this.stepGoal,
     required this.targetWeight,
-    required this.caloricBurn,
+    required this.caloricChangeGoal,
   });
 }

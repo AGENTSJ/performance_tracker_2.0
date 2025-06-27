@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/constants.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/components/microNutrientList.dart';
@@ -394,9 +394,9 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
         caloriesController.text = '0';
         newQuant = 0;
       }
-      if (MAX_FOOD_QUANTITY_ALLOWED < newQuant) {
-        caloriesController.text = MAX_FOOD_QUANTITY_ALLOWED.toString();
-        newQuant = MAX_FOOD_QUANTITY_ALLOWED;
+      if (MAX_FOOD_QUANTITY_LIMIT < newQuant) {
+        caloriesController.text = MAX_FOOD_QUANTITY_LIMIT.toString();
+        newQuant = MAX_FOOD_QUANTITY_LIMIT;
       }
       updateFood(newQuant);
     });

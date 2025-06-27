@@ -1,13 +1,11 @@
 import 'dart:async';
-
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 
 class UserGoalsService {
-  final CALORIE_DEFICIT_LIMIT = 500;
-  final CAL_SURPLUS_LIMIT = 500;
-  final STANDARD_STEP_LIMIT = 5000;
+  
   var userService = locator<UserService>();
   Map<ActivityLevel,double> activityFactor = {
     ActivityLevel.sedentary : 1.2,
@@ -17,24 +15,34 @@ class UserGoalsService {
     ActivityLevel.extraActive : 1.9,
   };
 
+
+  int getDaysToReachWeightTarget(User user)
+  {
+    double weightDiff = (user.userGoals.targetWeight - user.weight).abs();
+    var caloriesToChange = weightDiff*CALORIES_IN_1KG_FAT;
+
+    var daysToReach = caloriesToChange/user.userGoals.caloricChangeGoal;
+    return daysToReach.round();
+  }
+
   ActivityLevel getActivity(int steps) {
-      if (steps<= 5000)
+      if (steps<= 3500)
       {
         return ActivityLevel.sedentary;
       }
-      if (steps<= 7500)
+      if (steps<= 7000)
       {
         return ActivityLevel.lightlyActive;
       }
-      if(steps<= 10000)
+      if(steps<= 12000)
       {
         return ActivityLevel.moderatelyActive;
       }
-      if(steps<=12500)
+      if(steps<=15000)
       {
         return ActivityLevel.veryActive;
       }
-      if(steps > 12500)
+      if(steps > 15000)
       {
         return ActivityLevel.extraActive;
       }
@@ -50,10 +58,22 @@ class UserGoalsService {
   {
     var user = await userService.getUserData();
     user.userGoals.stepGoal = STANDARD_STEP_LIMIT;
-    user.userGoals.caloricBurn = 200;
-
+    var recommendedUserWeight = getRecommendedWeight(user);
+    user.userGoals.targetWeight = recommendedUserWeight.round().toDouble();
+    if(recommendedUserWeight < user.weight) // SHOULD CUT
+    {
+      user.userGoals.caloricChangeGoal = CALORIE_DEFICIT_LIMIT;
+    }
+    if(recommendedUserWeight > user.weight) // SHOULD BULK
+    {
+      user.userGoals.caloricChangeGoal = CAL_SURPLUS_LIMIT;
+    }
+    if(recommendedUserWeight > user.weight) // GOOD WEIGHT
+    {
+      user.userGoals.caloricChangeGoal = 0;
+    }
+    user.userGoals.caloricChangeGoal = 200;
     await userService.updateUser(user);
-
     return true;
   }
 
@@ -62,11 +82,11 @@ class UserGoalsService {
     var maintenanceCalories = fetchMaintenanceCalories(user,steps:user.userGoals.stepGoal);
     if(user.weight > user.userGoals.targetWeight)
     { 
-      user.userGoals.calorieLimit = maintenanceCalories- CALORIE_DEFICIT_LIMIT;
+      user.userGoals.calorieLimit = maintenanceCalories- user.userGoals.caloricChangeGoal;
     }
     if(user.weight < user.userGoals.targetWeight)
     {
-      user.userGoals.calorieLimit = maintenanceCalories + CAL_SURPLUS_LIMIT;
+      user.userGoals.calorieLimit = maintenanceCalories + user.userGoals.caloricChangeGoal;
     }
     if(user.weight == user.userGoals.targetWeight)
     {
@@ -80,6 +100,19 @@ class UserGoalsService {
     var activityLevel = getActivity(steps);
     var factor = activityFactor[activityLevel];
     return bmr*factor!;
+  }
+
+  double getBMI(User user)
+  {
+    // BMI = weight (
+    double heightInMeters = user.height / 100;
+    return user.weight / (heightInMeters * heightInMeters);
+  }
+
+  double getRecommendedWeight(User user)
+  {
+    var hInMeter = (user.height)/100; 
+    return hInMeter*hInMeter*RECOMMENDED_B_M_I;
   }
 
   double _getBmr(User user)

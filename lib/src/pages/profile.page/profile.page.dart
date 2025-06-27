@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
@@ -67,6 +70,14 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: PRIMARY, width: 1),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red,width: 0.5)
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red,width: 1)
+      )
     );
   }
 
@@ -138,6 +149,13 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    validator: (value){
+                                     return validateAge(value);
+                                    },
                                     decoration: getInputDecoration("Age"),
                                     controller: ageController,
                                   ),
@@ -175,14 +193,28 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
-                                    decoration: getInputDecoration("Height"),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                    ],
+                                    validator: (value) {
+                                      return validateHeight(value);
+                                    },
+                                    decoration: getInputDecoration("Height (Cm)"),
                                     controller: heightController,
                                   ),
                                 ),
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: TextFormField(
-                                    decoration: getInputDecoration("Weight"),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                    ],
+                                    validator: (value){
+                                      return validateWeight(value);
+                                    },
+                                    decoration: getInputDecoration("Weight (Kg)"),
                                     controller: weightController,
                                   ),
                                 ),
@@ -192,7 +224,14 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            _saveUserData();
+                            if(_formKey.currentState!.validate())
+                            {
+                              _saveUserData();
+                            }
+                            else
+                            {
+                              Fluttertoast.showToast(msg: "Error in values");
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: SURFACE,
@@ -216,5 +255,29 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
         ),
       ),
     );
+  }
+
+  validateAge(String? value)
+  {
+    int intVal = int.tryParse(value ?? '0') ?? 0;
+    if(intVal<=0 || intVal>200)
+    {
+      return 'Invalid age';
+    }
+  }
+  validateWeight(String? value) {
+    double weight = double.tryParse(value ?? '0') ?? 0;
+    if (weight < minimumHumanWeightInKg || weight > maximumHumanWeightInKg) {
+      return 'Invalid weight';
+    }
+  }
+  validateHeight(String? value)
+  {
+    double height = double.tryParse(value ?? '0') ?? 0;
+    
+    if(height<minimumHumanHeightInCm || height> maximumHumanHeightInCm)
+    {
+      return 'Invalid height';
+    }
   }
 }

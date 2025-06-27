@@ -78,7 +78,7 @@ class UserGoalsAdapter extends TypeAdapter<UserGoals> {
       calorieLimit: fields[1] as double,
       stepGoal: fields[2] as int,
       targetWeight: fields[3] as double,
-      caloricBurn: fields[4] as double,
+      caloricChangeGoal: fields[4] as double,
     );
   }
 
@@ -93,7 +93,7 @@ class UserGoalsAdapter extends TypeAdapter<UserGoals> {
       ..writeByte(3)
       ..write(obj.targetWeight)
       ..writeByte(4)
-      ..write(obj.caloricBurn);
+      ..write(obj.caloricChangeGoal);
   }
 
   @override

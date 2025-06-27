@@ -16,7 +16,7 @@ class UserService {
         height: 173,
         weight: 71,
         activityLevel: ActivityLevel.moderatelyActive,
-        userGoals: UserGoals(calorieLimit: 1800, stepGoal: 5000,targetWeight: 71,caloricBurn: 200),
+        userGoals: UserGoals(calorieLimit: 1800, stepGoal: 5000,targetWeight: 71,caloricChangeGoal: 200),
         createdAt: DateTime.now()
       );
       await _userRepo.addUser(user);
