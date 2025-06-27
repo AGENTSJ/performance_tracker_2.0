@@ -8,17 +8,12 @@ class UserRepository {
 
   Future<User?> getUser({int userId =1}) async
   {
-    try
-    {
-      var user = _userBox.values.firstWhere(
-        (u) => u.id == userId,
-      );
-      return user;
-    }
-    catch (e)
+    var users = _userBox.values.toList();
+    if(users.isEmpty)
     {
       return null;
     }
+    return users[0];
   }
 
   updateUser(User user) async 

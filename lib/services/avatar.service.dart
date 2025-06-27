@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class AvatarService {
 
-  Widget placeHolder = Image(image: AssetImage(
+  Image placeHolder = Image(image: AssetImage(
     'assets/avataaars.png',
   ));
 
@@ -20,6 +20,17 @@ class AvatarService {
       height: height,
       placeholderBuilder: (context) => placeHolder,
     );
+  }
+
+  Widget getDefaultAvatar(
+    {
+      double width = 64,
+      double height = 64
+    }
+  )
+  {
+    
+    return Image(image: AssetImage('assets/avataaars.png'),width: width,height: height,);
   }
 
 }

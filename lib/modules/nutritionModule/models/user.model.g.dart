@@ -24,14 +24,15 @@ class UserAdapter extends TypeAdapter<User> {
       height: fields[3] as double,
       weight: fields[4] as double,
       activityLevel: fields[5] as ActivityLevel?,
-      userGoals: fields[6] as UserGoals?,
+      userGoals: fields[6] as UserGoals,
+      createdAt: fields[8] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(6)
       ..write(obj.userGoals)
       ..writeByte(7)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(8)
+      ..write(obj.createdAt);
   }
 
   @override
@@ -74,17 +77,23 @@ class UserGoalsAdapter extends TypeAdapter<UserGoals> {
     return UserGoals(
       calorieLimit: fields[1] as double,
       stepGoal: fields[2] as int,
+      targetWeight: fields[3] as double,
+      caloricBurn: fields[4] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserGoals obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(1)
       ..write(obj.calorieLimit)
       ..writeByte(2)
-      ..write(obj.stepGoal);
+      ..write(obj.stepGoal)
+      ..writeByte(3)
+      ..write(obj.targetWeight)
+      ..writeByte(4)
+      ..write(obj.caloricBurn);
   }
 
   @override

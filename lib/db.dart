@@ -35,4 +35,5 @@ Future<void> setupHiveDb() async
   await Hive.openBox<User>(Collections.users.value);
   // await Hive.deleteBoxFromDisk(Collections.foods.value);
   // await Hive.deleteBoxFromDisk(Collections.days.value);
+  // await Hive.deleteBoxFromDisk(Collections.users.value);
 }

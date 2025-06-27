@@ -47,10 +47,13 @@ class User extends HiveObject {
   ActivityLevel? activityLevel;
 
   @HiveField(6)
-  UserGoals? userGoals;
+  UserGoals userGoals;
 
   @HiveField(7)
   int id;
+
+  @HiveField(8)
+  DateTime createdAt;
 
   User({
     required this.id,
@@ -61,6 +64,7 @@ class User extends HiveObject {
     required this.weight,
     required this.activityLevel,
     required this.userGoals,
+    required this.createdAt,
   });
 }
 
@@ -69,11 +73,20 @@ class UserGoals
 {
   @HiveField(1)
   double calorieLimit;
+  
   @HiveField(2)
   int stepGoal;
+
+  @HiveField(3)
+  double targetWeight;
+
+  @HiveField(4)
+  double caloricBurn;
   
   UserGoals({
     required this.calorieLimit,
-    required this.stepGoal
+    required this.stepGoal,
+    required this.targetWeight,
+    required this.caloricBurn,
   });
 }

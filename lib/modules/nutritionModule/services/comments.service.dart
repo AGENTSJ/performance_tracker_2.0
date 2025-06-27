@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
@@ -15,7 +16,8 @@ class CommentsService {
   final CONTEXT_LIMIT_DAYS = 7;
   String UserGoalDescription = "";
 
-  Map<String,dynamic>? userGoals ;
+  UserGoals? userGoals ;
+
   CommentsService()
   {
     Future.microtask(
@@ -23,7 +25,7 @@ class CommentsService {
       {
         userGoals = await userGoalService.getUserGoals();
         UserGoalDescription = '''
-        Users maintenance calories is ${userGoals?["maintenanceCalories"]}
+        Users caloric limit is ${userGoals!.calorieLimit}
         User wants to reduce weight 
         ''';
       }
