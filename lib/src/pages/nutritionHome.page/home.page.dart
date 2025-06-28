@@ -64,13 +64,13 @@ class NutritionModuleState extends State<NutritionModule> {
           children: [
             Text(
               dayMarker,
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500,color: TEXT_PRIMARY),
             ),
             TextButton(
               onPressed: () {
                 toggleDateSelector();
               },
-              child: Icon(Icons.arrow_drop_down, size: 30, color: Colors.black),
+              child: Icon(Icons.arrow_drop_down, size: 30, color: TEXT_PRIMARY),
             ),
           ],
         ),
@@ -98,7 +98,7 @@ class NutritionModuleState extends State<NutritionModule> {
                     // Total calories
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: SURFACE,
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                       width: double.infinity,

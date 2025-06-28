@@ -13,14 +13,18 @@ class _ExerciseWidgetState extends State<ExerciseWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: CONT_BACKGROUND),
+      decoration: BoxDecoration(color: CONT_BACKGROUND,borderRadius: BorderRadius.circular(8)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
               children: [ 
-                Icon(FontAwesomeIcons.dumbbell),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(FontAwesomeIcons.dumbbell),
+                ),
+                SizedBox(width: 10,),
                 Text(widget.name)
               ],
             )

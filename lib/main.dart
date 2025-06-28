@@ -24,7 +24,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorSchemeSeed: PRIMARY,
         scaffoldBackgroundColor: BACKGROUND,
+        textTheme: ThemeData.light().textTheme.copyWith(
+          bodyLarge: TextStyle(color: TEXT_PRIMARY),
+          bodyMedium: TextStyle(color: TEXT_PRIMARY),
+        ),
       ),
+
       home: MainAppEntry(),
     );
   }
@@ -54,24 +59,17 @@ class _MainAppEntryState extends State<MainAppEntry> {
   }
 
   _handleIndexChange(int index) {
-    if(index>modules.length-1 )
-    {
+    if (index > modules.length - 1) {
       return;
     }
     selectedIndex = index;
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      body: IndexedStack(
-        index: selectedIndex,
-        children: modules,
-      ),
+      body: IndexedStack(index: selectedIndex, children: modules),
       bottomNavigationBar: BottomBar(onIndexChange: _handleIndexChange),
     );
   }
