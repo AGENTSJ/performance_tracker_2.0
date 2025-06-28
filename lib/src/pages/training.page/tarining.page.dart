@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/src/pages/training.page/widgets/exercise.dart';
 
 class TrainingModulePage extends StatefulWidget {
   const TrainingModulePage({super.key});
@@ -18,16 +17,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
         backgroundColor: BACKGROUND,
         title: const Text('Training Page'),
       ),
-      body:SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              ExerciseWidget(name: "Bench")
-            ],
-          ),
-        ),
-      )
+      body:Container()
     );
   }
 }

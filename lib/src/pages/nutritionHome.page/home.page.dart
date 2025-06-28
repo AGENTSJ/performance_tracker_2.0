@@ -98,7 +98,7 @@ class NutritionModuleState extends State<NutritionModule> {
                     // Total calories
                     Container(
                       decoration: BoxDecoration(
-                        color: SURFACE,
+                        color: SURFACE2,
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                       width: double.infinity,

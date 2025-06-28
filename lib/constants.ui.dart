@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 // Light mode colors
-// Light mode colors
-// const Color PRIMARY = Color(0xff3E8E7E);     // Teal Green
-// const Color BACKGROUND = Color.fromARGB(255, 243, 243, 243);  // White
-// const Color SURFACE = Color(0xFFE3EAE6);     // Light Gray
-// const Color CONT_BACKGROUND = Colors.white;     // Container Background
-// const Color TEXT_PRIMARY = Color(0xff1E1E1E);  // Dark Gray
+const Color PRIMARY = Color(0xff3E8E7E);     // Teal Green
+const Color BACKGROUND = Color.fromARGB(255, 243, 243, 243);  // White
+const Color SURFACE = Color(0xFFE3EAE6);     // Light Gray
+const Color SURFACE2 = Color.fromARGB(255, 255, 255, 255);     // Light Gray
+const Color CONT_BACKGROUND = Colors.white;     // Container Background
+const Color TEXT_PRIMARY = Color(0xff1E1E1E);  // Dark Gray
 
 // Dark mode colors
-const Color PRIMARY = Color(0xff2C5C53);     // Darker Teal Green
-const Color BACKGROUND = Color(0xFF181A1B);  // Almost Black
-const Color SURFACE = Color(0xFF232726);     // Dark Surface
-const Color SURFACE2 = Color.fromARGB(255, 44, 49, 48);     // Dark Surface
-const Color CONT_BACKGROUND = Color(0xFF222524); // Container Background Dark
-const Color TEXT_PRIMARY = Color(0xFFF3F3F3);  // Light Gray
+// const Color PRIMARY = Color(0xff2C5C53);     // Darker Teal Green
+// const Color BACKGROUND = Color(0xFF181A1B);  // Almost Black
+// const Color SURFACE = Color(0xFF232726);     // Dark Surface
+// const Color SURFACE2 = Color.fromARGB(255, 44, 49, 48);     // Dark Surface
+// const Color CONT_BACKGROUND = Color(0xFF222524); // Container Background Dark
+// const Color TEXT_PRIMARY = Color(0xFFF3F3F3);  // Light Gray
 
 
 const Color ACCENT = Color(0xffFF6B6B);      // Coral Red

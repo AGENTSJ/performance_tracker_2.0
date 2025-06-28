@@ -89,7 +89,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Material(
-                      color: SURFACE2,
+                      color: SURFACE,
                       borderRadius: BorderRadius.circular(8),
                       child: InkWell(
                         onTap: () {
@@ -104,7 +104,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
                                     ?.overallDietComments
                                     ?.comment ??
                                 'Hmmmm\n\nLooks like you forgot to track your calories this day.',
-                            style: TextStyle(height: 1.9),
+                            style: TextStyle(height: 1.6),
                           ),
                         ),
                       ),
