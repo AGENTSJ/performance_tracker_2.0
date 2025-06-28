@@ -41,8 +41,7 @@ class NutritionModuleState extends State<NutritionModule> {
   {
     var day = await dayService.getDayDataByDate(DateTime.now());
     currentDay = day;
-    var isToday = _setCurrentDayMarker();
-    await _setCurrentDayGoal(isToday);
+    _setCurrentDayMarker();
     setCaloriesInDay();
     refreshState();
   }
@@ -186,24 +185,13 @@ class NutritionModuleState extends State<NutritionModule> {
     );
   }
 
-  bool _setCurrentDayMarker() {
+  _setCurrentDayMarker() {
     var currentDateMarker = dayService.getDateString(currentDay!.dayTime);
     if (dayService.getDateString(DateTime.now()) == currentDateMarker) {
       dayMarker = 'Today';
-      return true;
     } else {
       dayMarker = currentDateMarker;
-      return false;
     }
-  }
-
-  _setCurrentDayGoal(bool isToday) async {
-    var goal = await goalService.getUserGoals();
-    currentDay?.goalForToday ??= goal;
-    if (isToday) {
-      currentDay?.goalForToday = goal;
-    }
-    await dayService.updateDayData(currentDay!);
   }
 
   toggleDateSelector() {

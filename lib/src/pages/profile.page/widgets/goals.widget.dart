@@ -4,6 +4,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
+import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
@@ -21,6 +22,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   late TextEditingController caloricBurn;
   late TextEditingController caloricLimit;
   final userService = locator<UserService>();
+  final dayService  = locator<DayService>();
   final userGoalService = locator<UserGoalsService>();
   bool formChanged = false;
 
@@ -250,6 +252,9 @@ class _GoalsWidgetState extends State<GoalsWidget> {
             widget.user.userGoals.caloricChangeGoal;
       userGoalService.setCaloricLimit(widget.user);
       await userService.updateUser(widget.user);
+      var currentDay = await dayService.getDayDataByDate(DateTime.now());
+      currentDay?.goalForToday = widget.user.userGoals;
+      await dayService.updateDayData(currentDay!);
       updateFormUi(widget.user);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),

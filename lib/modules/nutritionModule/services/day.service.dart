@@ -2,11 +2,13 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
+import 'package:performance_tracker/services/userGoals.service.dart';
 
 class DayService
 {
   final _dayRepo = locator<DayRepository>();
- 
+  final goalService = locator<UserGoalsService>();
+
   Future<Day?> getDayDataByDate(DateTime date) async
   {
     var day =  _dayRepo.getDayData(date);
@@ -15,7 +17,9 @@ class DayService
       return day;
     }
     Day? newDay = Day(dayTime: date);
-    newDay = await _dayRepo.addDayData(newDay);    
+    var goal = await goalService.getUserGoals();
+    newDay.goalForToday = goal;
+    newDay = await _dayRepo.addDayData(newDay);   
     return newDay;
   }
 
