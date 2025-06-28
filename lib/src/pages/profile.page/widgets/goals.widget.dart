@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
+import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
@@ -213,10 +213,10 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                _handleReset();
+                                _handleRecommended();
                               },
                               style: elevatedButtonDecor,
-                              child: Text('Reset'),
+                              child: Text('Suggest'),
                             ),
                           ),
                         ],
@@ -264,9 +264,12 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     }
   }
 
-  Future<void> _handleReset() async {
+  Future<void> _handleRecommended() async {
     if (_formKey.currentState!.validate()) {
       await userGoalService.resetGoals();
+      var currentDay = await dayService.getDayDataByDate(DateTime.now());
+      currentDay?.goalForToday = widget.user.userGoals;
+      await dayService.updateDayData(currentDay!);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),
       );

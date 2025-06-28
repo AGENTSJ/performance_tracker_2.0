@@ -1,47 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
+import 'package:performance_tracker/services/comments.service.dart';
 
-class MicroCommentsWidget extends StatefulWidget {
+class GreetingsWidget extends StatefulWidget {
   final Day? day;
-  final Map<String ,MeasuredUnit> microMap;
-  const MicroCommentsWidget({super.key, required this.day,required this.microMap});
+  const GreetingsWidget({super.key, required this.day});
 
   @override
-  State<StatefulWidget> createState() => MicroCommentsWidgetState();
+  State<StatefulWidget> createState() => GreetingsWidgetState();
 }
 
-class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
-  bool showMicroAnalysis = false;
+class GreetingsWidgetState extends State<GreetingsWidget>
+    with AutomaticKeepAliveClientMixin {
+  bool showWholeGreetings = false;
   final avatarService = locator<AvatarService>();
   final commentService = locator<CommentsService>();
-  bool isCommentGenerating = false;
+  @override
+  bool get wantKeepAlive => true;
 
-  handleGreetingContainerChange() async {
-    if (showMicroAnalysis) {
-      showMicroAnalysis = false;
-    } else {
-      if(isCommentGenerating)
-      {
-        return;
-      }
-      isCommentGenerating = true;
-      showMicroAnalysis = true;
-      setState(() {});
-      await commentService.setMicroComments(widget.day!,widget.microMap);
-      isCommentGenerating = false;
-    }
-
+  handleGreetingContainerChange() {
+    showWholeGreetings = !showWholeGreetings;
     setState(() {});
   }
 
   @override
   void initState() {
+    print('greetings ran');
     super.initState();
+    commentService
+        .setDietComments(widget.day!)
+        .then((comment) => {setState(() {})});
   }
 
   @override
@@ -59,7 +49,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
         width: double.infinity,
-        constraints: (showMicroAnalysis && !isCommentGenerating)
+        constraints: showWholeGreetings
             ? BoxConstraints(minHeight: 110, maxHeight: 300)
             : BoxConstraints(minHeight: 110, maxHeight: 110),
         child: Padding(
@@ -91,46 +81,12 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
                 ),
               ),
               SizedBox(width: 10),
-              if (isCommentGenerating) ...[
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Let me think',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(width: 30),
-                      SizedBox(
-                        child: SpinKitSpinningLines(
-                          color: Colors.grey,
-                          size: 40,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ] else if (!showMicroAnalysis) ...[
-                Expanded(
-                  child: Material(
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      onTap: () {
-                        handleGreetingContainerChange();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Hello there 👋\n\nWant me to look through your micros ?',
-                        ),
-                      ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                ),
-              ] else ...[
-                Expanded(
-                  child: SingleChildScrollView(
                     child: Material(
                       borderRadius: BorderRadius.circular(8),
                       child: InkWell(
@@ -143,9 +99,9 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
                             widget
                                     .day
                                     ?.comments
-                                    ?.microNutrientsComments
+                                    ?.overallDietComments
                                     ?.comment ??
-                                'Ah, leave it.\nIt\'s in the past, focus on now.',
+                                'Hmmmm\n\nLooks like you forgot to track your calories this day.',
                             style: TextStyle(height: 1.5),
                           ),
                         ),
@@ -153,7 +109,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
                     ),
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         ),

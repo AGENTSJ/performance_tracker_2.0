@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 
 class microNutrientList extends StatelessWidget {

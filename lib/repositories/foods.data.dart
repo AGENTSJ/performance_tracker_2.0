@@ -1,4 +1,4 @@
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 
 final List<Food> availableFoods = [
   // 1. Chicken Breast (cooked)

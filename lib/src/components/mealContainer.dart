@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/foodEntry.page/foodEntry.page.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/mealTracker.page/mealTracker.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
+import 'package:performance_tracker/src/pages/mealTracker.page/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
   final Meal meal;

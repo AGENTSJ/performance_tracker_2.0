@@ -2,15 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/components/microNutrientList.dart';
+import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionAnalysis.page/widgets/macroAnalysisWidget.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionAnalysis.page/widgets/macroCommentsWidget.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionAnalysis.page/widgets/microCommentsWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/macroAnalysisWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/macroCommentsWidget.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/microCommentsWidget.dart';
 
 class NutritionAnalysisPage extends StatefulWidget {
   final Day day;

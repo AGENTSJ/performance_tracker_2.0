@@ -4,14 +4,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
+import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/pages/profile.page/widgets/goals.widget.dart';
 
 class ProfilePageModule extends StatefulWidget {
-  const ProfilePageModule({Key? key}) : super(key: key);
-
+  const ProfilePageModule({super.key});
   @override
   State<ProfilePageModule> createState() => _ProfilePageModuleState();
 }
@@ -25,7 +24,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   final genderController = TextEditingController();
   final heightController = TextEditingController();
   final weightController = TextEditingController();
-  late Gender _selectedGender = Gender.other;
+  Gender _selectedGender = Gender.other;
   bool isUserFormUpdated = false;
   bool ignoreChanges = false;
   User? user;
@@ -88,6 +87,17 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
         borderSide: BorderSide(color: Colors.red,width: 1)
       )
     );
+  }
+
+  @override
+  void dispose()
+  {
+    nameController.dispose();
+    ageController.dispose();
+    genderController.dispose();
+    heightController.dispose();
+    weightController.dispose();
+    super.dispose();
   }
 
   @override

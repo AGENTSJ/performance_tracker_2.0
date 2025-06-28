@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/user.model.dart';
 
 enum Collections
 {

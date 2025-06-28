@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/foods.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/foodEntry.page/foodEntry.page.dart';
+import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {

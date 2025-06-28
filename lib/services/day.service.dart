@@ -1,6 +1,6 @@
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 

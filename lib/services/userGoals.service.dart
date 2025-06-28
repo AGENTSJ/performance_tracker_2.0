@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
+import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 
 class UserGoalsService {

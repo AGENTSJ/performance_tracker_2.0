@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/foods.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/foodEntry.page/foodEntry.page.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/components/foodDescriptionPopUp.dart';
+import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
+import 'package:performance_tracker/src/components/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {

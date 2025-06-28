@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
 
 class DateSelector extends StatefulWidget {
   final DateTime selectedDate;

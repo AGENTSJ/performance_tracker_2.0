@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
+import 'package:performance_tracker/services/comments.service.dart';
 
 class MacroCommentsWidget extends StatefulWidget {
   final Day? day;

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/day.model.dart';
-import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/components/dateSelector.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/components/mealContainer.dart';
+import 'package:performance_tracker/services/comments.service.dart';
+import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/src/components/dateSelector.dart';
+import 'package:performance_tracker/src/components/mealContainer.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
-import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';
+import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
+import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
