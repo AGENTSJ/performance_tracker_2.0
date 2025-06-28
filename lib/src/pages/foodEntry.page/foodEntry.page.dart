@@ -45,7 +45,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: CONT_BACKGROUND,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   width: double.infinity,
@@ -92,7 +92,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                   child: Text(
                                     widget.food.name,
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: CONT_BACKGROUND,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -214,7 +214,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                     SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: CONT_BACKGROUND,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Padding(
@@ -344,7 +344,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                 SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: CONT_BACKGROUND,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   width: double.infinity,
@@ -376,7 +376,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
           style: ElevatedButton.styleFrom(
             backgroundColor: PRIMARY,
             minimumSize: Size(double.infinity, 50),
-            foregroundColor: Colors.white,
+            foregroundColor: CONT_BACKGROUND,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadiusGeometry.circular(5),
             ),

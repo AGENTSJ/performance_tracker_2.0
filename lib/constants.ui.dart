@@ -7,7 +7,7 @@ const Color SURFACE = Color(0xFFE3EAE6);     // Light Gray
 const Color CONT_BACKGROUND = Colors.white;     // Dark Gray
 
 // Dark mode colors
-// const Color PRIMARY = Color(0xff2C5C53);     // Darker Teal Green
+// const Color PRIMARY = Color.fromARGB(255, 54, 55, 55);     // Darker Teal Green
 // const Color BACKGROUND = Color(0xFF181A1B);  // Almost Black
 // const Color SURFACE = Color(0xFF232726);     // Dark Gray
 // const Color CONT_BACKGROUND = Color(0xFF232726);     // Dark Gray

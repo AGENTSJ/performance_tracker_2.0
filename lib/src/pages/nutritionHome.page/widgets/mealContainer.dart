@@ -81,7 +81,7 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
           SizedBox(height: 20),
           Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: CONT_BACKGROUND,
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             width: double.infinity,

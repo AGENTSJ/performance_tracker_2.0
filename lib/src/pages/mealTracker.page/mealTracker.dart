@@ -366,7 +366,7 @@ class EmptyResultsWidget extends StatelessWidget {
       width: double.infinity,
       height: 100,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CONT_BACKGROUND,
         borderRadius: BorderRadius.circular(5),
       ),
       child: Padding(

@@ -37,7 +37,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: CONT_BACKGROUND,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: PRIMARY, width: 0.5),
@@ -83,7 +83,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CONT_BACKGROUND,
         borderRadius: BorderRadius.circular(8),
       ),
       width: double.infinity,

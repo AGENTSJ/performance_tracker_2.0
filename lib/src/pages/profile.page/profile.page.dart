@@ -65,7 +65,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: CONT_BACKGROUND,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: PRIMARY, width: 0.5),
@@ -121,7 +121,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                 key: _formKey,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: CONT_BACKGROUND,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Padding(

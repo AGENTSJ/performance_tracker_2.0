@@ -21,7 +21,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: CONT_BACKGROUND,
       actionsPadding: EdgeInsets.all(5),
       titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0), 
       contentPadding: EdgeInsets.all(15),
@@ -115,7 +115,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
         msg: "Mysterious food indeed !!, Try again.",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
-        backgroundColor: Colors.white,
+        backgroundColor: CONT_BACKGROUND,
         textColor: Colors.black,
         webBgColor: "white",
       );

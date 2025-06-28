@@ -55,7 +55,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
               // Micro
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: CONT_BACKGROUND,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 width: double.infinity,

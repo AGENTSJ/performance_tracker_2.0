@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
@@ -45,7 +46,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
         duration: Duration(milliseconds: 250), // Animation duration
         curve: Curves.decelerate,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 255, 255, 255),
+          color: CONT_BACKGROUND,
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
         width: double.infinity,

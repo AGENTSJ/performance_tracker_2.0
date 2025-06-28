@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 
 class DateSelector extends StatefulWidget {
@@ -76,7 +77,7 @@ class _DateCubeState extends State<DateCube>
       },
       child: Container(
         decoration: BoxDecoration(
-          color: selected? const Color.fromARGB(255, 220, 220, 220): Colors.white,
+          color: selected? const Color.fromARGB(255, 220, 220, 220): CONT_BACKGROUND,
         ),
         width: 50,
         child: Padding(

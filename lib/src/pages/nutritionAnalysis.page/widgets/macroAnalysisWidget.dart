@@ -24,7 +24,7 @@ class MacroAnalysisWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
+        color: CONT_BACKGROUND,
       ),
       constraints: BoxConstraints(maxHeight: 310),
       child: Padding(

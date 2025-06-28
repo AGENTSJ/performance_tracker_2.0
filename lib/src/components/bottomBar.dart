@@ -14,10 +14,10 @@ class BottomBar extends StatelessWidget {
       backgroundColor: BACKGROUND,
       animationDuration: Duration(milliseconds: 200),
       items: [
-        Icon(Icons.food_bank ,color: Colors.white,),
-        Icon(FontAwesomeIcons.user,color: Colors.white,),
-        Icon(Icons.directions_bike ,color: Colors.white,),
-        Icon(Icons.directions_run,color: Colors.white,),
+        Icon(Icons.food_bank ,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.user,color: CONT_BACKGROUND,),
+        Icon(Icons.directions_bike ,color: CONT_BACKGROUND,),
+        Icon(Icons.directions_run,color: CONT_BACKGROUND,),
       ],
       onTap: (index) {
         onIndexChange(index);
