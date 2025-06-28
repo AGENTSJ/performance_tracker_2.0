@@ -156,6 +156,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                     SizedBox(height: 10),
                     if (!formChanged)
                       Material(
+                        color: SURFACE2,
                         borderRadius: BorderRadius.circular(8),
                         child: InkWell(
                           child: Padding(
@@ -163,7 +164,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                             child: RichText(
                               text: TextSpan(
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  // color: Colors.black,
                                   fontWeight: FontWeight.w400,
                                   height: 1.5
                                 ), // default style
