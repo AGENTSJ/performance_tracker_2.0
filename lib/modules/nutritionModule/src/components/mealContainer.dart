@@ -18,155 +18,161 @@ class MealContainer extends StatefulWidget {
   State<MealContainer> createState() => _MealContainerState();
 }
 
-class _MealContainerState extends State<MealContainer> {
+class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveClientMixin{
   late double caloriesInMeal = 0;
   var dayService = locator<DayService>();
-  
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
+    print('meal ran');
     super.initState();
     setCalories(false);
   }
   
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              widget.meal.mealName,
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-            ),
-            Row(
-              children: [
-                Text("${caloriesInMeal.round().toString()} Cal"),
-                SizedBox(width: 10,),
-                Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: PRIMARY,
-                      ),
-                      width: 25,
-                      height: 25,
-                    ),
-                    Positioned(
-                      bottom: -11.5,
-                      left: -11.5,
-                      child: IconButton(
-                        onPressed: () {
-                          handleNavigation();
-                        },
-                        icon: Icon(
-                          Icons.add,
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          size: 20,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.meal.mealName,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+              Row(
+                children: [
+                  Text("${caloriesInMeal.round().toString()} Cal"),
+                  SizedBox(width: 10,),
+                  Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: PRIMARY,
                         ),
+                        width: 25,
+                        height: 25,
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: 20),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-          ),
-          width: double.infinity,
-          constraints: BoxConstraints(minHeight: 80),
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if(widget.meal.foods.isEmpty) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text("Track you meals for ${widget.meal.mealName}",style: TextStyle(fontSize: 12 ,color: const Color.fromARGB(255, 124, 124, 124)),),
-                      SizedBox(width: 10,),
-                      Icon(Icons.fastfood ,color: Colors.grey,size: 20,)
-                    ],
-                  )
-                ]
-                else
-                ...widget.meal.foods.map(
-                  (food) => Column(
-                    children: [
-                      SingleChildScrollView(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              handleFoodClick(food);
-                            },
-                            splashColor: const Color.fromARGB(91, 188, 188, 188),
-                            highlightColor: const Color.fromARGB(91, 188, 188, 188),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: 180,
-                                      child: Text(
-                                        food.name,
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                    Text(
-                                      "${food.quantity.value.round().toString()} ${food.quantity.unit}",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        color: const Color.fromARGB(
-                                          255,
-                                          109,
-                                          109,
-                                          109,
-                                        ),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 50, 
-                                      child: Text("${food.macros.calories.round().toString()} Cal",textAlign: TextAlign.right,)
-                                    ),
-                                    SizedBox(width: 15,),
-                                    GestureDetector(
-                                      onTap: () {
-                                        removeFoodFromMeal(food);
-                                      },
-                                      child: Icon(Icons.delete,color: Colors.grey, size: 20,)
-                                    )
-                                  ]
-                                )
-                              ],
-                            ),
+                      Positioned(
+                        bottom: -11.5,
+                        left: -11.5,
+                        child: IconButton(
+                          onPressed: () {
+                            handleNavigation();
+                          },
+                          icon: Icon(
+                            Icons.add,
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            size: 20,
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+            width: double.infinity,
+            constraints: const BoxConstraints(minHeight: 80),
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if(widget.meal.foods.isEmpty) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Track you meals for ${widget.meal.mealName}",style: TextStyle(fontSize: 12 ,color: const Color.fromARGB(255, 124, 124, 124)),),
+                        SizedBox(width: 10,),
+                        Icon(Icons.fastfood ,color: Colors.grey,size: 20,)
+                      ],
+                    )
+                  ]
+                  else
+                  ...widget.meal.foods.map(
+                    (food) => Column(
+                      children: [
+                        SingleChildScrollView(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                handleFoodClick(food);
+                              },
+                              splashColor: const Color.fromARGB(91, 188, 188, 188),
+                              highlightColor: const Color.fromARGB(91, 188, 188, 188),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 180,
+                                        child: Text(
+                                          food.name,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      ),
+                                      Text(
+                                        "${food.quantity.value.round().toString()} ${food.quantity.unit}",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: const Color.fromARGB(
+                                            255,
+                                            109,
+                                            109,
+                                            109,
+                                          ),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 50, 
+                                        child: Text("${food.macros.calories.round().toString()} Cal",textAlign: TextAlign.right,)
+                                      ),
+                                      SizedBox(width: 15,),
+                                      GestureDetector(
+                                        onTap: () {
+                                          removeFoodFromMeal(food);
+                                        },
+                                        child: Icon(Icons.delete,color: Colors.grey, size: 20,)
+                                      )
+                                    ]
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

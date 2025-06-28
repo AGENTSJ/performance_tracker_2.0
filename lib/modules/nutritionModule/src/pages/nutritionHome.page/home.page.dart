@@ -5,79 +5,84 @@ import 'package:performance_tracker/modules/nutritionModule/models/food.model.da
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/day.service.dart';
-import 'package:performance_tracker/src/components/bottomBar.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/components/dateSelector.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/components/mealContainer.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
 import 'package:performance_tracker/modules/nutritionModule/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';
+import 'package:performance_tracker/services/userGoals.service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class NutritionModule extends StatefulWidget {
   const NutritionModule({super.key});
   @override
-  State<StatefulWidget> createState() => _NutritionModuleState();
+  State<StatefulWidget> createState() => NutritionModuleState();
 }
 
-class _NutritionModuleState extends State<NutritionModule> {
+class NutritionModuleState extends State<NutritionModule> {
   final dayService = locator<DayService>();
   final commentService = locator<CommentsService>();
   final avatarService = locator<AvatarService>();
-  late Day? currentDay = null;
+  final goalService = locator<UserGoalsService>();
+  Day? currentDay;
   late MacroNutrients daysMacro;
   String dayMarker = '';
   bool showDateSelector = false;
   bool showWholeGreetings = false;
-  double totalCalorieForToday = 2000;
+
   @override
   void initState() {
-    print('nuti-home-init-ran');
+    print('nutrition-home-init-ran');
     super.initState();
-    dayService
-        .getDayDataByDate(DateTime.now())
-        .then(
-          (day) => {
-            setState(() {
-              currentDay = day;
-              _setCurrentDayMarker();
-              setCaloriesInDay();
-            }),
-          },
-        );
+    _setHomePage();
+  }
+  _setHomePage() async
+  {
+    var day = await dayService.getDayDataByDate(DateTime.now());
+    currentDay = day;
+    var isToday = _setCurrentDayMarker();
+    await _setCurrentDayGoal(isToday);
+    setCaloriesInDay();
+    refreshState();
+  }
+
+  void refreshState() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   handleGreetingContainerChange() {
-    this.showWholeGreetings = !showWholeGreetings;
-    setState(() {});
+    showWholeGreetings = !showWholeGreetings;
+    refreshState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Text(
-                dayMarker,
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
-              ),
-              TextButton(
-                onPressed: () {
-                  toggleDateSelector();
-                },
-                child: Icon(
-                  Icons.arrow_drop_down,
-                  size: 30,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: BACKGROUND,
-          shape: ContinuousRectangleBorder(),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Text(
+              dayMarker,
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+            ),
+            TextButton(
+              onPressed: () {
+                toggleDateSelector();
+              },
+              child: Icon(Icons.arrow_drop_down, size: 30, color: Colors.black),
+            ),
+          ],
         ),
-        body: Stack(
+        backgroundColor: BACKGROUND,
+        shape: ContinuousRectangleBorder(),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async{
+          await _setHomePage();
+        },
+        child: Stack(
           children: [
             if (currentDay != null) ...[
               Padding(
@@ -86,7 +91,10 @@ class _NutritionModuleState extends State<NutritionModule> {
                   scrollDirection: Axis.vertical,
                   children: [
                     // Greetings
-                    GreetingsWidget(day: currentDay,key: ValueKey(daysMacro.calories),),
+                    GreetingsWidget(
+                      day: currentDay,
+                      key: ValueKey(daysMacro.calories),
+                    ),
                     SizedBox(height: 20),
                     // Total calories
                     Container(
@@ -120,7 +128,7 @@ class _NutritionModuleState extends State<NutritionModule> {
                               ),
                             ),
                             Text(
-                              "${daysMacro.calories.round()} of ${totalCalorieForToday.round()} Cal",
+                              "${daysMacro.calories.round()} of ${currentDay?.goalForToday?.calorieLimit.round()} Cal",
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
@@ -129,7 +137,13 @@ class _NutritionModuleState extends State<NutritionModule> {
                             ),
                             IconButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>NutritionAnalysisPage(day: currentDay!)));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        NutritionAnalysisPage(day: currentDay!),
+                                  ),
+                                );
                               },
                               icon: Icon(
                                 Icons.bar_chart_outlined,
@@ -142,18 +156,14 @@ class _NutritionModuleState extends State<NutritionModule> {
                     ),
                     SizedBox(height: 20),
                     ...currentDay!.meals!.map(
-                      (meal) => Padding(
-                        key: ValueKey("$dayMarker ${meal.mealName}"),
-                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                        child: MealContainer(
-                          meal: meal,
-                          day: currentDay!,
-                          onMealUpdated: (value) {
-                            setState(() {
-                              setCaloriesInDay();
-                            });
-                          },
-                        ),
+                      (meal) => MealContainer(
+                        key: ValueKey("$dayMarker ${meal.calories} ${meal.mealName}"),
+                        meal: meal,
+                        day: currentDay!,
+                        onMealUpdated: (value) {
+                          setCaloriesInDay();
+                          refreshState();
+                        },
                       ),
                     ),
                   ],
@@ -172,35 +182,44 @@ class _NutritionModuleState extends State<NutritionModule> {
             ],
           ],
         ),
-      );
+      ),
+    );
   }
 
-  _setCurrentDayMarker() {
+  bool _setCurrentDayMarker() {
     var currentDateMarker = dayService.getDateString(currentDay!.dayTime);
     if (dayService.getDateString(DateTime.now()) == currentDateMarker) {
       dayMarker = 'Today';
+      return true;
     } else {
       dayMarker = currentDateMarker;
+      return false;
     }
   }
 
+  _setCurrentDayGoal(bool isToday) async {
+    var goal = await goalService.getUserGoals();
+    currentDay?.goalForToday ??= goal;
+    if (isToday) {
+      currentDay?.goalForToday = goal;
+    }
+    await dayService.updateDayData(currentDay!);
+  }
+
   toggleDateSelector() {
-    setState(() {
-      showDateSelector = !showDateSelector;
-    });
+    showDateSelector = !showDateSelector;
+    refreshState();
   }
 
   handleDateChange(DateTime value) async {
     currentDay = await dayService.getDayDataByDate(value);
-    setState(() {
-      showDateSelector = false;
-      _setCurrentDayMarker();
-      setCaloriesInDay();
-    });
+    _setCurrentDayMarker();
+    setCaloriesInDay();
+    showDateSelector = false;
+    refreshState();
   }
 
   setCaloriesInDay() {
     daysMacro = dayService.getDaysCalories(currentDay!);
   }
 }
-

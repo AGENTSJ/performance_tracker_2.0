@@ -5,20 +5,20 @@ import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/modules/nutritionModule/services/comments.service.dart';
 
 class GreetingsWidget extends StatefulWidget {
-
   final Day? day;
-  const GreetingsWidget({super.key,required this.day});
+  const GreetingsWidget({super.key, required this.day});
 
   @override
   State<StatefulWidget> createState() => GreetingsWidgetState();
 }
 
-class GreetingsWidgetState extends State<GreetingsWidget> with AutomaticKeepAliveClientMixin {
+class GreetingsWidgetState extends State<GreetingsWidget>
+    with AutomaticKeepAliveClientMixin {
   bool showWholeGreetings = false;
   final avatarService = locator<AvatarService>();
   final commentService = locator<CommentsService>();
   @override
-  bool get wantKeepAlive =>true;
+  bool get wantKeepAlive => true;
 
   handleGreetingContainerChange() {
     showWholeGreetings = !showWholeGreetings;
@@ -27,10 +27,11 @@ class GreetingsWidgetState extends State<GreetingsWidget> with AutomaticKeepAliv
 
   @override
   void initState() {
+    print('greetings ran');
     super.initState();
     commentService
-                .setDietComments(widget.day!)
-                .then((comment) => {setState(() {})});
+        .setDietComments(widget.day!)
+        .then((comment) => {setState(() {})});
   }
 
   @override
@@ -95,7 +96,8 @@ class GreetingsWidgetState extends State<GreetingsWidget> with AutomaticKeepAliv
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            widget.day
+                            widget
+                                    .day
                                     ?.comments
                                     ?.overallDietComments
                                     ?.comment ??

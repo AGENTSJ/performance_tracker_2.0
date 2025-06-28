@@ -25,13 +25,14 @@ class DayAdapter extends TypeAdapter<Day> {
       ..dinner = fields[3] as Meal
       ..eveningSnacks = fields[5] as Meal
       ..meals = (fields[6] as List?)?.cast<Meal>()
-      ..comments = fields[8] as DayComments?;
+      ..comments = fields[8] as DayComments?
+      ..goalForToday = fields[9] as UserGoals?;
   }
 
   @override
   void write(BinaryWriter writer, Day obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.breakFast)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class DayAdapter extends TypeAdapter<Day> {
       ..writeByte(7)
       ..write(obj.dayTime)
       ..writeByte(8)
-      ..write(obj.comments);
+      ..write(obj.comments)
+      ..writeByte(9)
+      ..write(obj.goalForToday);
   }
 
   @override

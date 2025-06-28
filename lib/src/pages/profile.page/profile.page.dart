@@ -27,16 +27,20 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   final weightController = TextEditingController();
   late Gender _selectedGender = Gender.other;
   bool isUserFormUpdated = false;
+  bool ignoreChanges = false;
   User? user;
 
   _ProfilePageModuleState() {
     Future.microtask(() async {
       user = await userService.getUserData();
+      ignoreChanges = true;
       nameController.text = user!.name;
       ageController.text = user!.age.toString();
       heightController.text = user!.height.toString();
       weightController.text = user!.weight.toString();
       _selectedGender = user!.gender;
+      ignoreChanges=false;
+      isUserFormUpdated = false;
       setState(() {});
     });
   }
@@ -87,11 +91,6 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BACKGROUND,
@@ -103,6 +102,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
             children: [
               Form(
                 onChanged: (){
+                  if(ignoreChanges) return;
                   isUserFormUpdated = true;
                   setState(() {
                     

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/modules/nutritionModule/models/food.model.dart';
+import 'package:performance_tracker/modules/nutritionModule/models/user.model.dart';
 
 part 'day.model.g.dart';
 
@@ -28,6 +29,9 @@ class Day extends HiveObject {
 
   @HiveField(8)
   DayComments? comments;
+
+  @HiveField(9)
+  UserGoals? goalForToday;
 
   Day({required this.dayTime}) {
     breakFast = Meal(mealName: 'Breakfast', foods: []);

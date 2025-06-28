@@ -21,6 +21,8 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
+      actionsPadding: EdgeInsets.all(5),
       titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0), 
       contentPadding: EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
@@ -28,35 +30,32 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
       ),
       title: Text(widget.foodName),
       content: isGenerating
-          ? Material(
-              borderRadius: BorderRadiusGeometry.circular(8),
-              child: Container(
-                height: 200,
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SpinKitSpinningLines(color: PRIMARY, size: 50),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        "Master chef is cooking ✨✨",
-                        style: TextStyle(fontSize: 14, height: 2),
-                      ),
-                    ),
-                  ],
+          ? Container(
+            height: 150,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SpinKitSpinningLines(color: PRIMARY, size: 50),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    "Master chef is cooking ✨✨",
+                    style: TextStyle(fontSize: 14, height: 2),
+                  ),
                 ),
-              ),
-            )
+              ],
+            ),
+          )
           : SizedBox(
-              height: 200,
+              height: 150,
               width: double.infinity,
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadiusGeometry.circular(8),
-                    color: Colors.white
+                    color: SURFACE
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
