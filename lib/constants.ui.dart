@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // Light mode colors
 const Color PRIMARY = Color(0xff3E8E7E);     // Teal Green
 const Color BACKGROUND = Color.fromARGB(255, 243, 243, 243);  // White
-const Color SURFACE = Color(0xFFE3EAE6);     // Light Gray
-const Color SURFACE2 = Color.fromARGB(255, 255, 255, 255);     // Light Gray
+const Color SURFACE = Color.fromARGB(103, 226, 233, 229);
+const Color SURFACE2 = Color.fromARGB(255, 255, 255, 255);
 const Color CONT_BACKGROUND = Colors.white;     // Container Background
 const Color TEXT_PRIMARY = Color(0xff1E1E1E);  // Dark Gray
 

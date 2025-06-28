@@ -22,23 +22,12 @@ class _DateSelectorState extends State<DateSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: const Color.fromARGB(169, 56, 56, 56),
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [...dates.map((date) => DateCube(date: date,onDateChanged: (value) {
-                widget.onDateChanged(value);
-              },))],
-            ),
-          ),
-          Expanded(child: GestureDetector(
-            onTap: (){widget.onDateChanged(widget.selectedDate);},
-          ))
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [...dates.map((date) => DateCube(date: date,onDateChanged: (value) {
+          widget.onDateChanged(value);
+        },))],
       ),
     );
   }

@@ -37,8 +37,8 @@ class NutritionModuleState extends State<NutritionModule> {
     super.initState();
     _setHomePage();
   }
-  _setHomePage() async
-  {
+
+  _setHomePage() async {
     var day = await dayService.getDayDataByDate(DateTime.now());
     currentDay = day;
     _setCurrentDayMarker();
@@ -64,7 +64,11 @@ class NutritionModuleState extends State<NutritionModule> {
           children: [
             Text(
               dayMarker,
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500,color: TEXT_PRIMARY),
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.w500,
+                color: TEXT_PRIMARY,
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -78,7 +82,7 @@ class NutritionModuleState extends State<NutritionModule> {
         shape: ContinuousRectangleBorder(),
       ),
       body: RefreshIndicator(
-        onRefresh: () async{
+        onRefresh: () async {
           await _setHomePage();
         },
         child: Stack(
@@ -156,7 +160,9 @@ class NutritionModuleState extends State<NutritionModule> {
                     SizedBox(height: 20),
                     ...currentDay!.meals!.map(
                       (meal) => MealContainer(
-                        key: ValueKey("$dayMarker ${meal.calories} ${meal.mealName}"),
+                        key: ValueKey(
+                          "$dayMarker ${meal.calories} ${meal.mealName}",
+                        ),
                         meal: meal,
                         day: currentDay!,
                         onMealUpdated: (value) {
@@ -169,16 +175,33 @@ class NutritionModuleState extends State<NutritionModule> {
                 ),
               ),
             ],
-            if (showDateSelector) ...[
-              Positioned(
-                child: DateSelector(
-                  selectedDate: currentDay!.dayTime,
-                  onDateChanged: (value) {
-                    handleDateChange(value);
-                  },
-                ),
+            Positioned(
+              child: Column(
+                children: [
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    height: showDateSelector ? 66 : 0,
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: DateSelector(
+                        selectedDate: currentDay!.dayTime,
+                        onDateChanged: (value) {
+                          handleDateChange(value);
+                        },
+                      ),
+                    ),
+                  ),
+                  if(showDateSelector)
+                  Expanded(child: GestureDetector(
+                    onTap: (){toggleDateSelector();},
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
+                  ))
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
