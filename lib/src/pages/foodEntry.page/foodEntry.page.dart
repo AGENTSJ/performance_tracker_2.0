@@ -496,6 +496,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
         value: (food.quantity.value / baseQuant),
         unit: food.quantity.unit,
       ),
+      servings: []
     );
 
     return newFood;

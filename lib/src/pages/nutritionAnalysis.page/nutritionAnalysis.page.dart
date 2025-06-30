@@ -6,6 +6,7 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/pages/nutritionAnalysis.page/widgets/macroAnalysisWidget.dart';
@@ -21,6 +22,7 @@ class NutritionAnalysisPage extends StatefulWidget {
 
 class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   final DayService dayService = locator<DayService>();
+  final  UserGoalsService userGoalService = locator<UserGoalsService>();
   MacroNutrients? todaysMacros;
   String unit = 'g';
   Map<String, MeasuredUnit> totalConsumed = {};
@@ -33,9 +35,8 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      setTotalConsumed();
-    });
+    setTotalConsumed();
+    
   }
 
   @override
@@ -87,7 +88,6 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                   ),
                 ),
               ),
-              
               SizedBox(height: 30),
               MicroCommentsWidget(day: widget.day, microMap: totalConsumed)
             ],
@@ -104,8 +104,10 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
     });
   }
 
-  setTotalConsumed() {
+  setTotalConsumed()async {
     this.todaysMacros = new MacroNutrients(0, 0, 0, 0, 0);
+    var goal  = await userGoalService.getUserGoals();
+    totalCalLimit =  goal.calorieLimit;
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(value: 0, unit: micro.value.unit);
     }
@@ -128,6 +130,8 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
         }
       }
     }
+    setState(() {
+    });
   }
 }
 

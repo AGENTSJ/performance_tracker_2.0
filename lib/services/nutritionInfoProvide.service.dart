@@ -113,7 +113,10 @@ class NutritionServiceProvider {
           macros: macros,
           micros: micros,
           quantity: quantity,
-          imageUrl:imageUrl
+          imageUrl:imageUrl,
+          servings: [
+            MeasuredUnit(value: quantity.value, unit: "serving")
+          ]
         ),
       );
     }

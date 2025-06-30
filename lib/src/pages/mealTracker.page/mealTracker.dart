@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -101,8 +102,8 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ),
                 ],
               ),
-              Expanded(
-                flex: 4,
+              Container(
+                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
                 child: Column(
                   children: [
                     if (fetching) ...[
@@ -111,9 +112,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                         child: Row(
                           children: [
                             SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              width: 40,
+                              height: 40,
+                              child: SpinKitSpinningLines(size: 40,color: PRIMARY,),
                             ),
                             SizedBox(width: 30),
                             Text(
@@ -182,8 +183,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   SizedBox(height: 5),
                   Visibility(
                     visible: showSuggested,
-                    child: SizedBox(
-                      height: 200,
+                    child: Container(
+                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                      constraints: BoxConstraints(maxHeight: 200),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -231,27 +233,30 @@ class _MealTrackerState extends State<MealTrackerPage> {
               SizedBox(height: 5),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      if (widget.meal.foods.isNotEmpty)
-                        ...widget.meal.foods.map(
-                          (food) => Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                showAddFoodModalUpdateMode(food);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(children: [Text('${food.name}')]),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                      children: [
+                        if (widget.meal.foods.isNotEmpty)
+                          ...widget.meal.foods.map(
+                            (food) => Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  showAddFoodModalUpdateMode(food);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(children: [Text('${food.name}')]),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      if (widget.meal.foods.isEmpty) ...[
-                        EmptyResultsWidget(insideText: "No foods are selected"),
+                        if (widget.meal.foods.isEmpty) ...[
+                          EmptyResultsWidget(insideText: "No foods are selected"),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

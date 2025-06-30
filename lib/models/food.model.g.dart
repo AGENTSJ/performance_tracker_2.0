@@ -22,13 +22,14 @@ class FoodAdapter extends TypeAdapter<Food> {
       micros: fields[2] as MicroNutrients,
       quantity: fields[3] as MeasuredUnit,
       imageUrl: fields[4] as String?,
+      servings: (fields[5] as List).cast<MeasuredUnit>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Food obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class FoodAdapter extends TypeAdapter<Food> {
       ..writeByte(3)
       ..write(obj.quantity)
       ..writeByte(4)
-      ..write(obj.imageUrl);
+      ..write(obj.imageUrl)
+      ..writeByte(5)
+      ..write(obj.servings);
   }
 
   @override

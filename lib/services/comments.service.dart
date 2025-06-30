@@ -36,7 +36,6 @@ class CommentsService {
   {
     var previousComment = day.comments?.overallDietComments;
 
-
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )

@@ -18,13 +18,17 @@ class Food {
   
   @HiveField(4)
   final String? imageUrl;
+
+  @HiveField(5)
+  final List<MeasuredUnit> servings;
   
   Food({
     required this.name,
     required this.macros,
     required this.micros,
     required this.quantity,
-    this.imageUrl
+    this.imageUrl,
+    required this.servings,
   });
 
   Food clone({
@@ -38,7 +42,8 @@ class Food {
       macros: macros ?? this.macros.clone(),
       micros: micros ?? this.micros.clone(),
       quantity: quantity ?? this.quantity.clone(),
-      imageUrl: imageUrl 
+      imageUrl: imageUrl ,
+      servings: this.servings
     );
   }
 }
@@ -320,3 +325,4 @@ class MeasuredUnit {
     return MeasuredUnit(value: this.value, unit: this.unit);
   }
 }
+

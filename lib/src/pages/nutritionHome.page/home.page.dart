@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/src/components/dateSelector.dart';
+// import 'package:performance_tracker/src/components/dateSelector.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/mealContainer.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
@@ -30,7 +31,7 @@ class NutritionModuleState extends State<NutritionModule> {
   String dayMarker = '';
   bool showDateSelector = false;
   bool showWholeGreetings = false;
-
+  bool isHomePageLoading = false;
   @override
   void initState() {
     print('nutrition-home-init-ran');
@@ -39,10 +40,13 @@ class NutritionModuleState extends State<NutritionModule> {
   }
 
   _setHomePage() async {
+    isHomePageLoading = true;
+    refreshState();
     var day = await dayService.getDayDataByDate(DateTime.now());
     currentDay = day;
     _setCurrentDayMarker();
     setCaloriesInDay();
+    isHomePageLoading = false;
     refreshState();
   }
 
@@ -72,7 +76,11 @@ class NutritionModuleState extends State<NutritionModule> {
             ),
             TextButton(
               onPressed: () {
-                toggleDateSelector();
+                // toggleDateSelector();
+                handleDatePickerEnable();
+              },
+              onLongPress: () async {
+                handleDatePickerEnable();
               },
               child: Icon(Icons.arrow_drop_down, size: 30, color: TEXT_PRIMARY),
             ),
@@ -81,131 +89,155 @@ class NutritionModuleState extends State<NutritionModule> {
         backgroundColor: BACKGROUND,
         shape: ContinuousRectangleBorder(),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await _setHomePage();
-        },
-        child: Stack(
-          children: [
-            if (currentDay != null) ...[
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: [
-                    // Greetings
-                    GreetingsWidget(
-                      day: currentDay,
-                      key: ValueKey(daysMacro.calories),
-                    ),
-                    SizedBox(height: 20),
-                    // Total calories
-                    Container(
-                      decoration: BoxDecoration(
-                        color: SURFACE2,
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      width: double.infinity,
-                      constraints: BoxConstraints(minHeight: 110),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          top: 8,
-                          bottom: 8,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: PRIMARY, width: 2),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.restaurant_menu_sharp,
-                                  color: PRIMARY,
-                                ),
+      body: !isHomePageLoading
+          ? RefreshIndicator(
+              onRefresh: () async {
+                await _setHomePage();
+              },
+              child: Stack(
+                children: [
+                  if (currentDay != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: ListView(
+                        scrollDirection: Axis.vertical,
+                        children: [
+                          // Greetings
+                          GreetingsWidget(
+                            day: currentDay,
+                            key: ValueKey(daysMacro.calories),
+                          ),
+                          SizedBox(height: 20),
+                          // Total calories
+                          Container(
+                            decoration: BoxDecoration(
+                              color: SURFACE2,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
                               ),
                             ),
-                            Text(
-                              "${daysMacro.calories.round()} of ${currentDay?.goalForToday?.calorieLimit.round()} Cal",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                letterSpacing: 1.0,
+                            width: double.infinity,
+                            constraints: BoxConstraints(minHeight: 110),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20,
+                                right: 20,
+                                top: 8,
+                                bottom: 8,
                               ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        NutritionAnalysisPage(day: currentDay!),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: PRIMARY,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.restaurant_menu_sharp,
+                                        color: PRIMARY,
+                                      ),
+                                    ),
                                   ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.bar_chart_outlined,
-                                color: PRIMARY,
+                                  Text(
+                                    "${daysMacro.calories.round()} of ${currentDay?.goalForToday?.calorieLimit.round()} Cal",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              NutritionAnalysisPage(
+                                                day: currentDay!,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.bar_chart_outlined,
+                                      color: PRIMARY,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    ...currentDay!.meals!.map(
-                      (meal) => MealContainer(
-                        key: ValueKey(
-                          "$dayMarker ${meal.calories} ${meal.mealName}",
-                        ),
-                        meal: meal,
-                        day: currentDay!,
-                        onMealUpdated: (value) {
-                          setCaloriesInDay();
-                          refreshState();
-                        },
+                          ),
+                          SizedBox(height: 20),
+                          ...currentDay!.meals!.map(
+                            (meal) => MealContainer(
+                              key: ValueKey(
+                                "$dayMarker ${meal.calories} ${meal.mealName}",
+                              ),
+                              meal: meal,
+                              day: currentDay!,
+                              onMealUpdated: (value) {
+                                setCaloriesInDay();
+                                refreshState();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-              ),
-            ],
-            Positioned(
-              child: Column(
-                children: [
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    height: showDateSelector ? 66 : 0,
-                    width: double.infinity,
-                    child: SingleChildScrollView(
-                      child: DateSelector(
-                        selectedDate: currentDay!.dayTime,
-                        onDateChanged: (value) {
-                          handleDateChange(value);
-                        },
-                      ),
+                  Positioned(
+                    child: Column(
+                      children: [
+                        // AnimatedContainer(
+                        //   duration: Duration(milliseconds: 250),
+                        //   curve: Curves.easeInOut,
+                        //   height: showDateSelector ? 66 : 0,
+                        //   width: double.infinity,
+                        //   child: SingleChildScrollView(
+                        //     child: DateSelector(
+                        //       selectedDate: currentDay!.dayTime,
+                        //       onDateChanged: (value) {
+                        //         handleDateChange(value);
+                        //       },
+                        //     ),
+                        //   ),
+                        // ),
+                        // if (showDateSelector)
+                        //   Expanded(
+                        //     child: GestureDetector(
+                        //       onTap: () {
+                        //         toggleDateSelector();
+                        //       },
+                        //       child: Container(color: Colors.transparent),
+                        //     ),
+                        //   ),
+                      ],
                     ),
                   ),
-                  if(showDateSelector)
-                  Expanded(child: GestureDetector(
-                    onTap: (){toggleDateSelector();},
-                    child: Container(
-                      color: Colors.transparent,
-                    ),
-                  ))
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
+            )
+          : Center(child: SpinKitSpinningLines(color: PRIMARY)),
     );
+  }
+
+  handleDatePickerEnable() async {
+    var pickedDate = await showDatePicker(
+      context: context,
+      initialDate: currentDay!.dayTime,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(Duration(days: 7)),
+    );
+    if (pickedDate != null) {
+      handleDateChange(pickedDate);
+    }
   }
 
   _setCurrentDayMarker() {
