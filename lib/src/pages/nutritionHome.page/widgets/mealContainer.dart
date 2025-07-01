@@ -26,7 +26,6 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
 
   @override
   void initState() {
-    print('meal ran');
     super.initState();
     setCalories(false);
   }

@@ -34,7 +34,6 @@ class NutritionModuleState extends State<NutritionModule> {
   bool isHomePageLoading = false;
   @override
   void initState() {
-    print('nutrition-home-init-ran');
     super.initState();
     _setHomePage();
   }

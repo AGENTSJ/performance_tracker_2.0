@@ -149,7 +149,6 @@ class CommentsService {
       MacroNutrients prevMacroStructure = previousComment.macrosAtGenTime;
       String currentMacroSignature = jsonEncode(currentMacroStructure);
       String prevMacroSignature = jsonEncode(prevMacroStructure);
-      // Duration timeDiff = DateTime.now().difference(previousComment.timeOfGeneration);
 
       if(currentMacroSignature == prevMacroSignature)
       {

@@ -30,7 +30,6 @@ class GreetingsWidgetState extends State<GreetingsWidget>
 
   @override
   void initState() {
-    print('greetings ran');
     super.initState();
     Future.microtask(
       ()async
