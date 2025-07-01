@@ -104,7 +104,6 @@ class NutritionModuleState extends State<NutritionModule> {
                           // Greetings
                           GreetingsWidget(
                             day: currentDay,
-                            key: ValueKey(daysMacro.calories),
                           ),
                           SizedBox(height: 20),
                           // Total calories

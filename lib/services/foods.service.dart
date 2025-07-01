@@ -219,7 +219,7 @@ class FoodService {
         $jsonResponseStructure
       ''';
 
-      var body = await _ai.getResponse(prompt, instructions);
+      var body = await _ai.getResponse(prompt, instructions,modelType: Models.Pro);
       var resString = body.message;
       if(resString[0]=="`")
       {

@@ -90,6 +90,7 @@ class MacroAnalysisWidget extends StatelessWidget {
                               height: 1,
                               width: double.infinity,
                               child: AnimatedProgressBar(
+                                key: ValueKey(macros.calories),
                                 value:
                                     (commonService.getPercentage(
                                       totalCalLimit,

@@ -37,7 +37,7 @@ class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderS
     _controller = AnimationController(duration: const Duration(milliseconds: 700), vsync: this);
     _animation = Tween<double>(begin: 0, end: carbsPercent).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeOut,
+      curve: Curves.linear,
     ))
       ..addListener(() => setState(() {}));
     _controller.forward();

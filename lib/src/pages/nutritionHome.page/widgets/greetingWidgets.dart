@@ -16,6 +16,7 @@ class GreetingsWidget extends StatefulWidget {
 
 class GreetingsWidgetState extends State<GreetingsWidget>
     with AutomaticKeepAliveClientMixin {
+  final String greetingPlaceHolder = "Hello there 😊 \n\nWant to know how you did today?";
   bool showWholeGreetings = false;
   bool isGenerating = false;
   final avatarService = locator<AvatarService>();
@@ -23,26 +24,38 @@ class GreetingsWidgetState extends State<GreetingsWidget>
   @override
   bool get wantKeepAlive => true;
 
-  handleGreetingContainerChange() {
-    showWholeGreetings = !showWholeGreetings;
-    setState(() {});
+  handleGreetingContainerChange()async {
+    if(showWholeGreetings)
+    {
+      showWholeGreetings = false;
+    }
+    else
+    {
+      await handleGetGreeting();
+      showWholeGreetings = true;
+    }
+    refreshState();
   }
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      ()async
-      {
-        isGenerating = true;
-        setState(() {});
-        await commentService.setDietComments(widget.day!);
-        isGenerating = false;
-        setState(() {});
-      }
-    );
+    handleGetGreeting();
   }
-
+  refreshState()
+  {
+    if(!mounted) return;
+    setState(() {});
+  }
+  handleGetGreeting()async
+  {
+    if(isGenerating) return;
+    isGenerating = true;
+    refreshState();
+    await commentService.setDietComments(widget.day!);
+    isGenerating = false;
+    refreshState();
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -115,7 +128,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(
+                          child: showWholeGreetings? Text(
                             widget
                                     .day
                                     ?.comments
@@ -123,7 +136,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
                                     ?.comment ??
                                 'Hmmmm\n\nLooks like you forgot to track your calories this day.',
                             style: TextStyle(height: 1.6),
-                          ),
+                          ):Text(greetingPlaceHolder),
                         ),
                       ),
                     ),
