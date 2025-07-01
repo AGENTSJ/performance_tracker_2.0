@@ -9,19 +9,30 @@ class AiResponse
 
   const AiResponse({required this.message , required this.success}); 
 }
+enum Models
+{
+  Pro,
+  Flash,
+}
 class AiService
 {
-  late final _AI_Provider _provider;
   final _restService = locator<RestService>();
+  late final Map<Models,_AI_Provider> _models;
+
   AiService() 
   {
     var API_KEY = 'AIzaSyD6G15zpLNW9OtnDKveFIG9vZM8jw1yO5E';
     var modelName = "gemini-2.0-flash";
-    _provider = _AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$API_KEY");
+    _models = {
+      Models.Pro:_AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=$API_KEY"),
+      Models.Flash:_AI_Provider(apiKey: API_KEY,modelName: modelName,endpoint:"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$API_KEY")
+    };
+    // _provider = ;
   } 
 
-  Future<AiResponse> getResponse(String promt , String? instructions) async 
+  Future<AiResponse> getResponse(String promt , String? instructions,{Models modelType=Models.Flash }) async 
   {
+    var model = _models[modelType];
     dynamic payload = {
       "system_instruction": {
         "parts": [
@@ -40,15 +51,20 @@ class AiService
         }
       ]
     };
-    var response = await _restService.POST(_provider.endpoint, payload);
+    var response = await _restService.POST(model!.endpoint, payload);
     if(response.statusCode!=200)
     {
       return AiResponse(message: '', success: false);
     }
-
-    var body = jsonDecode(response.body);
-    var aiResp = AiResponse(message: body['candidates'][0]['content']['parts'][0]['text'], success: true);
-    return aiResp;
+    try {
+      var body = jsonDecode(response.body);
+      var aiResp = AiResponse(message: body['candidates'][0]['content']['parts'][0]['text'], success: true);
+      return aiResp;
+    }
+    catch(e)
+    {
+      return AiResponse(message: '', success: false);
+    }
   }
 
 }

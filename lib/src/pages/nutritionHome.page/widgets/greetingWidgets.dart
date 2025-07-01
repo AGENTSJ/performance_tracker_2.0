@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -16,6 +17,7 @@ class GreetingsWidget extends StatefulWidget {
 class GreetingsWidgetState extends State<GreetingsWidget>
     with AutomaticKeepAliveClientMixin {
   bool showWholeGreetings = false;
+  bool isGenerating = false;
   final avatarService = locator<AvatarService>();
   final commentService = locator<CommentsService>();
   @override
@@ -30,9 +32,16 @@ class GreetingsWidgetState extends State<GreetingsWidget>
   void initState() {
     print('greetings ran');
     super.initState();
-    commentService
-        .setDietComments(widget.day!)
-        .then((comment) => {setState(() {})});
+    Future.microtask(
+      ()async
+      {
+        isGenerating = true;
+        setState(() {});
+        await commentService.setDietComments(widget.day!);
+        isGenerating = false;
+        setState(() {});
+      }
+    );
   }
 
   @override
@@ -53,7 +62,17 @@ class GreetingsWidgetState extends State<GreetingsWidget>
         constraints: showWholeGreetings
             ? BoxConstraints(minHeight: 110, maxHeight: 300)
             : BoxConstraints(minHeight: 110, maxHeight: 110),
-        child: Padding(
+        child:isGenerating?SizedBox(
+          height: 110,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Hmmm lets see..'),
+              SizedBox(width: 20,),
+              SpinKitSpinningLines(color: Colors.grey,size: 30,),
+            ],
+          ),
+        ) :Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

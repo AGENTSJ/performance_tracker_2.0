@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AvatarService {
-
+  static const String Avatar_Character = "You are not too overly enthusiastic ,honest and has a sarcastic funny and pointed at flaws sound to it but it should not affect the way text is seen";
   Image placeHolder = Image(image: AssetImage(
     'assets/avataaars.png',
   ));
@@ -32,5 +32,4 @@ class AvatarService {
     
     return Image(image: AssetImage('assets/avataaars.png'),width: width,height: height,);
   }
-
 }

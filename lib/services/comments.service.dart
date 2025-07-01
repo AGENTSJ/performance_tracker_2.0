@@ -4,38 +4,40 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
+import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
+import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
 class CommentsService {
   final aiService = locator<AiService>();
   final dayService = locator<DayService>();
   final userGoalService = locator<UserGoalsService>();
+  final userService = locator<UserService>();
   final TIME_DIFF_TRIGGER_MINUTES = 60;
   final CAL_DIFF_TRIGGER = 500;
   final CONTEXT_LIMIT_DAYS = 7;
+  String userAccountCreatedDate = "";
   String UserGoalDescription = "";
 
   UserGoals? userGoals ;
-
+  User? user;
   CommentsService()
   {
     Future.microtask(
       ()async
       {
         userGoals = await userGoalService.getUserGoals();
-        UserGoalDescription = '''
-        Users caloric limit is ${userGoals!.calorieLimit}
-        User wants to reduce weight 
-        ''';
+        user = await userService.getUserData();
+        userAccountCreatedDate = "${user!.createdAt}";
+        UserGoalDescription = "User is currently at ${user!.weight}kg and has a goal to reach ${userGoals!.targetWeight}kg Todays target calories is ${userGoals!.calorieLimit}";
       }
     );
-
   }
+  
   Future<GeneratedComment?> setDietComments(Day day) async
   {
     var previousComment = day.comments?.overallDietComments;
-
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
@@ -43,6 +45,10 @@ class CommentsService {
         return null;
       }
       var genComment =  await _generateDietComment(day);
+      if(genComment == null)
+      {
+        return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+      }
       day.comments ??=  DayComments();
       day.comments!.overallDietComments = genComment;
       dayService.updateDayData(day);
@@ -52,19 +58,19 @@ class CommentsService {
     {
       MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
       MacroNutrients prevMacroStructure = previousComment.macrosAtGenTime;
-      // String currentMacroSignature = jsonEncode(currentMacroStructure);
-      // String prevMacroSignature = jsonEncode(prevMacroStructure);
-      Duration timeDiff = DateTime.now().difference(previousComment.timeOfGeneration);
-
       double calDiff = (currentMacroStructure.calories - prevMacroStructure.calories).abs();
 
-      if(calDiff < CAL_DIFF_TRIGGER && timeDiff.inMinutes < TIME_DIFF_TRIGGER_MINUTES)
+      if(calDiff < CAL_DIFF_TRIGGER)
       {
         return previousComment;
       }
       else
       {
         var genComment = await _generateDietComment(day);
+        if(genComment == null)
+        {
+          return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+        }
         day.comments!.overallDietComments = genComment;
         dayService.updateDayData(day);
         return genComment;
@@ -73,7 +79,7 @@ class CommentsService {
     }
   }
 
-  Future<GeneratedComment> _generateDietComment(Day day) async
+  Future<GeneratedComment?> _generateDietComment(Day day) async
   {
     String contextInformation = '';
     var currMacro = dayService.getDaysCalories(day);
@@ -85,10 +91,33 @@ class CommentsService {
       String macroStructureOnTheDay = jsonEncode(dayService.getDaysCalories(currDay!).toJson());
       contextInformation+="${dayService.getDateString(currDay.dayTime)} : $macroStructureOnTheDay";
     }
-    const String instructions = 'You are a diet coach your responsibility is to help user to be healthy and helping them achieving their goals by means of nutrition the data can contain last 7 days of data this application is an calorie counter app and some times the user can be new or the user can forget to log data on some days so respond apt for both see DO NOT PROVIDE ANY ANNOTATIONS FOR MARK DOWN as this must look like a text but feel free to provide line breaks where it could improve readability emojis are also welcomed if needed do not over use any';
-    String prompt = '''${UserGoalDescription} here is todays macros user has added till now time now is ${DateTime.now()} and the day user gave to comment is ${day.dayTime} and macros is $todayMacroStructure And the users past week data is here as follows $contextInformation your response is shown when user logs on the application guide user Greet them and give a tip if they are doing well if not consolidate them keep it short as like a small talk dont include calorie count exact in the response ''';
 
+    const String instructions = '''
+    You are a diet coach
+    ${AvatarService.Avatar_Character}
+    Your responsibility 
+    1. Greet user (good morning etc based on the current time)
+    2. Comment on users macro Nutrients that they have taken for the day
+    3. Comment on past days performance compliment or provide support 
+    Note 
+    1. DO NOT USE ANY MARK DOWN ANNOTATIONS (** **)
+    2. THE RESPONSE SHOULD LOOK LIKE A TEXT MESSAGE (Keep it short , like a funny caring friend not too short not too long)
+    3. use emojis 
+    4. Dont have to include calorie count and other things specific things in your response unless user asks for it
+    5. An empty context information or gaps in them mean user has not been tracking consistently or the user has recently created the account
+    ''';
+    String prompt = '''
+    Today is ${DateTime.now()},
+    User created the account on $userAccountCreatedDate,
+    Day on which user has provided to comment on is ${day.dayTime},
+    Users macro structure till now $todayMacroStructure,
+    Users past day context $contextInformation
+    ''';
     var response = await aiService.getResponse(prompt, instructions);
+    if(!response.success)
+    {
+      return null;
+    }
     var resString = response.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currMacro);
     return genComment;
@@ -97,6 +126,7 @@ class CommentsService {
   Future<GeneratedComment?> setMacroComments(Day day) async
   {
     var previousComment = day.comments?.macroNutrientsComments;
+
     if(previousComment == null)
     {
       if(dayService.getDateString(day.dayTime)!=dayService.getDateString(DateTime.now()) )
@@ -104,6 +134,10 @@ class CommentsService {
         return null;
       }
       var genComment =  await _generateMacroComment(day);
+      if(genComment == null)
+      {
+        return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+      }
       day.comments ??=  DayComments();
       day.comments!.macroNutrientsComments = genComment;
       dayService.updateDayData(day);
@@ -124,6 +158,10 @@ class CommentsService {
       else
       {
         var genComment = await _generateMacroComment(day);
+        if(genComment == null)
+        {
+          return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+        }
         day.comments!.macroNutrientsComments = genComment;
         dayService.updateDayData(day);
         return genComment;
@@ -132,26 +170,34 @@ class CommentsService {
     }
   }
 
-  Future<GeneratedComment> _generateMacroComment(Day day) async
+  Future<GeneratedComment?> _generateMacroComment(Day day) async
   {
     const String instruction = '''
-    You are a diet coach. You are given the user's macronutrient distribution for the day.
-    Review the values and suggest how the user can improve their diet to better achieve their goals.
-    If their macronutrient intake is good, compliment them.
-    Keep your response short, unless a longer explanation is necessary for the situation.
-    Do NOT use markdown notations (such as ** **).
-    Write your response as if you are talking to the user.
-    Use emojis if appropriate, and use line breaks where it improves readability, but do not overdo it.
-    You do not need to repeat the user's current status, as it is visible in the UI.
+    You are a diet coach. ${AvatarService.Avatar_Character}
+    Your responsibilities 
+    1 analyze users macro distribution 
+    2 provide tips and tricks on how user can improve and achieve their goal
+    3 suggest foods that help user to achieve their goal and health
+    Note
+    1. DO NOT USE ANY MARK DOWN ANNOTATIONS (** **)
+    2. THE RESPONSE SHOULD LOOK LIKE A TEXT MESSAGE (Keep it short , like a funny caring friend not too short not too long)
+    3. use emojis 
+    4. Dont have to include calorie count and other things specific things in your response unless user asks for it
+    5. An empty context information or gaps in them mean user has not been tracking consistently or the user has recently created the account
+    6. FOCUS ON THE MACRO NUTRIENT PROFILE ONLY FOR THIS RESPONSE
     ''';
     MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
     String currentMacroSignature = jsonEncode(currentMacroStructure);
     String prompt = '''
-    Users goal is ${UserGoalDescription},
+    Users goal is $UserGoalDescription,
     User has an macro structure as follows $currentMacroSignature 
-    Suggest user foods that help them to acheive their goal and health
+    Suggest user foods that help them to achieve their goal and health
     ''';
     var responseObject = await aiService.getResponse(prompt, instruction);
+    if(!responseObject.success)
+    {
+      return null;
+    }
     var resString = responseObject.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
     return genComment;
@@ -167,6 +213,10 @@ class CommentsService {
         return null;
       }
       var genComment =  await _generateMicroComment(day,microMap);
+      if(genComment == null)
+      {
+        return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+      }
       day.comments ??=  DayComments();
       day.comments!.microNutrientsComments = genComment;
       dayService.updateDayData(day);
@@ -186,6 +236,10 @@ class CommentsService {
       else
       {
         var genComment = await _generateMicroComment(day,microMap);
+        if(genComment == null)
+        {
+          return GeneratedComment(comment: 'Sorry, I am not able to respond now. Please try again later.', timeOfGeneration: DateTime.now(), macrosAtGenTime: MacroNutrients( 0, 0,  0, 0,0));
+        }
         day.comments!.microNutrientsComments = genComment;
         dayService.updateDayData(day);
         return genComment;
@@ -194,28 +248,36 @@ class CommentsService {
     }
   }
 
-   Future<GeneratedComment> _generateMicroComment(Day day , Map<String, MeasuredUnit> microMap) async
+   Future<GeneratedComment?> _generateMicroComment(Day day , Map<String, MeasuredUnit> microMap) async
   {
     const String instruction = '''
-    You are a diet coach. You are given the user's micronutrient distribution. 
-    Review the values and suggest how the user can improve their diet to better achieve their goals. 
-    If their micronutrient intake is good, compliment them. 
-    Keep your response short, unless a longer explanation is necessary for the situation. 
-    Do NOT use markdown notations (such as ** **). 
-    Write your response as if you are talking to the user. 
-    Use emojis if appropriate, and use line breaks where it improves readability, but do not overdo it. 
-    You do not need to repeat the user's current status, as it is visible in the UI.
+    You are a diet coach. ${AvatarService.Avatar_Character}
+    Your responsibilities 
+    1 analyze users micro nutrient distribution 
+    2 provide tips and tricks on how user can improve and achieve their goal
+    3 suggest foods that help user to achieve their goal and health
+    Note
+    1. DO NOT USE ANY MARK DOWN ANNOTATIONS (** **)
+    2. THE RESPONSE SHOULD LOOK LIKE A TEXT MESSAGE (Keep it short , like a funny caring friend not too short not too long)
+    3. use emojis 
+    4. Dont have to include calorie count and other things specific things in your response unless user asks for it
+    5. An empty context information or gaps in them mean user has not been tracking consistently or the user has recently created the account
+    6. FOCUS ON THE MICRO NUTRIENT PROFILE ONLY FOR THIS RESPONSE
     ''';
     MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
 
     String currentMicroSignature = _convertMicroMapToString(microMap);
     
     String prompt = '''
-    Users goal is ${UserGoalDescription},
+    Users goal is $UserGoalDescription,
     User has an micro structure as follows $currentMicroSignature 
-    Suggest user foods that help them to acheive their goal and health
+    Suggest user foods that help them to achieve their goal and health
     ''';
     var responseObject = await aiService.getResponse(prompt, instruction);
+    if(!responseObject.success)
+    {
+      return null;
+    }
     var resString = responseObject.message; 
     GeneratedComment genComment = GeneratedComment(comment: resString, timeOfGeneration: DateTime.now(), macrosAtGenTime: currentMacroStructure);
     return genComment;
