@@ -105,4 +105,4 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/food-template2.png"
+  image_path: "assets/logo.png"
