@@ -32,7 +32,11 @@ class Day extends HiveObject {
 
   @HiveField(9)
   UserGoals? goalForToday;
+  
+  @HiveField(10)
+  UserGoals? routineId;
 
+  
   Day({required this.dayTime}) {
     breakFast = Meal(mealName: 'Breakfast', foods: []);
     morningSnacks = Meal(mealName: 'Morning Snacks', foods: []);
