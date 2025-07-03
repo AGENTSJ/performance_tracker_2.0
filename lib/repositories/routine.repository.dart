@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 
@@ -31,13 +30,36 @@ class RoutineRepository {
     return await routineBox.delete(routine.key);
   }
 
-
-
   Future<Workout?> getWorkoutById(int id) async
   {
     return  workoutBox.get(id);
   }
 
-  // add workout 
-  // remove workout workout 
+  Future<int> addWorkout(Workout workout)async
+  {
+    return await workoutBox.add(workout);
+  }
+
+  Future<void> removeWorkout(Workout workout) async
+  {
+    return await workoutBox.delete(workout.key);
+  }
+
+  List<Workout> getWorkoutsByName(String name)
+  {
+    var workouts = workoutBox.values;
+    name = name.toLowerCase();
+    var filtered = workouts.where((work)=>work.name.startsWith(name));
+    return filtered.toList();
+  }
+
+  List<Workout> getAllWorkouts()
+  {
+    return workoutBox.values.toList();
+  }
+
+  Future<void> updateWorkout(int key,Workout workout)async
+  {
+    return await workoutBox.put(key, workout);
+  }
 }

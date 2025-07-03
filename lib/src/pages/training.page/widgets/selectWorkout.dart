@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/services/routine.service.dart';
 
 class SelectWorkout extends StatefulWidget {
   const SelectWorkout({Key? key}) : super(key: key);
@@ -8,10 +12,77 @@ class SelectWorkout extends StatefulWidget {
 }
 
 class _SelectWorkoutState extends State<SelectWorkout> {
+  var routineService = locator<RoutineService>();
+  var serachController = TextEditingController();
+  List<Workout> workouts = [];
+  @override
+  void initState() {
+    workouts = routineService.getAllWorkouts();
+    serachController.addListener(
+      () => handleSerachWorkouts(serachController.text),
+    );
+    super.initState();
+  }
+
+  handleSerachWorkouts(String name) {
+    
+    workouts = routineService.serachWorkoutByName(name);
+    refreshState();
+  }
+
+  refreshState() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text("Pop up"),
+    return Padding(
+      padding: const EdgeInsets.all(14.0),
+      child: Container(
+        height: 400,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8),
+            topRight: Radius.circular(8),
+          ),
+        ),
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: serachController,
+              decoration: InputDecoration(
+                hintText: 'Search workout',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ...workouts.map(
+                    (work) => Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(work.name),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

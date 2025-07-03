@@ -4,7 +4,9 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/routine.service.dart';
-import 'package:performance_tracker/src/pages/training.page/widgets/workout.component.dart';
+import 'package:performance_tracker/src/pages/training.page/widgets/selectWorkout.dart';
+import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
   const TrainingModulePage({super.key});
@@ -35,9 +37,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
     super.initState();
   }
 
-  getAllWorkouts() {
+  getAllWorkouts()async {
     for (var wId in routine!.workoutsIds) {
-      var workout = routineService.getWorkOutById(wId);
+      var workout = await routineService.getWorkOutById(wId);
       if (workout != null) {
         workouts.add(workout);
       }
@@ -63,7 +65,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>WorkoutsPage()));
+                    },
                     style: buttonDecor,
                     child: Padding(
                       padding: const EdgeInsets.only(left:8.0,right: 8.0),
@@ -127,7 +131,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                             SizedBox(
-                              width: 170,
+                              width: 180,
                               child: ElevatedButton(
                               onPressed: () {},
                               style: addFromButtonDecor,
@@ -144,7 +148,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                             ),
                             SizedBox(width: 10),
                             SizedBox(
-                              width: 170,
+                              width: 180,
                               child: ElevatedButton(
                               onPressed: () {handleAddWorkout();},
                               style: addFromButtonDecor,
@@ -173,9 +177,6 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
   }
   handleAddWorkout()
   {
-   showBottomSheet(context: context, builder: (BuildContext context)=>Container(
-     height: 200,
-     color: SURFACE2,
-   )); 
+   showBottomSheet(context: context, builder: (BuildContext context)=>SelectWorkout()); 
   }
 }

@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-// part 'routine.model.g.dart';
+part 'routine.model.g.dart';
 
 @HiveType(typeId: 13)
 class Routine extends HiveObject {
@@ -38,26 +38,26 @@ class Set extends HiveObject {
   Set({required this.value, required this.history, required this.pr});
 }
 
-var demoWorkOut = [
-  Workout(
-    name: 'Bench Press',
-    sets: [
-      Set(value: 10, history: [8, 10, 12], pr: 12),
-      Set(value: 8, history: [6, 8, 10], pr: 10),
-    ],
-  ),
-  Workout(
-    name: 'Squat',
-    sets: [
-      Set(value: 12, history: [10, 12, 14], pr: 14),
-      Set(value: 10, history: [8, 10, 12], pr: 12),
-    ],
-  ),
-  Workout(
-    name: 'Deadlift',
-    sets: [
-      Set(value: 6, history: [5, 6, 7], pr: 7),
-      Set(value: 5, history: [4, 5, 6], pr: 6),
-    ],
-  ),
-];
+// var demoWorkOut = [
+//   Workout(
+//     name: 'Bench Press',
+//     sets: [
+//       Set(value: 10, history: [8, 10, 12], pr: 12),
+//       Set(value: 8, history: [6, 8, 10], pr: 10),
+//     ],
+//   ),
+//   Workout(
+//     name: 'Squat',
+//     sets: [
+//       Set(value: 12, history: [10, 12, 14], pr: 14),
+//       Set(value: 10, history: [8, 10, 12], pr: 12),
+//     ],
+//   ),
+//   Workout(
+//     name: 'Deadlift',
+//     sets: [
+//       Set(value: 6, history: [5, 6, 7], pr: 7),
+//       Set(value: 5, history: [4, 5, 6], pr: 6),
+//     ],
+//   ),
+// ];
