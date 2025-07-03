@@ -21,9 +21,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
     shape: RoundedRectangleBorder(side: BorderSide.none),
   );
   final addFromButtonDecor = ElevatedButton.styleFrom(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6), // Less padding
-    minimumSize: Size(0, 0), // Allow button to shrink
-    textStyle: TextStyle(fontSize: 14), // Smaller text
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6), 
+    minimumSize: Size(0, 0), 
+    textStyle: TextStyle(fontSize: 14), 
     elevation: 0,
     shadowColor: Colors.transparent,
   );
@@ -146,7 +146,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                             SizedBox(
                               width: 170,
                               child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {handleAddWorkout();},
                               style: addFromButtonDecor,
                               child: Row(
                                 children: [
@@ -157,9 +157,8 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                                   Text("Add From Workout"),
                                 ],
                               ),
-                              ),
                             ),
-
+                          ),
                         ],
                       ),
                     ],
@@ -171,5 +170,12 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
         ),
       ),
     );
+  }
+  handleAddWorkout()
+  {
+   showBottomSheet(context: context, builder: (BuildContext context)=>Container(
+     height: 200,
+     color: SURFACE2,
+   )); 
   }
 }
