@@ -30,13 +30,15 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       appBar: AppBar(title: const Text('Workouts'),backgroundColor: BACKGROUND,),
       body: Padding(
         padding: EdgeInsets.all(14), 
-        child: Column(
-          children: [
-            ...workouts.map((work)=>Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: WorkoutComponent(workout: work,),
-            ))
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ...workouts.map((work)=>Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: WorkoutComponent(workout: work,),
+              ))
+            ],
+          ),
         )),
       floatingActionButton: FloatingActionButton(onPressed: (){
         Navigator.push(context, MaterialPageRoute(builder: (context)=>WorkoutDetailsPage(workout: Workout(name: "New One", sets: []),isCreateMode: true,)));

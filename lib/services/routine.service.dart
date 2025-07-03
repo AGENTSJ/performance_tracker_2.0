@@ -4,7 +4,6 @@ import 'package:performance_tracker/repositories/routine.repository.dart';
 
 class RoutineService {
   var routineRepo = locator<RoutineRepository>(); 
-
   Routine? getTodaysWorkout() { }
   
   Future<Workout?> getWorkOutById(int key) {
@@ -35,6 +34,10 @@ class RoutineService {
   Future<Workout?> addWorkout(Workout workout) async
   {
     var isUnique = isWorkoutNameUnique(workout.name);
+    if(!isUnique)
+    {
+      workout.name = "${workout.name} ${DateTime.now()}";
+    }
     var key = await routineRepo.addWorkout(workout);
     return await getWorkOutById(key);
   } 

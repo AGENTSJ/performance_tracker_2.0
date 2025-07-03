@@ -27,6 +27,9 @@ class _WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     Future.microtask(() async {
       if (widget.isCreateMode) {
         workout = await routineService.addWorkout(widget.workout);
+        setState(() {
+          
+        });
       } else {
         workout = widget.workout;
       }
