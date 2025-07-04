@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/routine.service.dart';
 
 class SelectWorkout extends StatefulWidget {
-  const SelectWorkout({Key? key}) : super(key: key);
+  const SelectWorkout({super.key});
 
   @override
-  _SelectWorkoutState createState() => _SelectWorkoutState();
+  SelectWorkoutState createState() => SelectWorkoutState();
 }
 
-class _SelectWorkoutState extends State<SelectWorkout> {
+class SelectWorkoutState extends State<SelectWorkout> {
   var routineService = locator<RoutineService>();
-  var serachController = TextEditingController();
+  var searchController = TextEditingController();
   List<Workout> workouts = [];
   @override
   void initState() {
     workouts = routineService.getAllWorkouts();
-    serachController.addListener(
-      () => handleSerachWorkouts(serachController.text),
+    searchController.addListener(
+      () => handleSearchWorkouts(searchController.text),
     );
     super.initState();
   }
 
-  handleSerachWorkouts(String name) {
+  handleSearchWorkouts(String name) {
     
-    workouts = routineService.serachWorkoutByName(name);
+    workouts = routineService.searchWorkoutByName(name);
     refreshState();
   }
 
@@ -52,7 +51,7 @@ class _SelectWorkoutState extends State<SelectWorkout> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              controller: serachController,
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Search workout',
                 border: OutlineInputBorder(

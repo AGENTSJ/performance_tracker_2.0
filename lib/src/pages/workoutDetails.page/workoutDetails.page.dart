@@ -143,12 +143,16 @@ class _WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                               height: 100,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Row(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Icon(FontAwesomeIcons.faceSmileWink),
-                                    SizedBox(width: 20),
+                                    SizedBox(height: 10),
                                     Text(
-                                      "Lets start by adding some sets shall we ?",
+                                      "Lets start by adding some sets",
+                                      softWrap: true,
+                                      maxLines: null,
                                     ),
                                   ],
                                 ),

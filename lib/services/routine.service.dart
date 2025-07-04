@@ -13,7 +13,7 @@ class RoutineService {
   List<Workout> getAllWorkouts(){
     return routineRepo.getAllWorkouts();
   }
-  List<Workout> serachWorkoutByName(String name){
+  List<Workout> searchWorkoutByName(String name){
     return routineRepo.getWorkoutsByName(name);
   }
   Future<void> updateWorkout(Workout workout) async
