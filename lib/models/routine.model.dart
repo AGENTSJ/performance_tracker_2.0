@@ -27,7 +27,7 @@ class Workout extends HiveObject {
 @HiveType(typeId: 15)
 class Set extends HiveObject {
   @HiveField(0)
-  int value;
+  double value;
 
   @HiveField(1)
   List<int> history;
@@ -35,7 +35,10 @@ class Set extends HiveObject {
   @HiveField(2)
   int pr;
 
-  Set({required this.value, required this.history, required this.pr});
+  @HiveField(3)
+  bool enabled;
+
+  Set({required this.value, required this.history, required this.pr,required this.enabled});
 }
 
 // var demoWorkOut = [

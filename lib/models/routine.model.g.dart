@@ -91,22 +91,25 @@ class SetAdapter extends TypeAdapter<Set> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Set(
-      value: fields[0] as int,
+      value: fields[0] as double,
       history: (fields[1] as List).cast<int>(),
       pr: fields[2] as int,
+      enabled: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Set obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.value)
       ..writeByte(1)
       ..write(obj.history)
       ..writeByte(2)
-      ..write(obj.pr);
+      ..write(obj.pr)
+      ..writeByte(3)
+      ..write(obj.enabled);
   }
 
   @override
