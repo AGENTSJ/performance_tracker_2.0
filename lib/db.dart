@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
@@ -36,6 +35,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(WorkoutAdapter());
   Hive.registerAdapter(RoutineAdapter());
   Hive.registerAdapter(SetAdapter());
+
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);
   await Hive.openBox<User>(Collections.users.value);
@@ -47,4 +47,15 @@ Future<void> setupHiveDb() async
   // await Hive.deleteBoxFromDisk(Collections.users.value);
   // await Hive.deleteBoxFromDisk(Collections.routines.value);
   // await Hive.deleteBoxFromDisk(Collections.workouts.value);
+}
+_openBox<T>(String boxName)async
+{
+  try{
+    await Hive.openBox<T>(boxName);
+  }
+  catch(e)
+  {
+    await Hive.deleteBoxFromDisk(boxName);
+    await Hive.openBox<T>(boxName);
+  }
 }

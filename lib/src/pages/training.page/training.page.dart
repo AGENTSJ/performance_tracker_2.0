@@ -66,7 +66,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>WorkoutsPage()));
+                      
                     },
                     style: buttonDecor,
                     child: Padding(
@@ -75,7 +75,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>WorkoutsPage()));
+                    },
                     style: buttonDecor,
                     child: Padding(
                       padding: const EdgeInsets.only(left:8.0,right: 8.0),
@@ -96,7 +98,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
               ...workouts.map(
                 (work) => Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: WorkoutComponent(workout: work),
+                  child: WorkoutComponent(workout: work,onUpdated: (value){},),
                 ),
                 
               ),

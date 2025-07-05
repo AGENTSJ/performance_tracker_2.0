@@ -55,18 +55,21 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
     };
     return Workout(
       name: fields[0] as String,
-      sets: (fields[1] as List).cast<Set>(),
+      sets: (fields[1] as List).cast<WorkSet>(),
+      enabled: fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.sets);
+      ..write(obj.sets)
+      ..writeByte(2)
+      ..write(obj.enabled);
   }
 
   @override
@@ -80,17 +83,17 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
           typeId == other.typeId;
 }
 
-class SetAdapter extends TypeAdapter<Set> {
+class SetAdapter extends TypeAdapter<WorkSet> {
   @override
   final int typeId = 15;
 
   @override
-  Set read(BinaryReader reader) {
+  WorkSet read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Set(
+    return WorkSet(
       value: fields[0] as double,
       history: (fields[1] as List).cast<int>(),
       pr: fields[2] as int,
@@ -99,7 +102,7 @@ class SetAdapter extends TypeAdapter<Set> {
   }
 
   @override
-  void write(BinaryWriter writer, Set obj) {
+  void write(BinaryWriter writer, WorkSet obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)

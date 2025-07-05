@@ -19,13 +19,16 @@ class Workout extends HiveObject {
   String name;
 
   @HiveField(1)
-  List<Set> sets;
-
-  Workout({required this.name, required this.sets});
+  List<WorkSet> sets;
+  
+  @HiveField(2)
+  bool enabled;
+  
+  Workout({required this.name, required this.sets,required this.enabled});
 }
 
 @HiveType(typeId: 15)
-class Set extends HiveObject {
+class WorkSet extends HiveObject {
   @HiveField(0)
   double value;
 
@@ -38,29 +41,5 @@ class Set extends HiveObject {
   @HiveField(3)
   bool enabled;
 
-  Set({required this.value, required this.history, required this.pr,required this.enabled});
+  WorkSet({required this.value, required this.history, required this.pr,required this.enabled});
 }
-
-// var demoWorkOut = [
-//   Workout(
-//     name: 'Bench Press',
-//     sets: [
-//       Set(value: 10, history: [8, 10, 12], pr: 12),
-//       Set(value: 8, history: [6, 8, 10], pr: 10),
-//     ],
-//   ),
-//   Workout(
-//     name: 'Squat',
-//     sets: [
-//       Set(value: 12, history: [10, 12, 14], pr: 14),
-//       Set(value: 10, history: [8, 10, 12], pr: 12),
-//     ],
-//   ),
-//   Workout(
-//     name: 'Deadlift',
-//     sets: [
-//       Set(value: 6, history: [5, 6, 7], pr: 7),
-//       Set(value: 5, history: [4, 5, 6], pr: 6),
-//     ],
-//   ),
-// ];

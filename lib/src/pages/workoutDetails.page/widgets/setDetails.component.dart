@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/setDetailsRow.component.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
 
 class SetDetailsComponent extends StatefulWidget {
@@ -18,11 +20,11 @@ class SetDetailsComponent extends StatefulWidget {
 }
 
 class SetDetailsComponentState extends State<SetDetailsComponent> {
+  bool showTrack = true;
   static const _headingTextDecor = TextStyle(
     fontWeight: FontWeight.w500,
     color: TEXT_SECONDARY,
   );
-  bool showTrack = true;
   var enabledButtonDecor = ElevatedButton.styleFrom(
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     minimumSize: Size(30, 30),
@@ -39,6 +41,21 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       borderRadius: BorderRadiusGeometry.circular(4),
     ),
   );
+  var routineService = locator<RoutineService>();
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  setSets(bool setsUpdated) async {
+    if(setsUpdated)
+    {
+      var work = await routineService.getWorkOutById(widget.workout.key);
+      widget.workout.sets = work!.sets;
+    }
+    refreshState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -93,9 +110,11 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                   ],
                 ),
                 TextButton(
-                  onPressed: ()async {
+                  onPressed: () async {
                     var weight = await showMaterialNumberInput(context);
-                    widget.onSetAdded(weight!);
+                    if (weight != null) {
+                      widget.onSetAdded(weight);
+                    }
                   },
                   style: enabledButtonDecor,
                   child: Icon(Icons.add, size: 20),
@@ -109,86 +128,137 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (widget.workout.sets.isNotEmpty) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.weightHanging,
-                                color: TEXT_SECONDARY,
-                                size: 12,
-                              ),
-                              SizedBox(width: 5),
-                              Text('Kg', style: _headingTextDecor),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.award,
-                                color: TEXT_SECONDARY,
-                                size: 12,
-                              ),
-                              SizedBox(width: 5),
-                              Text('Max', style: _headingTextDecor),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              if (showTrack) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
                                 Icon(
-                                  FontAwesomeIcons.calendarCheck,
+                                  FontAwesomeIcons.weightHanging,
                                   color: TEXT_SECONDARY,
                                   size: 12,
                                 ),
                                 SizedBox(width: 5),
-                                Text(
-                                  'Today',
-                                  style: _headingTextDecor,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ] else ...[
-                                Icon(
-                                  FontAwesomeIcons.chartSimple,
-                                  color: TEXT_SECONDARY,
-                                  size: 12,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'View',
-                                  style: _headingTextDecor,
-                                  textAlign: TextAlign.center,
+                                Expanded(
+                                  child: Text(
+                                    'Kg',
+                                    style: _headingTextDecor,
+                                    softWrap: true,
+                                    maxLines: 1,
+                                  ),
                                 ),
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.squareCheck,
-                                color: TEXT_SECONDARY,
-                                size: 12,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Enable',
-                                style: _headingTextDecor,
-                                textAlign: TextAlign.end,
-                              ),
-                            ],
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.award,
+                                  color: TEXT_SECONDARY,
+                                  size: 12,
+                                ),
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Max',
+                                    style: _headingTextDecor,
+                                    softWrap: true,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          if (showTrack) ...[
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.solidCalendarCheck,
+                                    color: TEXT_SECONDARY,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      'Today',
+                                      style: _headingTextDecor,
+                                      textAlign: TextAlign.center,
+                                      softWrap: true,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.solidSquareCheck,
+                                    color: TEXT_SECONDARY,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Track',
+                                    style: _headingTextDecor,
+                                    softWrap: true,
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ] else ...[
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.trash,
+                                    color: TEXT_SECONDARY,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 3),
+                                  Expanded(
+                                    child: Text(
+                                      'Remove',
+                                      style: _headingTextDecor,
+                                      textAlign: TextAlign.center,
+                                      softWrap: true,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.solidSquareCheck,
+                                    color: TEXT_SECONDARY,
+                                    size: 12,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'Enable',
+                                    style: _headingTextDecor,
+                                    softWrap: true,
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                     SizedBox(height: 10),
                     SingleChildScrollView(
@@ -203,12 +273,15 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                               child: SetDetailRowComponent(
                                 set: set,
                                 showTrack: showTrack,
+                                workout: widget.workout,
+                                onSetUpdated: (value) {
+                                  setSets(value);
+                                },
                               ),
                             ),
                           ),
                         ],
                       ),
-                      // child: Container(color: Colors.red,height: 100,),
                     ),
                   ] else ...[
                     SizedBox(height: 20),
@@ -216,7 +289,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       color: SURFACE2,
                       child: InkWell(
                         onTap: () {
-                          handleGoToWorkOutDetails();
                         },
                         child: Container(
                           width: double.infinity,
@@ -272,14 +344,14 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
 
   Future<double?> showMaterialNumberInput(BuildContext context) async {
     final controller = TextEditingController();
-
     return showDialog<double>(
       barrierColor: const Color.fromARGB(87, 90, 90, 90),
       context: context,
-      barrierDismissible: false, // Prevents dismissing without action
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: Text('Enter a number'),
+          backgroundColor: SURFACE2,
+          title: Text('Enter weight in Kg'),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -294,12 +366,18 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
           ),
           actions: [
             TextButton(
-              style: ElevatedButton.styleFrom(elevation: 0,shadowColor: Colors.transparent),
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
               onPressed: () => Navigator.of(context).pop(),
               child: Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(elevation: 0,shadowColor: Colors.transparent),
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
               onPressed: () {
                 final input = double.tryParse(controller.text);
                 Navigator.of(context).pop(input);
@@ -312,113 +390,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
           ),
         );
       },
-    );
-  }
-}
-
-class SetDetailRowComponent extends StatelessWidget {
-  static const inputDecor = InputDecoration(
-    fillColor: SURFACE,
-    filled: true,
-    border: OutlineInputBorder(borderSide: BorderSide.none),
-    contentPadding: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
-  );
-  static const fieldDecor = TextStyle(
-    fontSize: 15,
-    fontWeight: FontWeight.w400,
-  );
-  final Set set;
-  final bool showTrack;
-  const SetDetailRowComponent({
-    super.key,
-    required this.set,
-    required this.showTrack,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 27,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(child: Text("${set.value}", style: fieldDecor)),
-          Expanded(child: Text("${set.pr}", style: fieldDecor)),
-          if (showTrack) ...[
-            Expanded(
-              child: TextField(
-                decoration: inputDecor,
-                textAlign: TextAlign.center,
-                style: fieldDecor,
-              ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        FontAwesomeIcons.check,
-                        size: 12,
-                        color: Colors.green.shade400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ] else ...[
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: SURFACE,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        FontAwesomeIcons.eye,
-                        size: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        FontAwesomeIcons.check,
-                        size: 12,
-                        color: Colors.green.shade400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

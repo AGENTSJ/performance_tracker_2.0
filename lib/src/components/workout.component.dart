@@ -6,16 +6,30 @@ import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails
 
 class WorkoutComponent extends StatefulWidget {
   final Workout workout;
-  const WorkoutComponent({super.key, required this.workout});
+  final ValueChanged<bool> onUpdated;
+  const WorkoutComponent({super.key, required this.workout,required this.onUpdated});
   @override
-  State<WorkoutComponent> createState() => _WorkoutComponentState();
+  State<WorkoutComponent> createState() => WorkoutComponentState();
 }
 
-class _WorkoutComponentState extends State<WorkoutComponent> {
+class WorkoutComponentState extends State<WorkoutComponent> {
   static const _headingTextDecor = TextStyle(
     fontWeight: FontWeight.w500,
     color: TEXT_SECONDARY,
   );
+  List<WorkSet> enabledSets = [];
+
+  @override
+  void initState()
+  {
+    widget.workout.sets.forEach((workSet){
+      if(workSet.enabled)
+      {
+        enabledSets.add(workSet);
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +80,7 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
               ],
             ),
             SizedBox(height: 20),
-            if (widget.workout.sets.isNotEmpty) ...[
+            if (enabledSets.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Row(
@@ -102,7 +116,7 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
                       child: Row(
                         children: [
                           Icon(
-                            FontAwesomeIcons.calendarCheck,
+                            FontAwesomeIcons.solidCalendarCheck,
                             color: TEXT_SECONDARY,
                             size: 12,
                           ),
@@ -120,7 +134,7 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Icon(
-                            FontAwesomeIcons.squareCheck,
+                            FontAwesomeIcons.solidSquareCheck,
                             color: TEXT_SECONDARY,
                             size: 12,
                           ),
@@ -143,7 +157,7 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Column(
                       children: [
-                        ...widget.workout.sets.map(
+                        ...enabledSets.map(
                           (set) => Padding(
                             padding: const EdgeInsets.only(
                               top: 5.0,
@@ -155,7 +169,6 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
                       ],
                     ),
                   ),
-                  // child: Container(color: Colors.red,height: 100,),
                 ),
               ),
             ] else ...[
@@ -200,13 +213,17 @@ class _WorkoutComponentState extends State<WorkoutComponent> {
   }
 
   handleGoToWorkOutDetails() async {
-    await Navigator.push(
+    var removed = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
             WorkoutDetailsPage(workout: widget.workout, isCreateMode: false),
       ),
     );
+    if(removed!=null)
+    {
+      widget.onUpdated(removed);
+    }
     refreshState();
   }
 
@@ -227,7 +244,7 @@ class SetRowComponent extends StatelessWidget {
     fontSize: 15,
     fontWeight: FontWeight.w400,
   );
-  final Set set;
+  final WorkSet set;
   const SetRowComponent({super.key, required this.set});
 
   @override
