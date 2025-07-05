@@ -51,9 +51,9 @@ class _MainAppEntryState extends State<MainAppEntry> {
     super.initState();
     modules = [
       const NutritionModule(),
-      const ProfilePageModule(),
       const TrainingModulePage(),
       const ActivityPage(),
+      const ProfilePageModule(),
     ];
   }
 

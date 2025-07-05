@@ -104,7 +104,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 children: [
                   TextButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(25, 25),
+                      minimumSize: Size(20, 20),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       backgroundColor: const Color.fromARGB(104, 255, 163, 163),
                       foregroundColor: const Color.fromARGB(104, 255, 147, 147),
@@ -122,7 +122,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                     child: Icon(
                       FontAwesomeIcons.trash,
                       size: 12,
-                      color: const Color.fromARGB(202, 255, 111, 111),
+                      color: const Color.fromARGB(149, 255, 111, 111),
                     ),
                   ),
                 ],
