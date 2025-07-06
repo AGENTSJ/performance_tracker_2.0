@@ -148,9 +148,10 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     );
   }
 
-  handleRemoveSet(WorkSet setToRemove)
+  handleRemoveSet(WorkSet setToRemove) async
   {
     widget.workout.sets.remove(setToRemove);
+    await routineService.updateWorkout(widget.workout);
     widget.onSetUpdated(true);
   }
 

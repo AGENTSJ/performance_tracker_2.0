@@ -112,8 +112,6 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         builder: (context) => WorkoutDetailsPage(
           workout: Workout(name: "New One", sets: [], enabled: true),
           isCreateMode: true,
-          onUpdated: (value){},
-          onRemoved: (value){},
         ),
       ),
     );

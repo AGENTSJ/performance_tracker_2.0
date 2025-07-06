@@ -9,11 +9,11 @@ import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails
 
 class SetDetailsComponent extends StatefulWidget {
   final Workout workout;
-  final ValueChanged<double> onSetAdded;
+  final ValueChanged<bool> onSetUpdated;
   const SetDetailsComponent({
     super.key,
     required this.workout,
-    required this.onSetAdded,
+    required this.onSetUpdated,
   });
   @override
   State<SetDetailsComponent> createState() => SetDetailsComponentState();
@@ -113,7 +113,8 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                   onPressed: () async {
                     var weight = await showMaterialNumberInput(context);
                     if (weight != null) {
-                      widget.onSetAdded(weight);
+                      handleAddNewSet(weight);
+                      widget.onSetUpdated(true);
                     }
                   },
                   style: enabledButtonDecor,
@@ -325,7 +326,12 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       ),
     );
   }
-
+  handleAddNewSet(double weight)
+  {
+    var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
+    widget.workout.sets.add(set);
+    routineService.updateWorkout(widget.workout);
+  }
   handleGoToWorkOutDetails() async {
     await Navigator.push(
       context,

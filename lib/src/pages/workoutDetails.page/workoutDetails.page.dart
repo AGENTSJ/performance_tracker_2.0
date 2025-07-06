@@ -106,8 +106,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
               // sets
               SetDetailsComponent(
                 workout: widget.workout,
-                onSetAdded: (weight) {
-                  handleAddNewSet(weight);
+                onSetUpdated: (updated) {
+                  handleSetUpdated();
                 },
               ),
               SizedBox(height: 20),
@@ -214,10 +214,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     );
   }
 
-  void handleAddNewSet(double weight) {
-    var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
-    widget.workout.sets.add(set);
-    routineService.updateWorkout(workout!);
+  void handleSetUpdated() {
     refreshState();
   }
 
