@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/pages/training.page/widgets/selectWorkout.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
@@ -16,7 +16,7 @@ class TrainingModulePage extends StatefulWidget {
 }
 
 class _TrainingModulePageState extends State<TrainingModulePage> {
-  final routineService = locator<RoutineService>();
+  final workoutService = locator<WorkoutService>();
   final buttonDecor = ElevatedButton.styleFrom(
     elevation: 0,
     shadowColor: Colors.transparent,
@@ -33,13 +33,13 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
   List<Workout> workouts = [];
   @override
   void initState() {
-    routine = routineService.getTodaysWorkout();
+    routine = workoutService.getTodaysWorkout();
     super.initState();
   }
 
   getAllWorkouts()async {
     for (var wId in routine!.workoutsIds) {
-      var workout = await routineService.getWorkOutById(wId);
+      var workout = await workoutService.getWorkOutById(wId);
       if (workout != null) {
         workouts.add(workout);
       }

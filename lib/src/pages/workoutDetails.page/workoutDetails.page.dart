@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/setDetails.component.dart';
 
 class WorkoutDetailsPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class WorkoutDetailsPage extends StatefulWidget {
 }
 
 class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
-  var routineService = locator<RoutineService>();
+  var workoutService = locator<WorkoutService>();
   var workNameController = TextEditingController();
   bool isEditModeOn = false;
   Workout? workout;
@@ -30,7 +30,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     Future.microtask(() async {
       workNameController.text = widget.workout.name;
       if (widget.isCreateMode) {
-        workout = await routineService.addWorkout(widget.workout);
+        workout = await workoutService.addWorkout(widget.workout);
       } else {
         workout = widget.workout;
       }
@@ -231,7 +231,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
 
   handleUpdateWorkout() {
     workout?.name = workNameController.text;
-    routineService.updateWorkout(workout!);
+    workoutService.updateWorkout(workout!);
     isEditModeOn = false;
     refreshState();
   }
@@ -239,7 +239,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   handleRemove() async {
     bool remove = await showConfirmation(context) ?? false;
     if (remove) {
-      routineService.removeWorkout(workout!);
+      workoutService.removeWorkout(workout!);
       Navigator.of(context).pop(true);
     }
   }

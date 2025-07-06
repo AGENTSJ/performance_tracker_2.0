@@ -8,4 +8,11 @@ class CommonService {
     }
     return (part / total)*100;
   }
+  String getDateString(DateTime date)
+  {
+    var year = date.year;
+    var month = date.month;
+    var dayOfMonth = date.day;
+    return "$year-$month-$dayOfMonth"; 
+  }
 }

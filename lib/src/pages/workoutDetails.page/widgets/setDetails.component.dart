@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/setDetailsRow.component.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
 
@@ -41,7 +41,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       borderRadius: BorderRadiusGeometry.circular(4),
     ),
   );
-  var routineService = locator<RoutineService>();
+  var workoutService = locator<WorkoutService>();
   @override
   void initState() {
     super.initState();
@@ -50,7 +50,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   setSets(bool setsUpdated) async {
     if(setsUpdated)
     {
-      var work = await routineService.getWorkOutById(widget.workout.key);
+      var work = await workoutService.getWorkOutById(widget.workout.key);
       widget.workout.sets = work!.sets;
     }
     refreshState();
@@ -330,7 +330,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   {
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
-    routineService.updateWorkout(widget.workout);
+    workoutService.updateWorkout(widget.workout);
   }
   handleGoToWorkOutDetails() async {
     await Navigator.push(

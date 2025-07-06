@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 
 class SelectWorkout extends StatefulWidget {
   const SelectWorkout({super.key});
@@ -11,12 +11,12 @@ class SelectWorkout extends StatefulWidget {
 }
 
 class SelectWorkoutState extends State<SelectWorkout> {
-  var routineService = locator<RoutineService>();
+  var workoutService = locator<WorkoutService>();
   var searchController = TextEditingController();
   List<Workout> workouts = [];
   @override
   void initState() {
-    workouts = routineService.getAllWorkouts();
+    workouts = workoutService.getAllWorkouts();
     searchController.addListener(
       () => handleSearchWorkouts(searchController.text),
     );
@@ -25,7 +25,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
 
   handleSearchWorkouts(String name) {
     
-    workouts = routineService.searchWorkoutByName(name);
+    workouts = workoutService.searchWorkoutByName(name);
     refreshState();
   }
 

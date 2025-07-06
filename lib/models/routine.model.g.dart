@@ -83,7 +83,7 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
           typeId == other.typeId;
 }
 
-class SetAdapter extends TypeAdapter<WorkSet> {
+class WorkSetAdapter extends TypeAdapter<WorkSet> {
   @override
   final int typeId = 15;
 
@@ -95,7 +95,7 @@ class SetAdapter extends TypeAdapter<WorkSet> {
     };
     return WorkSet(
       value: fields[0] as double,
-      history: (fields[1] as List).cast<int>(),
+      history: (fields[1] as List).cast<TrackEntry>(),
       pr: fields[2] as int,
       enabled: fields[3] as bool,
     );
@@ -121,7 +121,44 @@ class SetAdapter extends TypeAdapter<WorkSet> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SetAdapter &&
+      other is WorkSetAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
+  @override
+  final int typeId = 16;
+
+  @override
+  TrackEntry read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return TrackEntry(
+      entryDate: fields[0] as DateTime,
+      value: fields[1] as int,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, TrackEntry obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.entryDate)
+      ..writeByte(1)
+      ..write(obj.value);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TrackEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

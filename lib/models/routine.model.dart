@@ -33,7 +33,7 @@ class WorkSet extends HiveObject {
   double value;
 
   @HiveField(1)
-  List<int> history;
+  List<TrackEntry> history;
 
   @HiveField(2)
   int pr;
@@ -42,4 +42,14 @@ class WorkSet extends HiveObject {
   bool enabled;
 
   WorkSet({required this.value, required this.history, required this.pr,required this.enabled});
+}
+
+@HiveType(typeId: 16)
+class TrackEntry
+{
+  @HiveField(0)
+  DateTime entryDate;
+  @HiveField(1)
+  int value;
+  TrackEntry({required this.entryDate,required this.value});
 }

@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
 
@@ -14,11 +14,11 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
-  var routineService = locator<RoutineService>();
+  var workoutService = locator<WorkoutService>();
   List<Workout> workouts = [];
   @override
   void initState() {
-    workouts = routineService.getAllWorkouts();
+    workouts = workoutService.getAllWorkouts();
     super.initState();
   }
 
@@ -124,7 +124,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   }
 
   getAndSetWorkouts() {
-    workouts = routineService.getAllWorkouts();
+    workouts = workoutService.getAllWorkouts();
     refreshState();
   }
 }

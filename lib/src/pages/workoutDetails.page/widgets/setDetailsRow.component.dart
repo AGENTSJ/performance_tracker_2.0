@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 
 class SetDetailRowComponent extends StatefulWidget {
   static const inputDecor = InputDecoration(
@@ -26,7 +28,7 @@ class SetDetailRowComponent extends StatefulWidget {
     required this.set,
     required this.showTrack,
     required this.workout,
-    required this.onSetUpdated
+    required this.onSetUpdated,
   });
 
   @override
@@ -35,17 +37,49 @@ class SetDetailRowComponent extends StatefulWidget {
 
 class SetDetailRowComponentState extends State<SetDetailRowComponent> {
   late bool isEnabled;
-  var routineService = locator<RoutineService>();
+  var workoutService = locator<WorkoutService>();
+  final commonService = locator<CommonService>();
+  final trackController = TextEditingController();
   @override
   void initState() {
     super.initState();
     isEnabled = widget.set.enabled;
+    setTrackValue();
   }
 
+  void setTrackValue() {
+    var last = widget.set.history.lastOrNull;
+    if (last != null &&
+        commonService.getDateString(last.entryDate) ==
+            commonService.getDateString(DateTime.now())) {
+      trackController.text = last.value.toString();
+    }
+  }
+
+  void handleTrack() {
+    var rep = int.tryParse(trackController.text);
+    if (rep == null) {
+      return;
+    }
+    workoutService.trackRep(widget.workout, widget.set, rep);
+    setTrackValue();
+    if (widget.set.pr < rep) {
+      widget.set.pr = rep;
+    }
+    refreshState();
+    Fluttertoast.showToast(msg: "Rep tracked");
+  }
+  refreshState()
+  {
+    if(!mounted) return;
+    setState(() {
+      
+    });
+  }
   void handleToggleEnable(bool val) async {
     isEnabled = val;
     widget.set.enabled = val;
-    await routineService.updateWorkout(widget.workout);
+    await workoutService.updateWorkout(widget.workout);
     setState(() {});
   }
 
@@ -74,23 +108,29 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 decoration: SetDetailRowComponent.inputDecor,
                 textAlign: TextAlign.center,
                 style: SetDetailRowComponent.fieldDecor,
+                controller: trackController,
               ),
             ),
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        FontAwesomeIcons.check,
-                        size: 12,
-                        color: Colors.green.shade400,
+                  GestureDetector(
+                    onTap: () {
+                      handleTrack();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          FontAwesomeIcons.check,
+                          size: 12,
+                          color: Colors.green.shade400,
+                        ),
                       ),
                     ),
                   ),
@@ -113,9 +153,11 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                       ),
                     ),
                     onPressed: () async {
-                      var remove =  await showConfirmDialog(context, widget.set.value);
-                      if(remove!=null && remove)
-                      {
+                      var remove = await showConfirmDialog(
+                        context,
+                        widget.set.value,
+                      );
+                      if (remove != null && remove) {
                         handleRemoveSet(widget.set);
                       }
                     },
@@ -148,10 +190,9 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     );
   }
 
-  handleRemoveSet(WorkSet setToRemove) async
-  {
+  handleRemoveSet(WorkSet setToRemove) async {
     widget.workout.sets.remove(setToRemove);
-    await routineService.updateWorkout(widget.workout);
+    await workoutService.updateWorkout(widget.workout);
     widget.onSetUpdated(true);
   }
 
