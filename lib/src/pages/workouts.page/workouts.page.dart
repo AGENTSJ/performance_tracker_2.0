@@ -29,53 +29,51 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         title: const Text('Workouts'),
         backgroundColor: BACKGROUND,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(14),
-        child: workouts.isEmpty
-            ? Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 250,
-                        height: 250,
-                        decoration: BoxDecoration(
-                          color: PRIMARY,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 150,
-                              width: 150,
-                              child: SvgPicture.asset(
-                                "assets/man-hold-dumbell.svg",
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Resting huh 🤨 ?",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+      body: workouts.isEmpty
+          ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    color: PRIMARY,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 150,
+                        width: 150,
+                        child: SvgPicture.asset(
+                          "assets/man-hold-dumbell.svg",
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Resting huh 🤨 ?",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            : SingleChildScrollView(
+              ),
+            ],
+          )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
                 child: Column(
                   children: [
                     ...workouts.map(
@@ -94,7 +92,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   ],
                 ),
               ),
-      ),
+            ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY,
         foregroundColor: Colors.white,
@@ -114,6 +112,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         builder: (context) => WorkoutDetailsPage(
           workout: Workout(name: "New One", sets: [], enabled: true),
           isCreateMode: true,
+          onUpdated: (value){},
+          onRemoved: (value){},
         ),
       ),
     );
