@@ -27,7 +27,7 @@ class DayAdapter extends TypeAdapter<Day> {
       ..meals = (fields[6] as List?)?.cast<Meal>()
       ..comments = fields[8] as DayComments?
       ..goalForToday = fields[9] as UserGoals?
-      ..routineId = fields[10] as UserGoals?;
+      ..routineId = fields[10] as int?;
   }
 
   @override

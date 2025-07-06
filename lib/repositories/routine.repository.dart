@@ -9,10 +9,21 @@ class RoutineRepository {
   
   Routine? getRoutineByName(String name)
   {
-    var routine = routineBox.values.firstWhere(
-      (routine) => routine.name == name,
-    );
-    return routine;
+    for (var routine in routineBox.values) {
+      if(routine.name==name)
+      {
+        return routine;
+      }
+    } 
+    return null;
+  }
+  updateRoutine(Routine routine)async
+  {
+    await routineBox.put(routine.key, routine);
+  }
+  Routine? getRoutineById(int id)
+  {
+    return routineBox.get(id);
   }
 
   Future<int> addRoutine(Routine routine)async
@@ -28,6 +39,11 @@ class RoutineRepository {
   removeRoutine(Routine routine) async
   {
     return await routineBox.delete(routine.key);
+  }
+
+  List<Routine> getAllRoutines()
+  {
+    return routineBox.values.toList();
   }
 
   Future<Workout?> getWorkoutById(int id) async
@@ -49,7 +65,7 @@ class RoutineRepository {
   {
     var workouts = workoutBox.values;
     name = name.toLowerCase();
-    var filtered = workouts.where((work)=>work.name.startsWith(name));
+    var filtered = workouts.where((work)=>work.name.toLowerCase().startsWith(name));
     return filtered.toList();
   }
 

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 
 part 'day.model.g.dart';
@@ -34,7 +35,7 @@ class Day extends HiveObject {
   UserGoals? goalForToday;
   
   @HiveField(10)
-  UserGoals? routineId;
+  int? routineId;
 
   
   Day({required this.dayTime}) {

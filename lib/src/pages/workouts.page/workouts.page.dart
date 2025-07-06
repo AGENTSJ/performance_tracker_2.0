@@ -14,11 +14,11 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
-  var workoutService = locator<WorkoutService>();
+  var routineService = locator<WorkoutService>();
   List<Workout> workouts = [];
   @override
   void initState() {
-    workouts = workoutService.getAllWorkouts();
+    workouts = routineService.getAllWorkouts();
     super.initState();
   }
 
@@ -124,7 +124,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   }
 
   getAndSetWorkouts() {
-    workouts = workoutService.getAllWorkouts();
+    workouts = routineService.getAllWorkouts();
     refreshState();
   }
 }

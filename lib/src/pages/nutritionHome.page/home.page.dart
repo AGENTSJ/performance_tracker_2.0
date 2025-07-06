@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
-import 'package:performance_tracker/services/day.service.dart';
-// import 'package:performance_tracker/src/components/dateSelector.dart';
+import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/mealContainer.dart';
-import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';
-import 'package:performance_tracker/services/userGoals.service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -99,6 +98,7 @@ class NutritionModuleState extends State<NutritionModule> {
                     Padding(
                       padding: const EdgeInsets.all(14.0),
                       child: ListView(
+                        physics: AlwaysScrollableScrollPhysics(),
                         scrollDirection: Axis.vertical,
                         children: [
                           // Greetings

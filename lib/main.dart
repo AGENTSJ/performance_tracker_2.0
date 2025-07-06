@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
@@ -19,17 +20,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorSchemeSeed: PRIMARY,
-        scaffoldBackgroundColor: BACKGROUND,
-        textTheme: ThemeData.light().textTheme.copyWith(
-          bodyLarge: TextStyle(color: TEXT_PRIMARY),
-          bodyMedium: TextStyle(color: TEXT_PRIMARY),
+    return ScreenUtilInit(
+      designSize: Size(360, 690), // <- your reference design size
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) => MaterialApp(
+        theme: ThemeData(
+          colorSchemeSeed: PRIMARY,
+          scaffoldBackgroundColor: BACKGROUND,
+          textTheme: ThemeData.light().textTheme.copyWith(
+            bodyLarge: TextStyle(color: TEXT_PRIMARY),
+            bodyMedium: TextStyle(color: TEXT_PRIMARY),
+          ),
         ),
+        home: MainAppEntry(),
       ),
-
-      home: MainAppEntry(),
     );
   }
 }

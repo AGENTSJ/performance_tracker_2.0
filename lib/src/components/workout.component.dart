@@ -81,7 +81,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
             SizedBox(height: 20),
             if (enabledSets.isNotEmpty) ...[
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -153,7 +153,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                     child: Column(
                       children: [
                         ...enabledSets.map(
@@ -185,7 +185,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(0.0),
                       child: Column(
                         children: [
                           SizedBox(height: 5),

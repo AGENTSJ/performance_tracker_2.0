@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -328,6 +329,12 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   }
   handleAddNewSet(double weight)
   {
+    for (var set in widget.workout.sets) {
+      if(set.value == weight) {
+        Fluttertoast.showToast(msg: "Already exist");
+        return;
+      }
+    }
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
     workoutService.updateWorkout(widget.workout);

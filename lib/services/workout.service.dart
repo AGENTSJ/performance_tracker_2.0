@@ -1,7 +1,6 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
-import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/common.service.dart';
 
 class WorkoutService {

@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/services/workout.service.dart';
-import 'package:performance_tracker/src/pages/training.page/widgets/selectWorkout.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
+import 'package:performance_tracker/src/components/selectWorkout.dart';
+import 'package:performance_tracker/src/pages/workout.routine.page/workout.routine.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
   const TrainingModulePage({super.key});
 
   @override
-  State<TrainingModulePage> createState() => _TrainingModulePageState();
+  State<TrainingModulePage> createState() => TrainingModulePageState();
 }
 
-class _TrainingModulePageState extends State<TrainingModulePage> {
+class TrainingModulePageState extends State<TrainingModulePage> {
   final workoutService = locator<WorkoutService>();
   final buttonDecor = ElevatedButton.styleFrom(
     elevation: 0,
@@ -23,9 +24,9 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
     shape: RoundedRectangleBorder(side: BorderSide.none),
   );
   final addFromButtonDecor = ElevatedButton.styleFrom(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6), 
-    minimumSize: Size(0, 0), 
-    textStyle: TextStyle(fontSize: 14), 
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    minimumSize: Size(0, 0),
+    textStyle: TextStyle(fontSize: 14),
     elevation: 0,
     shadowColor: Colors.transparent,
   );
@@ -37,7 +38,7 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
     super.initState();
   }
 
-  getAllWorkouts()async {
+  getAllWorkouts() async {
     for (var wId in routine!.workoutsIds) {
       var workout = await workoutService.getWorkOutById(wId);
       if (workout != null) {
@@ -66,21 +67,27 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => WorkoutRoutinePage()),
+                      );
                     },
                     style: buttonDecor,
                     child: Padding(
-                      padding: const EdgeInsets.only(left:8.0,right: 8.0),
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                       child: Text('Routines'),
                     ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>WorkoutsPage()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => WorkoutsPage()),
+                      );
                     },
                     style: buttonDecor,
                     child: Padding(
-                      padding: const EdgeInsets.only(left:8.0,right: 8.0),
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                       child: Text('Workouts'),
                     ),
                   ),
@@ -98,23 +105,28 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
               ...workouts.map(
                 (work) => Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: WorkoutComponent(workout: work,onUpdated: (value){},),
+                  child: WorkoutComponent(workout: work, onUpdated: (value) {}),
                 ),
-                
               ),
-              if(workouts.isEmpty ) ...[
+              if (workouts.isEmpty) ...[
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical:  30.0),
+                  padding: const EdgeInsets.symmetric(vertical: 30.0),
                   child: Container(
                     width: double.infinity,
                     height: 100,
-                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(FontAwesomeIcons.faceGrinWink,color: Colors.grey,),
-                        SizedBox(height: 10,),
-                        Text("Add some workouts to get started",style: TextStyle(color: Colors.grey),)
+                        Icon(FontAwesomeIcons.faceGrinWink, color: Colors.grey),
+                        SizedBox(height: 10),
+                        Text(
+                          "Add some workouts to get started",
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ],
                     ),
                   ),
@@ -123,7 +135,10 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
               Container(
                 width: double.infinity,
                 height: 130,
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Column(
@@ -132,33 +147,43 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                            SizedBox(
-                              width: 180,
-                              child: ElevatedButton(
+                          SizedBox(
+                            width: 180,
+                            child: ElevatedButton(
                               onPressed: () {},
                               style: addFromButtonDecor,
                               child: Row(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Icon(FontAwesomeIcons.plus,color: Colors.grey,size: 15,),
+                                    child: Icon(
+                                      FontAwesomeIcons.plus,
+                                      color: Colors.grey,
+                                      size: 15,
+                                    ),
                                   ),
                                   Text("Add From Routines"),
                                 ],
                               ),
-                              ),
                             ),
-                            SizedBox(width: 10),
-                            SizedBox(
-                              width: 180,
-                              child: ElevatedButton(
-                              onPressed: () {handleAddWorkout();},
+                          ),
+                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 180,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                handleAddWorkout();
+                              },
                               style: addFromButtonDecor,
                               child: Row(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Icon(FontAwesomeIcons.plus,color: Colors.grey,size: 15,),
+                                    child: Icon(
+                                      FontAwesomeIcons.plus,
+                                      color: Colors.grey,
+                                      size: 15,
+                                    ),
                                   ),
                                   Text("Add From Workout"),
                                 ],
@@ -170,15 +195,18 @@ class _TrainingModulePageState extends State<TrainingModulePage> {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
       ),
     );
   }
-  handleAddWorkout()
-  {
-   showBottomSheet(context: context, builder: (BuildContext context)=>SelectWorkout()); 
+
+  handleAddWorkout() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) => SelectWorkout(selectedWorkouts: [],),
+    );
   }
 }
