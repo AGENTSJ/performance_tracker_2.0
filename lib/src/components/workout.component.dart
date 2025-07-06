@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
 
 class WorkoutComponent extends StatefulWidget {
@@ -22,12 +24,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
   @override
   void initState()
   {
-    widget.workout.sets.forEach((workSet){
-      if(workSet.enabled)
-      {
-        enabledSets.add(workSet);
-      }
-    });
+    setEnabledSets();
     super.initState();
   }
 
@@ -224,12 +221,24 @@ class WorkoutComponentState extends State<WorkoutComponent> {
     {
       widget.onUpdated(removed);
     }
+    var routineService  = locator<RoutineService>();
+    setEnabledSets();
     refreshState();
   }
 
   refreshState() {
     if (!mounted) return;
     setState(() {});
+  }
+  setEnabledSets()
+  {
+    enabledSets = [];
+    widget.workout.sets.forEach((workSet){
+      if(workSet.enabled)
+      {
+        enabledSets.add(workSet);
+      }
+    });
   }
 }
 

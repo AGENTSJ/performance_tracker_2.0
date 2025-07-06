@@ -23,7 +23,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   var workNameController = TextEditingController();
   bool isEditModeOn = false;
   Workout? workout;
-
+  // bool
   @override
   void initState() {
     super.initState();
@@ -175,15 +175,26 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         foregroundColor: const Color.fromARGB(148, 255, 91, 91),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
-                          side: BorderSide(color: const Color.fromARGB(148, 255, 91, 91))
+                          side: BorderSide(
+                            color: const Color.fromARGB(148, 255, 91, 91),
+                          ),
                         ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(FontAwesomeIcons.trash,color: const Color.fromARGB(189, 255, 82, 82),size: 12,),
-                          SizedBox(width: 10,),
-                          Text("Remove",style: TextStyle(color: const Color.fromARGB(189, 255, 82, 82)),),
+                          Icon(
+                            FontAwesomeIcons.trash,
+                            color: const Color.fromARGB(189, 255, 82, 82),
+                            size: 12,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Remove",
+                            style: TextStyle(
+                              color: const Color.fromARGB(189, 255, 82, 82),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -224,17 +235,16 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     isEditModeOn = false;
     refreshState();
   }
-  handleRemove() async
-  {
-    bool remove =await showConfirmation(context ) ?? false;
-    if(remove)
-    {
+
+  handleRemove() async {
+    bool remove = await showConfirmation(context) ?? false;
+    if (remove) {
       routineService.removeWorkout(workout!);
       Navigator.of(context).pop(true);
     }
   }
-    Future<bool?> showConfirmation(BuildContext context) async {
 
+  Future<bool?> showConfirmation(BuildContext context) async {
     return showDialog<bool>(
       barrierColor: const Color.fromARGB(87, 90, 90, 90),
       context: context,
