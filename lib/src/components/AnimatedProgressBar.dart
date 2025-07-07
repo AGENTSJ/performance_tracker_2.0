@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class AnimatedProgressBar extends StatefulWidget {
@@ -8,7 +9,7 @@ class AnimatedProgressBar extends StatefulWidget {
   final double? width;
   @override
   State<StatefulWidget> createState() => _AnimatedProgressBarState();
-  const AnimatedProgressBar({super.key,required this.value ,this.color =PRIMARY, this.width = 5});
+  AnimatedProgressBar({super.key,required this.value ,this.color =PRIMARY, this.width});
 }
 
 class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTickerProviderStateMixin{
@@ -47,9 +48,9 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTi
               barRods: [
                 BarChartRodData(
                   toY: _animation.value,
-                  width: widget.width,
+                  width: widget.width ?? 5.w,
                   color: widget.color,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,
                     toY: 1,

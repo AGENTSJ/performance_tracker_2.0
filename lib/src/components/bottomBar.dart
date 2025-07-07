@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
@@ -10,7 +11,7 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
       color: PRIMARY,
-      height: 60,
+      height: 60.h,
       backgroundColor: BACKGROUND,
       animationDuration: Duration(milliseconds: 200),
       items: [

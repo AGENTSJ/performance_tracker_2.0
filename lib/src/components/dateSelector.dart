@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 
@@ -105,16 +106,16 @@ class _DateCubeState extends State<DateCube> {
               ? const Color.fromARGB(255, 220, 220, 220)
               : CONT_BACKGROUND,
         ),
-        width: 50,
+        width: 50.w,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0.w),
           child: Column(
             children: [
               Text(
                 widget.date.day.toString(),
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Text(
                 Weekday.values[widget.date.weekday - 1].name.substring(0, 2),
                 style: TextStyle(fontWeight: FontWeight.w500),

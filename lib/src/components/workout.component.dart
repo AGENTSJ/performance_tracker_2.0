@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -35,26 +36,26 @@ class WorkoutComponentState extends State<WorkoutComponent> {
     return Container(
       decoration: BoxDecoration(
         color: SURFACE2,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       ),
-      constraints: BoxConstraints(maxHeight: 200, minHeight: 0),
+      constraints: BoxConstraints(maxHeight: 200.h, minHeight: 0),
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(15.0.w),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 200,
+                  width: 200.w,
                   child: Text(
                     widget.workout.name,
                     maxLines: 1,
-                    style: const TextStyle(
+                    style: TextStyle(
                       overflow: TextOverflow.ellipsis,
                       color: TEXT_PRIMARY,
                       fontWeight: FontWeight.w600,
-                      fontSize: 17,
+                      fontSize: 17.sp,
                     ),
                   ),
                 ),
@@ -63,7 +64,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                     handleGoToWorkOutDetails();
                   },
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(30, 30),
+                    minimumSize: Size(30.w, 30.h),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     elevation: 0,
                     shadowColor: Colors.transparent,
@@ -73,15 +74,15 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                   child: Icon(
                     FontAwesomeIcons.penToSquare,
                     color: TEXT_SECONDARY,
-                    size: 18,
+                    size: 18.w,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             if (enabledSets.isNotEmpty) ...[
               Padding(
-                padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+                padding: EdgeInsets.only(left: 0.0, right: 0.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -91,9 +92,9 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                           Icon(
                             FontAwesomeIcons.weightHanging,
                             color: TEXT_SECONDARY,
-                            size: 12,
+                            size: 12.w,
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text('Kg', style: _headingTextDecor),
                         ],
                       ),
@@ -104,9 +105,9 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                           Icon(
                             FontAwesomeIcons.award,
                             color: TEXT_SECONDARY,
-                            size: 12,
+                            size: 12.w,
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text('Max', style: _headingTextDecor),
                         ],
                       ),
@@ -117,9 +118,9 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                           Icon(
                             FontAwesomeIcons.solidCalendarCheck,
                             color: TEXT_SECONDARY,
-                            size: 12,
+                            size: 12.w,
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             'Today',
                             style: _headingTextDecor,
@@ -135,9 +136,9 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                           Icon(
                             FontAwesomeIcons.solidSquareCheck,
                             color: TEXT_SECONDARY,
-                            size: 12,
+                            size: 12.w,
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(width: 5.w),
                           Text(
                             'Save',
                             style: _headingTextDecor,
@@ -149,18 +150,18 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Expanded(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 0.0, right: 0.0),
+                    padding: EdgeInsets.only(left: 0.0, right: 0.0),
                     child: Column(
                       children: [
                         ...enabledSets.map(
                           (set) => Padding(
-                            padding: const EdgeInsets.only(
-                              top: 5.0,
-                              bottom: 5.0,
+                            padding: EdgeInsets.only(
+                              top: 5.0.h,
+                              bottom: 5.0.h,
                             ),
                             child: SetRowComponent(set: set,workout: widget.workout,),
                           ),
@@ -171,7 +172,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                 ),
               ),
             ] else ...[
-              SizedBox(height: 20,),
+              SizedBox(height: 20.h,),
               Material(
                 color: SURFACE2,
                 child: InkWell(
@@ -182,18 +183,18 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: SURFACE,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(0.0),
+                      padding: EdgeInsets.all(0.0),
                       child: Column(
                         children: [
-                          SizedBox(height: 5),
+                          SizedBox(height: 5.h),
                           Icon(
                             FontAwesomeIcons.faceGrinWink,
                             color: Colors.grey,
                           ),
-                          SizedBox(height: 10),
+                          SizedBox(height: 10.h),
                           Text(
                             "Lets start by adding some sets",
                             style: TextStyle(color: Colors.grey),

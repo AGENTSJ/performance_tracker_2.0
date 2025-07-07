@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -46,7 +47,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
         title: const Text('Workout Details'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(14.0),
+        padding: EdgeInsets.all(14.0.w),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -54,19 +55,19 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
               Container(
                 decoration: BoxDecoration(
                   color: SURFACE2,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: isEditModeOn
                             ? TextField(
                                 controller: workNameController,
                                 maxLines: 1,
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 20.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
                               )
@@ -82,7 +83,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                       maxLines: 2,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 20,
+                                        fontSize: 20.sp,
                                       ),
                                     ),
                                   ),
@@ -102,7 +103,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // sets
               SetDetailsComponent(
                 workout: widget.workout,
@@ -110,15 +111,15 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                   handleSetUpdated();
                 },
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Notes
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(12.0.w),
                   child: Column(
                     children: [
                       Row(
@@ -127,12 +128,12 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                             "Workout Journal",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              fontSize: 15,
+                              fontSize: 15.sp,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       TextField(
                         minLines: 3,
                         maxLines: null,
@@ -149,18 +150,18 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Progress
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
-                height: 200,
+                height: 200.h,
                 width: double.infinity,
                 child: Center(child: Text("Progress")),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Row(
                 children: [
                   Expanded(
@@ -174,7 +175,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         backgroundColor: Colors.white,
                         foregroundColor: const Color.fromARGB(148, 255, 91, 91),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(4.r),
                           side: BorderSide(
                             color: const Color.fromARGB(148, 255, 91, 91),
                           ),
@@ -186,9 +187,9 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                           Icon(
                             FontAwesomeIcons.trash,
                             color: const Color.fromARGB(189, 255, 82, 82),
-                            size: 12,
+                            size: 12.w,
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Text(
                             "Remove",
                             style: TextStyle(
@@ -207,14 +208,14 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
       ),
       bottomNavigationBar: isEditModeOn
           ? Padding(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(10.w),
               child: ElevatedButton(
                 onPressed: () {
                   handleUpdateWorkout();
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   backgroundColor: PRIMARY,
                 ),
@@ -274,7 +275,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
             ),
           ],
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
           ),
         );
       },

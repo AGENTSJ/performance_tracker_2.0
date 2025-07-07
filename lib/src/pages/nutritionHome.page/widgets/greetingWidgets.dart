@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -68,66 +69,66 @@ class GreetingsWidgetState extends State<GreetingsWidget>
         curve: Curves.decelerate,
         decoration: BoxDecoration(
           color: CONT_BACKGROUND,
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: BorderRadius.all(Radius.circular(8.r)),
         ),
         width: double.infinity,
         constraints: showWholeGreetings
-            ? BoxConstraints(minHeight: 110, maxHeight: 300)
-            : BoxConstraints(minHeight: 110, maxHeight: 110),
+            ? BoxConstraints(minHeight: 110.h, maxHeight: 300.h)
+            : BoxConstraints(minHeight: 110.h, maxHeight: 110.h),
         child:isGenerating?SizedBox(
-          height: 110,
+          height: 110.h,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Hmmm lets see..'),
-              SizedBox(width: 20,),
-              SpinKitSpinningLines(color: Colors.grey,size: 30,),
+              SizedBox(width: 20.w,),
+              SpinKitSpinningLines(color: Colors.grey,size: 30.w,),
             ],
           ),
         ) :Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0.w),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 80,
-                height: 80,
+                width: 80.w,
+                height: 80.h,
                 child: Center(
                   child: Stack(
                     children: [
                       Positioned(
-                        bottom: -20,
+                        bottom: -20.h,
                         left: 0,
                         child: Container(
-                          width: 75,
-                          height: 75,
+                          width: 75.w,
+                          height: 75.h,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: const Color.fromARGB(190, 45, 150, 129),
                           ),
                         ),
                       ),
-                      avatarService.getGreetingAvatar(width: 80, height: 80),
+                      avatarService.getGreetingAvatar(width: 80.w, height: 80.h),
                     ],
                   ),
                 ),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 10.w),
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Material(
                       color: SURFACE,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       child: InkWell(
                         onTap: () {
                           handleGreetingContainerChange();
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0.w),
                           child: showWholeGreetings? Text(
                             widget
                                     .day

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -54,41 +55,41 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
         curve: Curves.decelerate,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 255, 255, 255),
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: BorderRadius.all(Radius.circular(8.r)),
         ),
         width: double.infinity,
         constraints: (showMacroAnalysis && !isCommentGenerating)
-            ? BoxConstraints(minHeight: 110, maxHeight: 300)
-            : BoxConstraints(minHeight: 110, maxHeight: 110),
+            ? BoxConstraints(minHeight: 110.h, maxHeight: 300.h)
+            : BoxConstraints(minHeight: 110.h, maxHeight: 110.h),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0.w),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 80,
-                height: 80,
+                width: 80.w,
+                height: 80.h,
                 child: Center(
                   child: Stack(
                     children: [
                       Positioned(
-                        bottom: -20,
+                        bottom: -20.h,
                         left: 0,
                         child: Container(
-                          width: 75,
-                          height: 75,
+                          width: 75.w,
+                          height: 75.h,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: const Color.fromARGB(190, 45, 150, 129),
                           ),
                         ),
                       ),
-                      avatarService.getGreetingAvatar(width: 80, height: 80),
+                      avatarService.getGreetingAvatar(width: 80.w, height: 80.h),
                     ],
                   ),
                 ),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 10.w),
               if (isCommentGenerating) ...[
                 Expanded(
                   child: Row(
@@ -99,11 +100,11 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
                         'Let me think',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      SizedBox(width: 30),
+                      SizedBox(width: 30.w),
                       SizedBox(
                         child: SpinKitSpinningLines(
                           color: Colors.grey,
-                          size: 40,
+                          size: 40.w,
                         ),
                       ),
                     ],
@@ -112,13 +113,13 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
               ] else if (!showMacroAnalysis) ...[
                 Expanded(
                   child: Material(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                     child: InkWell(
                       onTap: () {
                         handleAnalysis();
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: Text(
                           'Hello there 👋\n\nWant me to look through your macros ?',
                         ),
@@ -130,13 +131,13 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Material(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       child: InkWell(
                         onTap: () {
                           handleAnalysis();
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0.w),
                           child: Text(
                             widget
                                     .day

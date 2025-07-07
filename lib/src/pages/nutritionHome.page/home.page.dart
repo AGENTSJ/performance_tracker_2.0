@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -67,7 +68,7 @@ class NutritionModuleState extends State<NutritionModule> {
             Text(
               dayMarker,
               style: TextStyle(
-                fontSize: 19,
+                fontSize: 19.sp,
                 fontWeight: FontWeight.w500,
                 color: TEXT_PRIMARY,
               ),
@@ -80,7 +81,7 @@ class NutritionModuleState extends State<NutritionModule> {
               onLongPress: () async {
                 handleDatePickerEnable();
               },
-              child: Icon(Icons.arrow_drop_down, size: 30, color: TEXT_PRIMARY),
+              child: Icon(Icons.arrow_drop_down, size: 30.w, color: TEXT_PRIMARY),
             ),
           ],
         ),
@@ -96,7 +97,7 @@ class NutritionModuleState extends State<NutritionModule> {
                 children: [
                   if (currentDay != null) ...[
                     Padding(
-                      padding: const EdgeInsets.all(14.0),
+                      padding: EdgeInsets.all(14.0.w),
                       child: ListView(
                         physics: AlwaysScrollableScrollPhysics(),
                         scrollDirection: Axis.vertical,
@@ -105,23 +106,23 @@ class NutritionModuleState extends State<NutritionModule> {
                           GreetingsWidget(
                             day: currentDay,
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           // Total calories
                           Container(
                             decoration: BoxDecoration(
                               color: SURFACE2,
                               borderRadius: BorderRadius.all(
-                                Radius.circular(8),
+                                Radius.circular(8.r),
                               ),
                             ),
                             width: double.infinity,
-                            constraints: BoxConstraints(minHeight: 110),
+                            constraints: BoxConstraints(minHeight: 110.h),
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 20,
-                                right: 20,
-                                top: 8,
-                                bottom: 8,
+                              padding: EdgeInsets.only(
+                                left: 20.w,
+                                right: 20.w,
+                                top: 8.h,
+                                bottom: 8.h,
                               ),
                               child: Row(
                                 mainAxisAlignment:
@@ -132,11 +133,11 @@ class NutritionModuleState extends State<NutritionModule> {
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: PRIMARY,
-                                        width: 2,
+                                        width: 2.w,
                                       ),
                                     ),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(8.0.w),
                                       child: Icon(
                                         Icons.restaurant_menu_sharp,
                                         color: PRIMARY,
@@ -147,7 +148,7 @@ class NutritionModuleState extends State<NutritionModule> {
                                     "${daysMacro.calories.round()} of ${currentDay?.goalForToday?.calorieLimit.round()} Cal",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       letterSpacing: 1.0,
                                     ),
                                   ),
@@ -172,7 +173,7 @@ class NutritionModuleState extends State<NutritionModule> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           ...currentDay!.meals!.map(
                             (meal) => MealContainer(
                               key: ValueKey(

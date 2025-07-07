@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -28,18 +29,18 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   );
   var enabledButtonDecor = ElevatedButton.styleFrom(
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    minimumSize: Size(30, 30),
+    minimumSize: Size(30.w, 30.h),
     backgroundColor: SURFACE,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadiusGeometry.circular(4),
+      borderRadius: BorderRadiusGeometry.circular(4.r),
     ),
   );
   var disabledButtonDecor = ElevatedButton.styleFrom(
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    minimumSize: Size(30, 30),
+    minimumSize: Size(30.w, 30.h),
     backgroundColor: Colors.transparent,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadiusGeometry.circular(4),
+      borderRadius: BorderRadiusGeometry.circular(4.r),
     ),
   );
   var workoutService = locator<WorkoutService>();
@@ -62,14 +63,14 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     return Container(
       decoration: BoxDecoration(
         color: SURFACE2,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(
-          top: 15,
-          bottom: 15,
-          left: 15,
-          right: 15,
+        padding: EdgeInsets.only(
+          top: 15.h,
+          bottom: 15.h,
+          left: 15.w,
+          right: 15.w,
         ),
         child: Column(
           children: [
@@ -119,19 +120,19 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                     }
                   },
                   style: enabledButtonDecor,
-                  child: Icon(Icons.add, size: 20),
+                  child: Icon(Icons.add, size: 20.w),
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Container(
-              constraints: BoxConstraints(maxHeight: 500, minHeight: 0),
+              constraints: BoxConstraints(maxHeight: 500.h, minHeight: 0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (widget.workout.sets.isNotEmpty) ...[
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -141,9 +142,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                 Icon(
                                   FontAwesomeIcons.weightHanging,
                                   color: TEXT_SECONDARY,
-                                  size: 12,
+                                  size: 12.w,
                                 ),
-                                SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Expanded(
                                   child: Text(
                                     'Kg',
@@ -161,9 +162,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                 Icon(
                                   FontAwesomeIcons.award,
                                   color: TEXT_SECONDARY,
-                                  size: 12,
+                                  size: 12.w,
                                 ),
-                                SizedBox(width: 5),
+                                SizedBox(width: 5.w),
                                 Expanded(
                                   child: Text(
                                     'Max',
@@ -183,9 +184,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                   Icon(
                                     FontAwesomeIcons.solidCalendarCheck,
                                     color: TEXT_SECONDARY,
-                                    size: 12,
+                                    size: 12.w,
                                   ),
-                                  SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Expanded(
                                     child: Text(
                                       'Today',
@@ -205,9 +206,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                   Icon(
                                     FontAwesomeIcons.solidSquareCheck,
                                     color: TEXT_SECONDARY,
-                                    size: 12,
+                                    size: 12.w,
                                   ),
-                                  SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     'Track',
                                     style: _headingTextDecor,
@@ -224,9 +225,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                   Icon(
                                     FontAwesomeIcons.trash,
                                     color: TEXT_SECONDARY,
-                                    size: 12,
+                                    size: 12.w,
                                   ),
-                                  SizedBox(width: 3),
+                                  SizedBox(width: 3.w),
                                   Expanded(
                                     child: Text(
                                       'Remove',
@@ -246,9 +247,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                   Icon(
                                     FontAwesomeIcons.solidSquareCheck,
                                     color: TEXT_SECONDARY,
-                                    size: 12,
+                                    size: 12.w,
                                   ),
-                                  SizedBox(width: 5),
+                                  SizedBox(width: 5.w),
                                   Text(
                                     'Enable',
                                     style: _headingTextDecor,
@@ -262,15 +263,15 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     SingleChildScrollView(
                       child: Column(
                         children: [
                           ...widget.workout.sets.map(
                             (set) => Padding(
-                              padding: const EdgeInsets.only(
-                                top: 5.0,
-                                bottom: 5.0,
+                              padding: EdgeInsets.only(
+                                top: 5.0.h,
+                                bottom: 5.0.h,
                               ),
                               child: SetDetailRowComponent(
                                 set: set,
@@ -286,7 +287,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       ),
                     ),
                   ] else ...[
-                    SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Material(
                       color: SURFACE2,
                       child: InkWell(
@@ -296,18 +297,18 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: SURFACE,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0.w),
                             child: Column(
                               children: [
-                                SizedBox(height: 5),
+                                SizedBox(height: 5.h),
                                 Icon(
                                   FontAwesomeIcons.faceGrinWink,
                                   color: Colors.grey,
                                 ),
-                                SizedBox(height: 10),
+                                SizedBox(height: 10.h),
                                 Text(
                                   "Lets start by adding some sets",
                                   style: TextStyle(color: Colors.grey),
@@ -372,8 +373,8 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
               hintText: 'e.g. 24',
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
+                horizontal: 12.w,
+                vertical: 10.h,
               ),
             ),
           ),
@@ -399,7 +400,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
             ),
           ],
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
           ),
         );
       },
