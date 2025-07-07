@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/routine.service.dart';
-import 'package:performance_tracker/src/pages/workout.routine.page/widgets/routine.component.dart';
+import 'package:performance_tracker/src/pages/routine.details.page/routine.details.dart';
 
-class WorkoutRoutinePage extends StatefulWidget {
-  const WorkoutRoutinePage({super.key});
+class RoutinesPage extends StatefulWidget {
+  const RoutinesPage({super.key});
   @override
-  State<StatefulWidget> createState() => WorkoutRoutinePageState();
+  State<StatefulWidget> createState() => RoutinesPageState();
 }
 
-class WorkoutRoutinePageState extends State<WorkoutRoutinePage> {
+class RoutinesPageState extends State<RoutinesPage> {
   var routineService = locator<RoutineService>();
   List<Routine> routines = [];
   @override
@@ -81,16 +82,29 @@ class WorkoutRoutinePageState extends State<WorkoutRoutinePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Routines"), backgroundColor: BACKGROUND),
-      body: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              ...routines.map((routine) => RoutineComponent(routine: routine)),
-            ],
-          ),
-        ),
+      body: ReorderableListView(
+        onReorder: (int oldIndex, int newIndex) {
+          // Adjust for removing the item before inserting
+          if (newIndex > oldIndex) newIndex -= 1;
+
+          final item = routines.removeAt(oldIndex);
+          routines.insert(newIndex, item);
+
+          setState(() {}); // Rebuild with new order
+        },
+        children: [
+          for (int index = 0; index < routines.length; index++)
+            GestureDetector(
+              key: ValueKey(routines[index]),
+              onTap: () {
+                handleShowRoutine(routines[index]);
+              },
+              child: ListTile(
+                title: Text(routines[index].name),
+                // leading: Icon(Icons.drag_handle),
+              ),
+            ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 0,
@@ -101,5 +115,17 @@ class WorkoutRoutinePageState extends State<WorkoutRoutinePage> {
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
+  }
+
+  handleShowRoutine(Routine routine) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RoutineDetails(routine: routine, isCreateMode: false),
+      ),
+    );
+    routines = routineService.getAllRoutines();
+    refreshState();
   }
 }

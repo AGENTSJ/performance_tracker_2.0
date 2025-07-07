@@ -8,7 +8,7 @@ import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
-import 'package:performance_tracker/src/pages/workout.routine.page/workout.routine.page.dart';
+import 'package:performance_tracker/src/pages/routines.page/routines.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
   const TrainingModulePage({super.key});
@@ -70,7 +70,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WorkoutRoutinePage()),
+                        MaterialPageRoute(builder: (context) => RoutinesPage()),
                       );
                     },
                     style: buttonDecor,

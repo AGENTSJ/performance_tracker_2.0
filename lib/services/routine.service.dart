@@ -40,4 +40,8 @@ class RoutineService {
     }
     return workouts;
   }
+  removeRoutine(Routine routine)async
+  {
+    return await _routineRepo.removeRoutine(routine);
+  }
 }
