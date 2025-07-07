@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -67,17 +68,17 @@ class SelectWorkoutState extends State<SelectWorkout> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
+      height: 500.h,
       decoration: BoxDecoration(
         color: SURFACE2,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
+          topLeft: Radius.circular(12.r),
+          topRight: Radius.circular(12.r),
         ),
       ),
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.only(top: 20.0, left: 15, right: 15),
+        padding: EdgeInsets.only(top: 20.0.h, left: 15.w, right: 15.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -86,43 +87,43 @@ class SelectWorkoutState extends State<SelectWorkout> {
               decoration: InputDecoration(
                 hintText: 'Search workout',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ...workouts.map(
                     (work) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                      padding: EdgeInsets.only(bottom: 8.0.h),
                       child: Material(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         child: InkWell(
                           onTap: () {
                             handleSelectWorkout(work);
                           },
                           child: Padding(
-                            padding: const EdgeInsets.all(12.0),
+                            padding: EdgeInsets.all(12.0.w),
                             child: Text(work.name),
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Text("Selected"),
                   ...widget.selectedWorkouts.map(
                     (work) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                      padding: EdgeInsets.only(bottom: 8.0.h),
                       child: Material(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         child: InkWell(
                           onTap: () {},
                           child: Padding(
-                            padding: const EdgeInsets.all(12.0),
+                            padding: EdgeInsets.all(12.0.w),
                             child: Text(work.name),
                           ),
                         ),

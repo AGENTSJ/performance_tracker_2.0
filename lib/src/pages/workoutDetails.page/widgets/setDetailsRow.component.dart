@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -8,14 +9,14 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 
 class SetDetailRowComponent extends StatefulWidget {
-  static const inputDecor = InputDecoration(
+  static final inputDecor = InputDecoration(
     fillColor: SURFACE,
     filled: true,
     border: OutlineInputBorder(borderSide: BorderSide.none),
-    contentPadding: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
+    contentPadding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 0),
   );
-  static const fieldDecor = TextStyle(
-    fontSize: 15,
+  static final fieldDecor = TextStyle(
+    fontSize: 15.sp,
     fontWeight: FontWeight.w400,
   );
 
@@ -86,7 +87,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 27,
+      height: 27.h,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -122,13 +123,13 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: Icon(
                           FontAwesomeIcons.check,
-                          size: 12,
+                          size: 12.w,
                           color: Colors.green.shade400,
                         ),
                       ),
@@ -144,12 +145,12 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 children: [
                   TextButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(20, 20),
+                      minimumSize: Size(20.w, 20.h),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       backgroundColor: const Color.fromARGB(104, 255, 163, 163),
                       foregroundColor: const Color.fromARGB(104, 255, 147, 147),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(4),
+                        borderRadius: BorderRadiusGeometry.circular(4.r),
                       ),
                     ),
                     onPressed: () async {
@@ -163,7 +164,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                     },
                     child: Icon(
                       FontAwesomeIcons.trash,
-                      size: 12,
+                      size: 12.w,
                       color: const Color.fromARGB(149, 255, 111, 111),
                     ),
                   ),
@@ -209,7 +210,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
               elevation: 0,
               shadowColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(8),
+                borderRadius: BorderRadiusGeometry.circular(8.r),
               ),
             ),
             onPressed: () => Navigator.pop(context, false),
@@ -220,7 +221,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
               elevation: 0,
               shadowColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(8),
+                borderRadius: BorderRadiusGeometry.circular(8.r),
               ),
             ),
             onPressed: () => Navigator.pop(context, true),

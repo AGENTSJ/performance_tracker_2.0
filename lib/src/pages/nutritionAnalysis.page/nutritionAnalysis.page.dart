@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -45,40 +46,40 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
       appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(14.0),
+          padding: EdgeInsets.all(14.0.w),
           child: Column(
             children: [
               // Today analysis
               MacroAnalysisWidget(macros: todaysMacros!,totalCalLimit: totalCalLimit,),
-              SizedBox(height: 30),
+              SizedBox(height: 30.h),
               MacroCommentsWidget(day: widget.day),
-              SizedBox(height: 30),
+              SizedBox(height: 30.h),
               // Micro
               Container(
                 decoration: BoxDecoration(
                   color: CONT_BACKGROUND,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 width: double.infinity,
-                height: 300,
+                height: 300.h,
                 child: Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: EdgeInsets.all(14.0.w),
                   child: Column(
                     children: [
                       Row(
                         children: [
-                          Icon(FontAwesomeIcons.seedling, size: 20),
-                          SizedBox(width: 20),
+                          Icon(FontAwesomeIcons.seedling, size: 20.w),
+                          SizedBox(width: 20.w),
                           Text(
                             'Micro Nutrients Analysis',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 17,
+                              fontSize: 17.sp,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Expanded(
                         child: microNutrientList(totalConsumed: totalConsumed,allowScroll: allowMicroScroll,),
                       ),
@@ -88,7 +89,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 30.h),
               MicroCommentsWidget(day: widget.day, microMap: totalConsumed)
             ],
           ),

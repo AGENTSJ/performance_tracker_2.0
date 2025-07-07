@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/common.service.dart';
@@ -17,7 +18,7 @@ class MacroPieChart extends StatefulWidget {
 }
 
 class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderStateMixin {
-  double radius = 50;
+  double radius = 50.w;
   final commonService = locator<CommonService>();
   late double proteinPercent = 0;
   late double carbsPercent = 0;
@@ -54,8 +55,8 @@ class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderS
             value: proteinPercent,
             title: '',
             radius: radius,
-            titleStyle: TextStyle(fontSize: 16, color: CONT_BACKGROUND),
-            badgeWidget: proteinPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.drumstickBite, size: 12,) : null,
+            titleStyle: TextStyle(fontSize: 16.sp, color: CONT_BACKGROUND),
+            badgeWidget: proteinPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.drumstickBite, size: 12.w,) : null,
             badgePositionPercentageOffset: 0.6,
             ),
             // Carbs
@@ -64,8 +65,8 @@ class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderS
             value: _animation.value,
             title: '',
             radius: radius,
-            titleStyle: TextStyle(fontSize: 16, color: CONT_BACKGROUND),
-            badgeWidget: carbsPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.breadSlice, size: 12,) : null,
+            titleStyle: TextStyle(fontSize: 16.sp, color: CONT_BACKGROUND),
+            badgeWidget: carbsPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.breadSlice, size: 12.w,) : null,
             badgePositionPercentageOffset: 0.6,
             ),
             // Fats
@@ -74,8 +75,8 @@ class MacroPieChartState extends State<MacroPieChart> with SingleTickerProviderS
             value: fatPercent,
             title: '',
             radius: radius,
-            titleStyle: TextStyle(fontSize: 16, color: CONT_BACKGROUND),
-            badgeWidget: fatPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.cheese, size: 12,) : null,
+            titleStyle: TextStyle(fontSize: 16.sp, color: CONT_BACKGROUND),
+            badgeWidget: fatPercent > minBadgeWidgetVal ? Icon(FontAwesomeIcons.cheese, size: 12.w,) : null,
             badgePositionPercentageOffset: 0.6,
             ),
         ],

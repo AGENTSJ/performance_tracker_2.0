@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/food.model.dart';
@@ -23,12 +24,12 @@ class MacroAnalysisWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
         color: CONT_BACKGROUND,
       ),
-      constraints: BoxConstraints(maxHeight: 310),
+      constraints: BoxConstraints(maxHeight: 310.h),
       child: Padding(
-        padding: const EdgeInsets.all(14.0),
+        padding: EdgeInsets.all(14.0.w),
         child: Column(
           children: [
             // heading
@@ -36,11 +37,11 @@ class MacroAnalysisWidget extends StatelessWidget {
               children: [
                 Text(
                   'Macro Nutrient Analysis',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17.sp),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             // calories
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,10 +51,10 @@ class MacroAnalysisWidget extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  width: 90,
-                  height: 90,
+                  width: 90.w,
+                  height: 90.h,
                   child: MacroPieChart(
                     totalCalories: macros.calories,
                     fats: macros.fat,
@@ -65,11 +66,11 @@ class MacroAnalysisWidget extends StatelessWidget {
                 else
                 ...[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(FontAwesomeIcons.solidFaceLaughWink,size: 75,color: const Color.fromARGB(150, 158, 158, 158),),
+                    padding: EdgeInsets.all(8.0.w),
+                    child: Icon(FontAwesomeIcons.solidFaceLaughWink,size: 75.w,color: const Color.fromARGB(150, 158, 158, 158),),
                   )
                 ],
-                SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,16 +79,16 @@ class MacroAnalysisWidget extends StatelessWidget {
                         "${macros.calories.round()} / ${totalCalLimit.round()} Cal",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 10.h),
                       Row(
                         children: [
                           Expanded(
                             flex: 2,
                             child: SizedBox(
-                              height: 1,
+                              height: 1.h,
                               width: double.infinity,
                               child: AnimatedProgressBar(
                                 key: ValueKey(macros.calories),
@@ -101,12 +102,12 @@ class MacroAnalysisWidget extends StatelessWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 8),
+                            padding: EdgeInsets.only(left: 8.w),
                             child: Text(
                               "${commonService.getPercentage(totalCalLimit, macros.calories).round()} %",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontSize: 22,
+                                fontSize: 22.sp,
                               ),
                             ),
                           ),
@@ -117,9 +118,9 @@ class MacroAnalysisWidget extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 30.h),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0.w),
               child: Column(
                 children: [
                   Row(
@@ -127,8 +128,8 @@ class MacroAnalysisWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.circle, color: PROTEIN_COLOR, size: 16),
-                          SizedBox(width: 20),
+                          Icon(Icons.circle, color: PROTEIN_COLOR, size: 16.w),
+                          SizedBox(width: 20.w),
                           Text(
                             'Protein',
                             style: TextStyle(fontWeight: FontWeight.w500),
@@ -141,14 +142,14 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.circle, color: CARBS_COLOR, size: 16),
-                          SizedBox(width: 20),
+                          Icon(Icons.circle, color: CARBS_COLOR, size: 16.w),
+                          SizedBox(width: 20.w),
                           Text(
                             'Carbohydrate',
                             style: TextStyle(fontWeight: FontWeight.w500),
@@ -161,14 +162,14 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.circle, color: FAT_COLOR, size: 16),
-                          SizedBox(width: 20),
+                          Icon(Icons.circle, color: FAT_COLOR, size: 16.w),
+                          SizedBox(width: 20.w),
                           Text(
                             'Fat',
                             style: TextStyle(fontWeight: FontWeight.w500),
@@ -181,14 +182,14 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.circle, color: FIBER_COLOR, size: 16),
-                          SizedBox(width: 20),
+                          Icon(Icons.circle, color: FIBER_COLOR, size: 16.w),
+                          SizedBox(width: 20.w),
                           Text(
                             'Fiber',
                             style: TextStyle(fontWeight: FontWeight.w500),

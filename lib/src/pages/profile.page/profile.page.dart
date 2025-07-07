@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
@@ -67,24 +68,24 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       filled: true,
       fillColor: CONT_BACKGROUND,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 0.5),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 0.5.w),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 0.5),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 0.5.w),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 1),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 1.w),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red,width: 0.5)
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: Colors.red,width: 0.5.w)
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red,width: 1)
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: Colors.red,width: 1.w)
       )
     );
   }
@@ -106,7 +107,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       backgroundColor: BACKGROUND,
       appBar: AppBar(title: const Text('Profile'), backgroundColor: BACKGROUND),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -122,27 +123,27 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: CONT_BACKGROUND,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 16,
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15.h,
+                      horizontal: 16.w,
                     ),
                     child: Column(
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 100,
+                          height: 100.h,
                           child: Center(
                             child: Stack(
                               children: [
                                 Positioned(
-                                  top: 27,
-                                  left: 4.5,
+                                  top: 27.h,
+                                  left: 4.5.w,
                                   child: Container(
-                                    width: 90,
-                                    height: 90,
+                                    width: 90.w,
+                                    height: 90.h,
                                     decoration: BoxDecoration(
                                       color: PRIMARY,
                                       shape: BoxShape.circle,
@@ -150,20 +151,20 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                   ),
                                 ),
                                 avatarService.getDefaultAvatar(
-                                  width: 100,
-                                  height: 100,
+                                  width: 100.w,
+                                  height: 100.h,
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         TextFormField(
                           decoration: getInputDecoration("Name"),
                           controller: nameController,
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                           child: Container(
                             width: double.infinity,
                             child: Row(
@@ -181,7 +182,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                     controller: ageController,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 10.w),
                                 Expanded(
                                   child: DropdownButtonFormField(
                                     value: _selectedGender,
@@ -207,7 +208,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                           child: SizedBox(
                             width: double.infinity,
                             child: Row(
@@ -225,7 +226,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                     controller: heightController,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 10.w),
                                 Expanded(
                                   child: TextFormField(
                                     keyboardType: TextInputType.number,
@@ -258,9 +259,9 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: SURFACE,
                             elevation: 0,
-                            minimumSize: Size(double.infinity, 40),
+                            minimumSize: Size(double.infinity, 40.h),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                           ),
                           child: Text('Save'),
@@ -270,7 +271,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               if (user != null) GoalsWidget(user: user!),
             ],
           ),

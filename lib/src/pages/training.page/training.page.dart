@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -24,9 +25,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     shape: RoundedRectangleBorder(side: BorderSide.none),
   );
   final addFromButtonDecor = ElevatedButton.styleFrom(
-    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
     minimumSize: Size(0, 0),
-    textStyle: TextStyle(fontSize: 14),
+    textStyle: TextStyle(fontSize: 14.sp),
     elevation: 0,
     shadowColor: Colors.transparent,
   );
@@ -55,9 +56,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
         backgroundColor: BACKGROUND,
         title: const Text('Training Page'),
         bottom: PreferredSize(
-          preferredSize: Size(double.infinity, 40),
+          preferredSize: Size(double.infinity, 40.h),
           child: Container(
-            height: 40,
+            height: 40.h,
             width: double.infinity,
             color: SURFACE,
             child: SingleChildScrollView(
@@ -74,7 +75,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                     },
                     style: buttonDecor,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      padding: EdgeInsets.only(left: 8.0.w, right: 8.0.w),
                       child: Text('Routines'),
                     ),
                   ),
@@ -87,7 +88,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                     },
                     style: buttonDecor,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      padding: EdgeInsets.only(left: 8.0.w, right: 8.0.w),
                       child: Text('Workouts'),
                     ),
                   ),
@@ -98,31 +99,31 @@ class TrainingModulePageState extends State<TrainingModulePage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(14.0),
+        padding: EdgeInsets.all(14.0.w),
         child: SingleChildScrollView(
           child: Column(
             children: [
               ...workouts.map(
                 (work) => Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0.w),
                   child: WorkoutComponent(workout: work, onUpdated: (value) {}),
                 ),
               ),
               if (workouts.isEmpty) ...[
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30.0),
+                  padding: EdgeInsets.symmetric(vertical: 30.0.h),
                   child: Container(
                     width: double.infinity,
-                    height: 100,
+                    height: 100.h,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(FontAwesomeIcons.faceGrinWink, color: Colors.grey),
-                        SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         Text(
                           "Add some workouts to get started",
                           style: TextStyle(color: Colors.grey),
@@ -134,13 +135,13 @@ class TrainingModulePageState extends State<TrainingModulePage> {
               ],
               Container(
                 width: double.infinity,
-                height: 130,
+                height: 130.h,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: EdgeInsets.all(14.0.w),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -148,18 +149,18 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: 180,
+                            width: 180.w,
                             child: ElevatedButton(
                               onPressed: () {},
                               style: addFromButtonDecor,
                               child: Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(8.0.w),
                                     child: Icon(
                                       FontAwesomeIcons.plus,
                                       color: Colors.grey,
-                                      size: 15,
+                                      size: 15.w,
                                     ),
                                   ),
                                   Text("Add From Routines"),
@@ -167,9 +168,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           SizedBox(
-                            width: 180,
+                            width: 180.w,
                             child: ElevatedButton(
                               onPressed: () {
                                 handleAddWorkout();
@@ -178,11 +179,11 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                               child: Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(8.0.w),
                                     child: Icon(
                                       FontAwesomeIcons.plus,
                                       color: Colors.grey,
-                                      size: 15,
+                                      size: 15.w,
                                     ),
                                   ),
                                   Text("Add From Workout"),

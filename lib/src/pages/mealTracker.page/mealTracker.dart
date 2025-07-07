@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -24,8 +25,8 @@ class _MealTrackerState extends State<MealTrackerPage> {
   var dayService = locator<DayService>();
   TextEditingController foodNameControl = TextEditingController();
   var inputBorder = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(10),
-    borderSide: BorderSide(color: PRIMARY, width: 1),
+    borderRadius: BorderRadius.circular(10.r),
+    borderSide: BorderSide(color: PRIMARY, width: 1.w),
   );
   final foodService = locator<FoodService>();
   final ai = locator<AiService>();
@@ -49,11 +50,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: BACKGROUND,
       appBar: AppBar(
-        title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18)),
+        title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18.sp)),
         backgroundColor: BACKGROUND,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(18.0.w),
         child: Column(
           children: [
             TextField(
@@ -71,7 +72,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                         child: Icon(
                           FontAwesomeIcons.wandSparkles,
                           color: Colors.amber[400],
-                          size: 14,
+                          size: 14.w,
                         ),
                       ),
                       onPressed: () {
@@ -88,7 +89,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
             ),
             if (showSearchRes) ...[
               // search
-              SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,20 +104,20 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 ],
               ),
               Container(
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
                 child: Column(
                   children: [
                     if (fetching) ...[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0.w),
                         child: Row(
                           children: [
                             SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: SpinKitSpinningLines(size: 40,color: PRIMARY,),
+                              width: 40.w,
+                              height: 40.h,
+                              child: SpinKitSpinningLines(size: 40.w,color: PRIMARY,),
                             ),
-                            SizedBox(width: 30),
+                            SizedBox(width: 30.w),
                             Text(
                               'Fetching....',
                               style: TextStyle(fontWeight: FontWeight.w500),
@@ -137,7 +138,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                               showAddFoodModal(food);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8.0.w),
                               child: Row(children: [Text('${food.name}')]),
                             ),
                           ),
@@ -151,7 +152,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                 // suggested
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -175,17 +176,17 @@ class _MealTrackerState extends State<MealTrackerPage> {
                               showSuggested = true;
                             });
                           },
-                          icon: const Icon(Icons.visibility, size: 18),
+                          icon: Icon(Icons.visibility, size: 18.w),
                         ),
                       ],
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Visibility(
                     visible: showSuggested,
                     child: Container(
-                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
-                      constraints: BoxConstraints(maxHeight: 200),
+                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
+                      constraints: BoxConstraints(maxHeight: 200.h),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -202,7 +203,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                       showAddFoodModal(food);
                                     },
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(8.0.w),
                                       child: Row(
                                         children: [Text('${food.name}')],
                                       ),
@@ -217,9 +218,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 5.h),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -230,11 +231,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 5.h),
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
                     child: Column(
                       children: [
                         if (widget.meal.foods.isNotEmpty)
@@ -246,7 +247,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                   showAddFoodModalUpdateMode(food);
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(8.0.w),
                                   child: Row(children: [Text('${food.name}')]),
                                 ),
                               ),
@@ -369,18 +370,18 @@ class EmptyResultsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 100,
+      height: 100.h,
       decoration: BoxDecoration(
         color: CONT_BACKGROUND,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(5.r),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.sentiment_neutral, size: 30),
-            SizedBox(height: 10),
+            Icon(Icons.sentiment_neutral, size: 30.w),
+            SizedBox(height: 10.h),
             Text(insideText, style: TextStyle(fontWeight: FontWeight.w500)),
           ],
         ),

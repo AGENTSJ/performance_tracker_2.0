@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
@@ -29,8 +30,8 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   final elevatedButtonDecor = ElevatedButton.styleFrom(
     backgroundColor: SURFACE,
     elevation: 0,
-    minimumSize: Size(double.infinity, 40),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    minimumSize: Size(double.infinity, 40.h),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
   );
 
   InputDecoration getInputDecoration(String label) {
@@ -39,24 +40,24 @@ class _GoalsWidgetState extends State<GoalsWidget> {
       filled: true,
       fillColor: CONT_BACKGROUND,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 0.5),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 0.5.w),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 0.5),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 0.5.w),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: PRIMARY, width: 1),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: PRIMARY, width: 1.w),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red, width: 0.5),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: Colors.red, width: 0.5.w),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red, width: 1),
+        borderRadius: BorderRadius.circular(8.r),
+        borderSide: BorderSide(color: Colors.red, width: 1.w),
       ),
     );
   }
@@ -84,7 +85,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     return Container(
       decoration: BoxDecoration(
         color: CONT_BACKGROUND,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.r),
       ),
       width: double.infinity,
       child: Form(
@@ -95,15 +96,15 @@ class _GoalsWidgetState extends State<GoalsWidget> {
         },
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Column(
             children: [
               Row(children: [Padding(
-                padding: const EdgeInsets.only(top:8.0,bottom: 8.0),
-                child: Text('Goals',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500),),
+                padding: EdgeInsets.only(top:8.0.h,bottom: 8.0.h),
+                child: Text('Goals',style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w500),),
               )]),
               Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 16),
+                padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                 child: Column(
                   children: [
                     Row(
@@ -123,7 +124,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                             controller: targetWeight,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 10.w),
                         Expanded(
                           child: TextFormField(
                             keyboardType: TextInputType.number,
@@ -138,7 +139,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Row(
                       children: [
                         Expanded(
@@ -153,14 +154,14 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     if (!formChanged)
                       Material(
                         color: SURFACE,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         child: InkWell(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0.w),
                             child: RichText(
                               text: TextSpan(
                                 style: TextStyle(
@@ -193,11 +194,11 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                           ),
                         ),
                       ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10.h),
                     AnimatedContainer(
                       duration: Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
-                      height: formChanged ? 60 : 0,
+                      height: formChanged ? 60.h : 0,
                       width: double.infinity,
                       child: Row(
                         children: [
@@ -210,7 +211,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                               child: Text('Update'),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
