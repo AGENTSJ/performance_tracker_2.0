@@ -6,7 +6,6 @@ import 'package:performance_tracker/services/common.service.dart';
 class WorkoutService {
   var routineRepo = locator<RoutineRepository>();
   var commonService = locator<CommonService>();
-  Routine? getTodaysWorkout() {}
 
   Future<Workout?> getWorkOutById(int key) {
     return routineRepo.getWorkoutById(key);

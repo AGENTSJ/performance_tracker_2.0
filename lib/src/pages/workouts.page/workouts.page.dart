@@ -72,6 +72,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             ],
           )
           : SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.all(14.0),
                 child: Column(

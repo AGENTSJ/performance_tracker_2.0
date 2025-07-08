@@ -27,18 +27,21 @@ class RoutineDetailsState extends State<RoutineDetails> {
   List<Workout> workouts = [];
   @override
   void initState() {
+    print("ran");
+    setRoutineUi();
     super.initState();
-    Future.microtask(() async {
-      workNameController.text = widget.routine.name;
-      if (widget.isCreateMode) {
-        var routineKey = await routineService.addRoutine(widget.routine);
-        routine = await routineService.getRoutineById(routineKey);
-        workouts = await routineService.getRoutinesWorkouts(routine!);
-      } else {
-        routine = widget.routine;
-      }
-      refreshState();
-    });
+  }
+
+  setRoutineUi() async {
+    workNameController.text = widget.routine.name;
+    if (widget.isCreateMode) {
+      var routineKey = await routineService.addRoutine(widget.routine);
+      routine = await routineService.getRoutineById(routineKey);
+    } else {
+      routine = widget.routine;
+    }
+    workouts = await routineService.getRoutinesWorkouts(routine!);
+    refreshState();
   }
 
   @override
@@ -119,36 +122,90 @@ class RoutineDetailsState extends State<RoutineDetails> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Workouts",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500),),
+                          Text(
+                            "Workouts",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           TextButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: SURFACE,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              minimumSize: Size(20.w, 20.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(
+                                  8.r,
+                                ),
+                              ),
+                            ),
                             onPressed: () {
                               handleAddWorkout();
                             },
-                            child: Icon(FontAwesomeIcons.plus,size: 20.sp,),
+                            child: Icon(Icons.add, size: 20.sp),
                           ),
                         ],
                       ),
-                      Column(
-                        children: [
-                          if(workouts.isEmpty)
-                          Container(
-                            decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
+                      SizedBox(height: 10.h,),
+                      Material(
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Column(
+                          children: [
+                            if (workouts.isEmpty)
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: SURFACE2,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        FontAwesomeIcons.faceGrinWink,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Text(
+                                        "Add workouts to routine",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ...workouts.map(
+                              (work) => Padding(
+                                padding: EdgeInsets.all(12.0.r),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Icon(FontAwesomeIcons.faceGrinWink,color: Colors.grey,),
-                                    SizedBox(height: 10.h,),
-                                    Text("Add workouts to routine",style:TextStyle(color: Colors.grey))
+                                    Text(work.name),
+                                    Material(
+                                      child: InkWell(
+                                        onTap: () {
+                                          handleRemoveWorkout(work);
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8.0.r,
+                                            horizontal: 5.r,
+                                          ),
+                                          child: Icon(
+                                            FontAwesomeIcons.trash,
+                                            size: 12.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
+                                ),
                               ),
                             ),
-                          ),
-
-                          ...workouts.map(
-                            (work) => Row(children: [Text(work.name)]),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -182,7 +239,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                         maxLines: null,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: const Color.fromARGB(53, 202, 202, 202),
+                          fillColor: SURFACE,
                           hintText: "Add some notes about this routine",
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
@@ -326,6 +383,13 @@ class RoutineDetailsState extends State<RoutineDetails> {
       context: context,
       builder: (context) => SelectWorkout(selectedWorkouts: workouts),
     );
+    refreshState();
+  }
+
+  handleRemoveWorkout(Workout work)async {
+    workouts.remove(work);
+    widget.routine.workoutsIds.remove(work.key);
+    await routineService.updateRoutine(widget.routine);
     refreshState();
   }
 }

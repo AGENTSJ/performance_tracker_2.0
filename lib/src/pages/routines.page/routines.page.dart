@@ -3,8 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/src/pages/routine.details.page/routine.details.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RoutinesPage extends StatefulWidget {
   const RoutinesPage({super.key});
@@ -17,10 +19,13 @@ class RoutinesPageState extends State<RoutinesPage> {
   List<Routine> routines = [];
   @override
   void initState() {
-    routines = routineService.getAllRoutines();
+    setRoutineUi();
     super.initState();
   }
-
+  setRoutineUi()async
+  {
+    routines = routineService.getAllRoutines();
+  }
   handleAddRoutine() async {
     String? name = await showRoutineNamePopUp();
     if (name == null || name.isEmpty) {
@@ -82,29 +87,34 @@ class RoutinesPageState extends State<RoutinesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Routines"), backgroundColor: BACKGROUND),
-      body: ReorderableListView(
-        onReorder: (int oldIndex, int newIndex) {
-          // Adjust for removing the item before inserting
-          if (newIndex > oldIndex) newIndex -= 1;
-
-          final item = routines.removeAt(oldIndex);
-          routines.insert(newIndex, item);
-
-          setState(() {}); // Rebuild with new order
-        },
-        children: [
-          for (int index = 0; index < routines.length; index++)
-            GestureDetector(
-              key: ValueKey(routines[index]),
-              onTap: () {
-                handleShowRoutine(routines[index]);
-              },
-              child: ListTile(
-                title: Text(routines[index].name),
-                // leading: Icon(Icons.drag_handle),
+      body: Padding(
+        padding:  EdgeInsets.all(14.r),
+        child: Column(
+          children: [
+            ...routines.map(
+              (routine) => Padding(
+                padding: EdgeInsets.only(bottom:5.0.r),
+                child: Material(
+                  color: SURFACE2,
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: InkWell(
+                    onTap: (){
+                      handleShowRoutine(routine);
+                    },
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(vertical: 20.r,horizontal: 15.r),
+                      child: Row(children: [
+                        Icon(FontAwesomeIcons.layerGroup),
+                        SizedBox(width: 20.w,),
+                        Text("${routine.name} (${routine.workoutsIds.length})")
+                      ],),
+                    ),
+                  ),
+                ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 0,

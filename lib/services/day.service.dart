@@ -1,14 +1,18 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
+import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 
 class DayService
 {
   final _dayRepo = locator<DayRepository>();
   final goalService = locator<UserGoalsService>();
-
+  final _routineService = locator<RoutineService>();
+  final _commonService = locator<CommonService>();
   Future<Day?> getDayDataByDate(DateTime date) async
   {
     var day =  _dayRepo.getDayData(date);
@@ -19,7 +23,10 @@ class DayService
     Day? newDay = Day(dayTime: date);
     var goal = await goalService.getUserGoals();
     newDay.goalForToday = goal;
-    newDay = await _dayRepo.addDayData(newDay);   
+    var todaysRoutine = Routine(name: _commonService.getDateString(date), workoutsIds: []);
+    int routId = await _routineService.addRoutine(todaysRoutine);
+    newDay.routineId = routId;
+    newDay = await _dayRepo.addDayData(newDay);  
     return newDay;
   }
 

@@ -186,7 +186,7 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(0.0),
+                      padding: EdgeInsets.all(12.0.r),
                       child: Column(
                         children: [
                           SizedBox(height: 5.h),
