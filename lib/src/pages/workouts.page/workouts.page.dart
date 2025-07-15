@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -38,7 +39,6 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   width: 250,
                   height: 250,
                   decoration: BoxDecoration(
-                    color: PRIMARY,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
@@ -58,8 +58,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           Text(
                             "Resting huh 🤨 ?",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                              fontSize: 15.sp,
                               fontWeight: FontWeight.w500
                             ),
                           ),
@@ -111,7 +110,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       context,
       MaterialPageRoute(
         builder: (context) => WorkoutDetailsPage(
-          workout: Workout(name: "New One", sets: [], enabled: true),
+          workout: Workout(name: "New One", sets: [], enabled: true,desc: ''),
           isCreateMode: true,
         ),
       ),

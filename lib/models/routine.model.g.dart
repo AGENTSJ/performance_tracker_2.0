@@ -19,17 +19,26 @@ class RoutineAdapter extends TypeAdapter<Routine> {
     return Routine(
       name: fields[0] as String,
       workoutsIds: (fields[1] as List).cast<int>(),
+      createdAt: fields[2] as DateTime,
+      isCustom: fields[3] as bool,
+      desc: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.workoutsIds);
+      ..write(obj.workoutsIds)
+      ..writeByte(2)
+      ..write(obj.createdAt)
+      ..writeByte(3)
+      ..write(obj.isCustom)
+      ..writeByte(4)
+      ..write(obj.desc);
   }
 
   @override
@@ -57,19 +66,22 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       name: fields[0] as String,
       sets: (fields[1] as List).cast<WorkSet>(),
       enabled: fields[2] as bool,
+      desc: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.sets)
       ..writeByte(2)
-      ..write(obj.enabled);
+      ..write(obj.enabled)
+      ..writeByte(3)
+      ..write(obj.desc);
   }
 
   @override

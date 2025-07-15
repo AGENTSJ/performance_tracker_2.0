@@ -21,19 +21,30 @@ class RoutineDetails extends StatefulWidget {
 
 class RoutineDetailsState extends State<RoutineDetails> {
   var routineService = locator<RoutineService>();
-  var workNameController = TextEditingController();
+  var routineNameController = TextEditingController();
+  var routineDescriptionController = TextEditingController();
   bool isEditModeOn = false;
+  bool isNameEdit = false;
   Routine? routine;
   List<Workout> workouts = [];
   @override
   void initState() {
-    print("ran");
+    routineDescriptionController.text = widget.routine.desc;
+      routineDescriptionController.addListener(() {
+        if(!isEditModeOn)
+        {
+          setState(() {
+            this.isEditModeOn = true;
+          });
+        }
+      });
     setRoutineUi();
     super.initState();
   }
 
   setRoutineUi() async {
-    workNameController.text = widget.routine.name;
+    routineNameController.text = widget.routine.name;
+    
     if (widget.isCreateMode) {
       var routineKey = await routineService.addRoutine(widget.routine);
       routine = await routineService.getRoutineById(routineKey);
@@ -67,9 +78,9 @@ class RoutineDetailsState extends State<RoutineDetails> {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.all(8.0.w),
-                        child: isEditModeOn
+                        child: isNameEdit
                             ? TextField(
-                                controller: workNameController,
+                                controller: routineNameController,
                                 maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 20.sp,
@@ -96,6 +107,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                     child: TextButton(
                                       onPressed: () {
                                         this.isEditModeOn = true;
+                                        this.isNameEdit = true;
                                         refreshState();
                                       },
                                       child: Icon(FontAwesomeIcons.penToSquare),
@@ -141,7 +153,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                               ),
                             ),
                             onPressed: () {
-                              handleAddWorkout();
+                              handleAddRoutine();
                             },
                             child: Icon(Icons.add, size: 20.sp),
                           ),
@@ -235,6 +247,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                       ),
                       SizedBox(height: 10.h),
                       TextField(
+                        controller: routineDescriptionController,
                         minLines: 3,
                         maxLines: null,
                         decoration: InputDecoration(
@@ -302,7 +315,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               padding: EdgeInsets.all(10.w),
               child: ElevatedButton(
                 onPressed: () {
-                  handleUpdateWorkout();
+                  handleUpdateRoutine();
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -321,10 +334,12 @@ class RoutineDetailsState extends State<RoutineDetails> {
     refreshState();
   }
 
-  handleUpdateWorkout() {
-    routine?.name = workNameController.text;
+  handleUpdateRoutine() {
+    routine?.name = routineNameController.text;
+    routine?.desc = routineDescriptionController.text;
     routineService.updateRoutine(routine!);
     isEditModeOn = false;
+    isNameEdit = false;
     refreshState();
   }
 
@@ -378,7 +393,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
     setState(() {});
   }
 
-  handleAddWorkout() async {
+  handleAddRoutine() async {
     await showModalBottomSheet(
       context: context,
       builder: (context) => SelectWorkout(selectedWorkouts: workouts),

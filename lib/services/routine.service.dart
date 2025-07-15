@@ -4,7 +4,6 @@ import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 
 class RoutineService {
-
   final _routineRepo = locator<RoutineRepository>();
   final _workService = locator<WorkoutService>();
 
@@ -25,7 +24,7 @@ class RoutineService {
 
   List<Routine> getAllRoutines()
   {
-    return _routineRepo.getAllRoutines();
+    return _routineRepo.getAllRoutines().where((rout)=>rout.isCustom==false).toList();
   }
 
   updateRoutine(Routine routine)async
@@ -48,5 +47,10 @@ class RoutineService {
   removeRoutine(Routine routine)async
   {
     return await _routineRepo.removeRoutine(routine);
+  }
+  List<Routine>getAllCustomRoutines()
+  {
+    var all =  _routineRepo.getAllRoutines().toList();
+    return all.where((rout)=>rout.isCustom==true).toList();
   }
 }

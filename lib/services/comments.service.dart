@@ -94,7 +94,6 @@ class CommentsService {
 
     const String instructions = '''
     You are a diet coach
-    ${AvatarService.Avatar_Character}
     Your responsibility 
     1. Greet user (good morning etc based on the current time)
     2. Comment on users macro Nutrients that they have taken for the day
@@ -172,7 +171,6 @@ class CommentsService {
   Future<GeneratedComment?> _generateMacroComment(Day day) async
   {
     const String instruction = '''
-    You are a diet coach. ${AvatarService.Avatar_Character}
     Your responsibilities 
     1 analyze users macro distribution 
     2 provide tips and tricks on how user can improve and achieve their goal
@@ -250,7 +248,6 @@ class CommentsService {
    Future<GeneratedComment?> _generateMicroComment(Day day , Map<String, MeasuredUnit> microMap) async
   {
     const String instruction = '''
-    You are a diet coach. ${AvatarService.Avatar_Character}
     Your responsibilities 
     1 analyze users micro nutrient distribution 
     2 provide tips and tricks on how user can improve and achieve their goal

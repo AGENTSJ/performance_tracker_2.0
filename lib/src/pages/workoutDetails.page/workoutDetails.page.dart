@@ -22,7 +22,9 @@ class WorkoutDetailsPage extends StatefulWidget {
 class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   var workoutService = locator<WorkoutService>();
   var workNameController = TextEditingController();
+  var workDescriptionController = TextEditingController();
   bool isEditModeOn = false;
+  bool isNameEdit = false;
   Workout? workout;
   // bool
   @override
@@ -30,6 +32,15 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     super.initState();
     Future.microtask(() async {
       workNameController.text = widget.workout.name;
+      workDescriptionController.text = widget.workout.desc;
+      workDescriptionController.addListener(() {
+        if(!isEditModeOn)
+        {
+          setState(() {
+            this.isEditModeOn = true;
+          });
+        }
+      });
       if (widget.isCreateMode) {
         workout = await workoutService.addWorkout(widget.workout);
       } else {
@@ -62,7 +73,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.all(8.0.w),
-                        child: isEditModeOn
+                        child: isNameEdit
                             ? TextField(
                                 controller: workNameController,
                                 maxLines: 1,
@@ -91,6 +102,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                     child: TextButton(
                                       onPressed: () {
                                         this.isEditModeOn = true;
+                                        this.isNameEdit = true;
                                         refreshState();
                                       },
                                       child: Icon(FontAwesomeIcons.penToSquare),
@@ -135,6 +147,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                       ),
                       SizedBox(height: 10.h),
                       TextField(
+                        controller: workDescriptionController,
                         minLines: 3,
                         maxLines: null,
                         decoration: InputDecoration(
@@ -232,8 +245,10 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
 
   handleUpdateWorkout() {
     workout?.name = workNameController.text;
+    workout?.desc = workDescriptionController.text;
     workoutService.updateWorkout(workout!);
     isEditModeOn = false;
+    isNameEdit = false;
     refreshState();
   }
 

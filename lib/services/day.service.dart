@@ -23,6 +23,9 @@ class DayService {
     var todaysRoutine = Routine(
       name: _commonService.getDateString(date),
       workoutsIds: [],
+      createdAt: DateTime.now(),
+      isCustom: false,
+      desc: ''
     );
     int routId = await _routineService.addRoutine(todaysRoutine);
 
