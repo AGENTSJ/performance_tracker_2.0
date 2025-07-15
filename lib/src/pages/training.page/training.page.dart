@@ -201,7 +201,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                             bottom: 0,
                             left: 0,
                             child: Container(
-                              width: double.infinity,
                               decoration: BoxDecoration(color: SURFACE2),
                               child: TextButton(
                                 onPressed: () {
@@ -282,7 +281,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
         child: PageView(
           children: [
             SelectWorkout(selectedWorkouts: workouts),
-            RoutineSelection(),
+            RoutineSelection(selectedWorkouts: workouts,),
           ],
         ),
       ),

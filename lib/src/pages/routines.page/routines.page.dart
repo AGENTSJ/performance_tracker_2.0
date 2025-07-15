@@ -39,7 +39,7 @@ class RoutinesPageState extends State<RoutinesPage> {
         workoutsIds: [],
         createdAt: DateTime.now(),
         isCustom: true,
-        desc: ''
+        desc: '',
       ),
     );
     setRoutineUi();
@@ -131,6 +131,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 10.h),
               Row(children: [Text("Previous workouts")]),
               SizedBox(height: 20.h),
               ...routines.map(

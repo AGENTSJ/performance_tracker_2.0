@@ -398,6 +398,11 @@ class RoutineDetailsState extends State<RoutineDetails> {
       context: context,
       builder: (context) => SelectWorkout(selectedWorkouts: workouts),
     );
+    routine?.workoutsIds = [];
+    for (var work in workouts) {
+      routine?.workoutsIds.add(work.key);
+    }
+    await routineService.updateRoutine(routine!);
     refreshState();
   }
 

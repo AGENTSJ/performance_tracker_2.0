@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -66,7 +67,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 500.h,
       width: double.infinity,
       child: Padding(
@@ -84,61 +85,72 @@ class SelectWorkoutState extends State<SelectWorkout> {
               ),
             ),
             SizedBox(height: 20.h),
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Material(
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (workouts.isEmpty) ...[
-                          SizedBox(child: empty, width: 100.w, height: 100.h),
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text("No workout found...",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.sp),),
-                            ),
-                          )
-                        ],
-                        ...workouts.map(
-                          (work) => Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                handleSelectWorkout(work);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: TEXT_SECONDARY,
-                                      width: 0.5,
+            Material(
+              borderRadius: BorderRadius.circular(8.r),
+              child: SizedBox(
+                height: 300,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (workouts.isEmpty) ...[
+                        Container(
+                          color: SURFACE2,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                child: empty,
+                                width: 100.w,
+                                height: 100.h,
+                              ),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    "No workout found...",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.sp,
                                     ),
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(14.0),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        FontAwesomeIcons.circle,
-                                        size: 14.sp,
-                                      ),
-                                      SizedBox(width: 10.w),
-                                      Text(work.name),
-                                    ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      ...workouts.map(
+                        (work) => Material(
+                          child: InkWell(
+                            onTap: () {
+                              handleSelectWorkout(work);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: TEXT_SECONDARY,
+                                    width: 0.5,
                                   ),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14.0),
+                                child: Row(
+                                  children: [
+                                    Icon(FontAwesomeIcons.circle, size: 14.sp),
+                                    SizedBox(width: 10.w),
+                                    Text(work.name),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
