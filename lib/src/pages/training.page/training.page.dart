@@ -202,19 +202,27 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                             left: 0,
                             child: Container(
                               decoration: BoxDecoration(color: SURFACE2),
-                              child: TextButton(
-                                onPressed: () {
-                                  handleRemoveWorkout(work);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: SURFACE2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadiusGeometry.circular(
-                                      4,
+                              child: Padding(
+                                padding:  EdgeInsets.only(right: 8.0.r,bottom: 4.r),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        handleRemoveWorkout(work);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: SURFACE,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadiusGeometry.circular(
+                                            4,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text("Remove"),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                child: Text("Take out"),
                               ),
                             ),
                           ),
