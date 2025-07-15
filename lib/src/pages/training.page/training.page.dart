@@ -55,9 +55,14 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     today = await dayService.getDayDataByDate(DateTime.now());
     routine = await routineService.getRoutineById(today!.routineId!);
     workouts = await routineService.getRoutinesWorkouts(routine!);
-    print("he");
+    refreshState();
   }
-
+  refreshState()
+  {
+    if(!mounted)return;
+    setState(() {
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

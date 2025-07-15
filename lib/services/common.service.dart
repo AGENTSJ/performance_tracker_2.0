@@ -1,3 +1,5 @@
+import 'package:performance_tracker/models/day.model.dart';
+
 class CommonService {
 
   double getPercentage(double total ,double part)
@@ -13,6 +15,7 @@ class CommonService {
     var year = date.year;
     var month = date.month;
     var dayOfMonth = date.day;
-    return "$year-$month-$dayOfMonth"; 
+    // return "$year-$month-$dayOfMonth"; 
+    return "$dayOfMonth ${Months.values[month].name} $year";
   }
 }

@@ -43,20 +43,4 @@ Future<void> setupHiveDb() async
   await Hive.openBox<Routine>(Collections.routines.value);
   await Hive.openBox<Workout>(Collections.workouts.value);
 
-  // await Hive.deleteBoxFromDisk(Collections.foods.value);
-  // await Hive.deleteBoxFromDisk(Collections.days.value);
-  // await Hive.deleteBoxFromDisk(Collections.users.value);
-  // await Hive.deleteBoxFromDisk(Collections.routines.value);
-  // await Hive.deleteBoxFromDisk(Collections.workouts.value);
-}
-_openBox<T>(String boxName)async
-{
-  try{
-    await Hive.openBox<T>(boxName);
-  }
-  catch(e)
-  {
-    await Hive.deleteBoxFromDisk(boxName);
-    await Hive.openBox<T>(boxName);
-  }
 }

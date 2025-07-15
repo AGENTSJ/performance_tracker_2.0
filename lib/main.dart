@@ -48,32 +48,46 @@ class MainAppEntry extends StatefulWidget {
 
 class _MainAppEntryState extends State<MainAppEntry> {
   int selectedIndex = 0;
-  int nutritionModuleKey = 0;
-  late List<Widget> modules;
+
+  NutritionModule? nutritionModule;
+  TrainingModulePage? trainingModulePage;
+  ProfilePageModule? profilePageModule;
+  ActivityPage? activityPage;
 
   @override
   void initState() {
     super.initState();
-    modules = [
-      const NutritionModule(),
-      const TrainingModulePage(),
-      const ActivityPage(),
-      const ProfilePageModule(),
-    ];
   }
 
   _handleIndexChange(int index) {
-    if (index > modules.length - 1) {
+    if (index > 3) {
       return;
     }
     selectedIndex = index;
     setState(() {});
   }
 
+  getCurrentPage() {
+    switch (selectedIndex) {
+      case 0:
+        nutritionModule ??= NutritionModule();
+        return nutritionModule;
+      case 1:
+        trainingModulePage ??= TrainingModulePage();
+        return trainingModulePage;
+      case 2:
+        activityPage ??= ActivityPage();
+        return activityPage;
+      case 3:
+        profilePageModule ??= ProfilePageModule();
+        return profilePageModule;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: modules),
+      body: getCurrentPage(),
       bottomNavigationBar: BottomBar(onIndexChange: _handleIndexChange),
     );
   }

@@ -8,8 +8,13 @@ class RoutineService {
   final _routineRepo = locator<RoutineRepository>();
   final _workService = locator<WorkoutService>();
 
-  Future<int> addRoutine(Routine routine)
+  Future<int> addRoutine(Routine routine) async
   {
+    var routineSearch = _routineRepo.getRoutineByName(routine.name);
+    if(routineSearch!=null)
+    {
+      return -1;
+    }
     return _routineRepo.addRoutine(routine);
   }
 

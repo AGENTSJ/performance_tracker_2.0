@@ -28,11 +28,6 @@ class RoutineRepository {
 
   Future<int> addRoutine(Routine routine)async
   {
-    var res  = getRoutineByName(routine.name);
-    if(res!=null)
-    {
-      return -1;
-    }
     return await routineBox.add(routine);
   }
 

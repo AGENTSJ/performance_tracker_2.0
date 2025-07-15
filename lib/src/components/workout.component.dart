@@ -33,180 +33,42 @@ class WorkoutComponentState extends State<WorkoutComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: SURFACE2,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      constraints: BoxConstraints(maxHeight: 200.h, minHeight: 0),
-      child: Padding(
-        padding: EdgeInsets.all(15.0.w),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: 200.w,
-                  child: Text(
-                    widget.workout.name,
-                    maxLines: 1,
-                    style: TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      color: TEXT_PRIMARY,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 17.sp,
+    return Material(
+      color: SURFACE2,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: () {
+          handleGoToWorkOutDetails();
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 18.0.h,horizontal: 15.w),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 200.w,
+                    child: Text(
+                      widget.workout.name,
+                      maxLines: 1,
+                      style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
+                        color: TEXT_PRIMARY,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17.sp,
+                      ),
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    handleGoToWorkOutDetails();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(30.w, 30.h),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                    backgroundColor: Colors.transparent,
-                    padding: EdgeInsets.all(0),
-                  ),
-                  child: Icon(
-                    FontAwesomeIcons.penToSquare,
+                  Icon(
+                    FontAwesomeIcons.eye,
                     color: TEXT_SECONDARY,
                     size: 18.w,
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20.h),
-            if (enabledSets.isNotEmpty) ...[
-              Padding(
-                padding: EdgeInsets.only(left: 0.0, right: 0.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.weightHanging,
-                            color: TEXT_SECONDARY,
-                            size: 12.w,
-                          ),
-                          SizedBox(width: 5.w),
-                          Text('Kg', style: _headingTextDecor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.award,
-                            color: TEXT_SECONDARY,
-                            size: 12.w,
-                          ),
-                          SizedBox(width: 5.w),
-                          Text('Max', style: _headingTextDecor),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.solidCalendarCheck,
-                            color: TEXT_SECONDARY,
-                            size: 12.w,
-                          ),
-                          SizedBox(width: 5.w),
-                          Text(
-                            'Today',
-                            style: _headingTextDecor,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.solidSquareCheck,
-                            color: TEXT_SECONDARY,
-                            size: 12.w,
-                          ),
-                          SizedBox(width: 5.w),
-                          Text(
-                            'Save',
-                            style: _headingTextDecor,
-                            textAlign: TextAlign.end,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 0.0, right: 0.0),
-                    child: Column(
-                      children: [
-                        ...enabledSets.map(
-                          (set) => Padding(
-                            padding: EdgeInsets.only(
-                              top: 5.0.h,
-                              bottom: 5.0.h,
-                            ),
-                            child: SetRowComponent(set: set,workout: widget.workout,),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ] else ...[
-              SizedBox(height: 20.h,),
-              Material(
-                color: SURFACE2,
-                child: InkWell(
-                  onTap: () {
-                    handleGoToWorkOutDetails();
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: SURFACE,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(12.0.r),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 5.h),
-                          Icon(
-                            FontAwesomeIcons.faceGrinWink,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            "Lets start by adding some sets",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                ],
               ),
             ],
-          ],
+          ),
         ),
       ),
     );
