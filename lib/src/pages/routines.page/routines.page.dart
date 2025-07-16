@@ -104,27 +104,40 @@ class RoutinesPageState extends State<RoutinesPage> {
               ],
               ...customRoutines.map(
                 (routine) => Padding(
-                  padding: EdgeInsets.only(bottom: 5.0.r),
+                  padding: EdgeInsets.only(bottom: 0.0.r),
                   child: Material(
-                    color: SURFACE2,
-                    borderRadius: BorderRadius.circular(8.r),
+                    color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
                         handleShowRoutine(routine);
                       },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 20.r,
-                          horizontal: 15.r,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: SURFACE2,
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(FontAwesomeIcons.layerGroup),
-                            SizedBox(width: 20.w),
-                            Text(
-                              "${routine.name} (${routine.workoutsIds.length})",
-                            ),
-                          ],
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 20.r,
+                            horizontal: 15.r,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                size: 18.sp,
+                                FontAwesomeIcons.layerGroup,
+                                color: TEXT_SECONDARY,
+                              ),
+                              SizedBox(width: 20.w),
+                              Text(
+                                "${routine.name} (${routine.workoutsIds.length})",
+                                style: TextStyle(color: TEXT_SECONDARY),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -134,33 +147,48 @@ class RoutinesPageState extends State<RoutinesPage> {
               SizedBox(height: 10.h),
               Row(children: [Text("Previous workouts")]),
               SizedBox(height: 20.h),
-              ...routines.map(
-                (routine) => Padding(
-                  padding: EdgeInsets.only(bottom: 5.0.r),
-                  child: Material(
-                    color: SURFACE2,
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: InkWell(
-                      onTap: () {
-                        handleShowRoutine(routine);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 20.r,
-                          horizontal: 15.r,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(FontAwesomeIcons.layerGroup),
-                            SizedBox(width: 20.w),
-                            Text(
-                              "${routine.name} (${routine.workoutsIds.length})",
+              Container(
+                decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8.r)),
+                child: Column(
+                  children: [
+                    ...routines.map(
+                      (routine) => Material(
+                        color: SURFACE2,
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: InkWell(
+                          onTap: () {
+                            handleShowRoutine(routine);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+                              borderRadius: BorderRadius.circular(8.r)
                             ),
-                          ],
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 20.r,
+                                horizontal: 15.r,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    size: 18.sp,
+                                    FontAwesomeIcons.layerGroup,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                  SizedBox(width: 20.w),
+                                  Text(
+                                    "${routine.name} (${routine.workoutsIds.length})",
+                                    style: TextStyle(color: TEXT_SECONDARY),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],

@@ -73,23 +73,29 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           : SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
               child: Padding(
-                padding:  EdgeInsets.all(14.0.w),
-                child: Column(
-                  children: [
-                    ...workouts.map(
-                      (work) => Padding(
-                        padding:  EdgeInsets.symmetric(vertical: 2.5.r),
-                        child: WorkoutComponent(
-                          workout: work,
-                          onUpdated: (val) {
-                            if (val) {
-                              getAndSetWorkouts();
-                            }
-                          },
+                padding: EdgeInsets.all(14.0.w),
+                child: Container(
+                  decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8.r)),
+                  child: Column(
+                    children: [
+                      ...workouts.map(
+                        (work) => Container(
+                          decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+                            borderRadius: BorderRadius.circular(8.r)
+                          ),
+                          child: WorkoutComponent(
+                            workout: work,
+                            onUpdated: (val) {
+                              if (val) {
+                                getAndSetWorkouts();
+                              }
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

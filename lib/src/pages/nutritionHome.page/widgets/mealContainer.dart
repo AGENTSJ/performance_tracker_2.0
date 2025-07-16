@@ -13,13 +13,19 @@ class MealContainer extends StatefulWidget {
   final Day day;
   final ValueChanged onMealUpdated;
 
-  const MealContainer({super.key, required this.meal, required this.day,required this.onMealUpdated});
+  const MealContainer({
+    super.key,
+    required this.meal,
+    required this.day,
+    required this.onMealUpdated,
+  });
 
   @override
   State<MealContainer> createState() => _MealContainerState();
 }
 
-class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveClientMixin{
+class _MealContainerState extends State<MealContainer>
+    with AutomaticKeepAliveClientMixin {
   late double caloriesInMeal = 0;
   var dayService = locator<DayService>();
   @override
@@ -30,7 +36,7 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
     super.initState();
     setCalories(false);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,38 +53,23 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
               Row(
                 children: [
                   Text("${caloriesInMeal.round().toString()} Cal"),
-                  SizedBox(width: 10.w,),
-                  Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: PRIMARY,
-                        ),
-                        width: 25.w,
-                        height: 25.h,
-                      ),
-                      Positioned(
-                        bottom: -8.6.h,
-                        left: -12.0.w,
-                        child: IconButton(
-                          onPressed: () {
-                            handleNavigation();
-                          },
-                          icon: Icon(
-                            Icons.add,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            size: 20.w,
-                          ),
-                        ),
-                      ),
-                    ],
+                  SizedBox(width: 10.w),
+                  TextButton(
+                    onPressed: () {handleNavigation();},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: PRIMARY,
+                      foregroundColor: Colors.white,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: Size(5.w, 5.h),
+                      padding: EdgeInsets.all(4.sp)
+                    ),
+                    child: Icon(Icons.add,size: 20.sp,),
                   ),
                 ],
               ),
             ],
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 10.h),
           Container(
             decoration: BoxDecoration(
               color: CONT_BACKGROUND,
@@ -91,82 +82,106 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if(widget.meal.foods.isEmpty) ...[
+                  if (widget.meal.foods.isEmpty) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text("Track you meals for ${widget.meal.mealName}",style: TextStyle(fontSize: 12.sp ,color: const Color.fromARGB(255, 124, 124, 124)),),
-                        SizedBox(width: 10.w,),
-                        Icon(Icons.fastfood ,color: Colors.grey,size: 20.w,)
+                        Text(
+                          "Track you meals for ${widget.meal.mealName}",
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: const Color.fromARGB(255, 124, 124, 124),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Icon(Icons.fastfood, color: Colors.grey, size: 20.w),
                       ],
-                    )
-                  ]
-                  else
-                  ...widget.meal.foods.map(
-                    (food) => Column(
-                      children: [
-                        SingleChildScrollView(
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                handleFoodClick(food);
-                              },
-                              splashColor: const Color.fromARGB(91, 188, 188, 188),
-                              highlightColor: const Color.fromARGB(91, 188, 188, 188),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 180.w,
-                                        child: Text(
-                                          food.name,
-                                          style: TextStyle(fontSize: 15.sp),
-                                        ),
-                                      ),
-                                      Text(
-                                        "${food.quantity.value.round().toString()} ${food.quantity.unit}",
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: const Color.fromARGB(
-                                            255,
-                                            109,
-                                            109,
-                                            109,
+                    ),
+                  ] else
+                    ...widget.meal.foods.map(
+                      (food) => Column(
+                        children: [
+                          SingleChildScrollView(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  handleFoodClick(food);
+                                },
+                                splashColor: const Color.fromARGB(
+                                  91,
+                                  188,
+                                  188,
+                                  188,
+                                ),
+                                highlightColor: const Color.fromARGB(
+                                  91,
+                                  188,
+                                  188,
+                                  188,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: 180.w,
+                                          child: Text(
+                                            food.name,
+                                            style: TextStyle(fontSize: 15.sp),
                                           ),
-                                          fontSize: 14.sp,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 50.w, 
-                                        child: Text("${food.macros.calories.round().toString()} Cal",textAlign: TextAlign.right,)
-                                      ),
-                                      SizedBox(width: 15.w,),
-                                      GestureDetector(
-                                        onTap: () {
-                                          removeFoodFromMeal(food);
-                                        },
-                                        child: Icon(Icons.delete,color: Colors.grey, size: 20.w,)
-                                      )
-                                    ]
-                                  )
-                                ],
+                                        Text(
+                                          "${food.quantity.value.round().toString()} ${food.quantity.unit}",
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(
+                                              255,
+                                              109,
+                                              109,
+                                              109,
+                                            ),
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 50.w,
+                                          child: Text(
+                                            "${food.macros.calories.round().toString()} Cal",
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                        SizedBox(width: 15.w),
+                                        GestureDetector(
+                                          onTap: () {
+                                            removeFoodFromMeal(food);
+                                          },
+                                          child: Icon(
+                                            Icons.delete,
+                                            color: Colors.grey,
+                                            size: 20.w,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 20.h),
-                      ],
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -190,36 +205,34 @@ class _MealContainerState extends State<MealContainer> with AutomaticKeepAliveCl
     });
   }
 
-  removeFoodFromMeal(Food food)
-  {
+  removeFoodFromMeal(Food food) {
     setState(() {
-      widget.meal.foods = widget.meal.foods.where((e)=>e!=food).toList();
+      widget.meal.foods = widget.meal.foods.where((e) => e != food).toList();
       dayService.updateDayData(widget.day);
       setCalories(true);
     });
   }
 
-  setCalories(bool emit) {  
+  setCalories(bool emit) {
     caloriesInMeal = 0;
     for (var food in widget.meal.foods) {
       caloriesInMeal += food.macros.calories;
     }
-    if(emit)
-    {
+    if (emit) {
       widget.onMealUpdated(null);
     }
   }
 
-  handleFoodClick(Food food) async
-  {
+  handleFoodClick(Food food) async {
     await Future.delayed(Duration(milliseconds: 150));
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FoodEntryPage(food: food,isCreateMode: false,)),
+      MaterialPageRoute(
+        builder: (context) => FoodEntryPage(food: food, isCreateMode: false),
+      ),
     );
     dayService.updateDayData(widget.day);
     setCalories(true);
-    setState(() {
-    });
+    setState(() {});
   }
 }

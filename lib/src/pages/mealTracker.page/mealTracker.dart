@@ -40,10 +40,20 @@ class _MealTrackerState extends State<MealTrackerPage> {
     super.initState();
     foodService.suggestFoods(widget.meal, widget.day).then((suggestions) {
       suggestedFoods = suggestions;
+      suggestedFoods = suggestedFoods.where((element) => !_isPresentInSelected(element)).toList();
       setState(() {});
     });
   }
-
+  bool _isPresentInSelected(Food food)
+  {
+    for (var selectedFood in widget.meal.foods) {
+      if(selectedFood.name == food.name)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,216 +63,243 @@ class _MealTrackerState extends State<MealTrackerPage> {
         title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18.sp)),
         backgroundColor: BACKGROUND,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(18.0.w),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Food name',
-                focusedBorder: inputBorder,
-                border: inputBorder,
-                enabledBorder: inputBorder,
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Tooltip(
-                        message: 'Let AI help you create a custom food entry',
-                        child: Icon(
-                          FontAwesomeIcons.wandSparkles,
-                          color: Colors.amber[400],
-                          size: 14.w,
+      body: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.all(18.0.w),
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Food name',
+                  focusedBorder: inputBorder,
+                  border: inputBorder,
+                  enabledBorder: inputBorder,
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Tooltip(
+                          message: 'Let AI help you create a custom food entry',
+                          child: Icon(
+                            FontAwesomeIcons.wandSparkles,
+                            color: Colors.amber[400],
+                            size: 14.w,
+                          ),
                         ),
+                        onPressed: () {
+                          handleAICustomFood();
+                        },
                       ),
-                      onPressed: () {
-                        handleAICustomFood();
-                      },
+                    ],
+                  ),
+                ),
+                controller: foodNameControl,
+                onChanged: (str) {
+                  handleSearchChange(str);
+                },
+              ),
+              if (showSearchRes) ...[
+                // search
+                SizedBox(height: 20.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Search results',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      onPressed: handleSearchClose,
+                      icon: Icon(Icons.close),
                     ),
                   ],
                 ),
-              ),
-              controller: foodNameControl,
-              onChanged: (str) {
-                handleSearchChange(str);
-              },
-            ),
-            if (showSearchRes) ...[
-              // search
-              SizedBox(height: 20.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Search results',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  IconButton(
-                    onPressed: handleSearchClose,
-                    icon: Icon(Icons.close),
-                  ),
-                ],
-              ),
-              Container(
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
-                child: Column(
-                  children: [
-                    if (fetching) ...[
-                      Padding(
-                        padding: EdgeInsets.all(8.0.w),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40.w,
-                              height: 40.h,
-                              child: SpinKitSpinningLines(size: 40.w,color: PRIMARY,),
-                            ),
-                            SizedBox(width: 30.w),
-                            Text(
-                              'Fetching....',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          ],
+                  child: Column(
+                    children: [
+                      if (fetching) ...[
+                        Padding(
+                          padding: EdgeInsets.all(8.0.w),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 40.w,
+                                height: 40.h,
+                                child: SpinKitSpinningLines(
+                                  size: 40.w,
+                                  color: PRIMARY,
+                                ),
+                              ),
+                              SizedBox(width: 30.w),
+                              Text(
+                                'Fetching....',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ] else if (searchfoods.isEmpty) ...[
-                      EmptyResultsWidget(
-                        insideText: "No food with such name was found..",
-                      ),
-                    ] else
-                      ...searchfoods.map(
-                        (food) => Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              showAddFoodModal(food);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0.w),
-                              child: Row(children: [Text('${food.name}')]),
+                      ] else if (searchfoods.isEmpty) ...[
+                        EmptyResultsWidget(
+                          insideText: "No food with such name was found..",
+                        ),
+                      ] else
+                        ...searchfoods.map(
+                          (food) => Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                showAddFoodModal(food);
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0.w),
+                                child: Row(children: [Text('${food.name}')]),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-            ] else ...[
-              Column(
-                // suggested
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Suggested',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      if (showSuggested) ...[
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              showSuggested = false;
-                            });
-                          },
-                          icon: const Icon(Icons.close),
-                        ),
-                      ] else ...[
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              showSuggested = true;
-                            });
-                          },
-                          icon: Icon(Icons.visibility, size: 18.w),
-                        ),
-                      ],
                     ],
                   ),
-                  SizedBox(height: 5.h),
-                  Visibility(
-                    visible: showSuggested,
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
-                      constraints: BoxConstraints(maxHeight: 200.h),
-                      child: SingleChildScrollView(
+                ),
+              ] else ...[
+                Column(
+                  // suggested
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Suggested',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        if (showSuggested) ...[
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showSuggested = false;
+                              });
+                            },
+                            icon: const Icon(Icons.close),
+                          ),
+                        ] else ...[
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showSuggested = true;
+                              });
+                            },
+                            icon: Icon(Icons.visibility, size: 18.w),
+                          ),
+                        ],
+                      ],
+                    ),
+                    SizedBox(height: 5.h),
+                    Visibility(
+                      visible: showSuggested && suggestedFoods.isNotEmpty,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
                         child: Column(
                           children: [
-                            if (suggestedFoods.isEmpty) ...[
-                              EmptyResultsWidget(
-                                insideText: "No suggestions found",
-                              ),
-                            ] else
-                              ...suggestedFoods.map(
-                                (food) => Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      showAddFoodModal(food);
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0.w),
-                                      child: Row(
-                                        children: [Text('${food.name}')],
+                            ...suggestedFoods.map(
+                              (food) => Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    handleSelectSuggestedFood(food);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey.shade300,
+                                        ),
                                       ),
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0.w,
+                                        vertical: 14.h,
+                                      ),
+                                      child: Row(children: [Text(food.name)]),
                                     ),
                                   ),
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 5.h),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Selected',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
                   ],
                 ),
-              ),
-              SizedBox(height: 5.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(8.r)),
-                    child: Column(
-                      children: [
-                        if (widget.meal.foods.isNotEmpty)
-                          ...widget.meal.foods.map(
-                            (food) => Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  showAddFoodModalUpdateMode(food);
-                                },
+                SizedBox(height: 5.h),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Selected',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 5.h),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Column(
+                    children: [
+                      if (widget.meal.foods.isNotEmpty)
+                        ...widget.meal.foods.map(
+                          (food) => Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                showAddFoodModalUpdateMode(food);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
                                 child: Padding(
-                                  padding: EdgeInsets.all(8.0.w),
-                                  child: Row(children: [Text('${food.name}')]),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0.w,
+                                    vertical: 14.h,
+                                  ),
+                                  child: Row(children: [Text(food.name)]),
                                 ),
                               ),
                             ),
                           ),
-                        if (widget.meal.foods.isEmpty) ...[
-                          EmptyResultsWidget(insideText: "No foods are selected"),
-                        ],
+                        ),
+                      if (widget.meal.foods.isEmpty) ...[
+                        EmptyResultsWidget(insideText: "No foods are selected"),
                       ],
-                    ),
+                    ],
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -319,17 +356,23 @@ class _MealTrackerState extends State<MealTrackerPage> {
         builder: (context) => FoodEntryPage(food: newFood, isCreateMode: true),
       ),
     );
-    setState(() {
-      if (returnedFood != null) {
-        widget.meal.foods.add(returnedFood);
-        dayService.updateDayData(widget.day);
-      }
-      foodNameControl.text = '';
-      showSearchRes = false;
-      searchfoods = [];
-    });
+    if (returnedFood != null) {
+      widget.meal.foods.add(returnedFood);
+      dayService.updateDayData(widget.day);
+    }
+    foodNameControl.text = '';
+    showSearchRes = false;
+    searchfoods = [];
+    setState(() {});
   }
-
+  handleSelectSuggestedFood(Food food)
+  {
+    var newFood = food.clone();
+    widget.meal.foods.add(newFood); 
+    suggestedFoods.remove(food);
+    dayService.updateDayData(widget.day);
+    setState(() {});
+  }
   showAddFoodModalUpdateMode(Food food) async {
     await Navigator.push(
       context,
@@ -370,9 +413,9 @@ class EmptyResultsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 100.h,
+      height: 200.h,
       decoration: BoxDecoration(
-        color: CONT_BACKGROUND,
+        color: BACKGROUND,
         borderRadius: BorderRadius.circular(5.r),
       ),
       child: Padding(
@@ -380,7 +423,7 @@ class EmptyResultsWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.sentiment_neutral, size: 30.w),
+            SizedBox(height: 100.h,width: 100.w,child: empty),
             SizedBox(height: 10.h),
             Text(insideText, style: TextStyle(fontWeight: FontWeight.w500)),
           ],

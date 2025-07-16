@@ -13,7 +13,7 @@ import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
 import 'package:performance_tracker/src/pages/routines.page/routines.page.dart';
-import 'package:performance_tracker/src/pages/training.page/widgets/routineSelection.component.dart';
+import 'package:performance_tracker/src/components/routineSelection.component.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
@@ -125,9 +125,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                     Icon(
                                       FontAwesomeIcons.solidCalendar,
                                       size: 16.sp,
+                                      color: TEXT_SECONDARY,
                                     ),
                                     SizedBox(width: 20.w),
-                                    Text("Routines"),
+                                    Text("Routines" ,style: TextStyle(color: TEXT_SECONDARY),),
                                   ],
                                 ),
                               ),
@@ -157,9 +158,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                     Icon(
                                       FontAwesomeIcons.layerGroup,
                                       size: 16.sp,
+                                      color: TEXT_SECONDARY,
                                     ),
                                     SizedBox(width: 20.w),
-                                    Text("Workouts"),
+                                    Text("Workouts",style: TextStyle(color: TEXT_SECONDARY),),
                                   ],
                                 ),
                               ),
@@ -197,35 +199,32 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                             workout: work,
                             onUpdated: (value) {},
                           ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            child: Container(
-                              decoration: BoxDecoration(color: SURFACE2),
-                              child: Padding(
-                                padding:  EdgeInsets.only(right: 8.0.r,bottom: 4.r),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        handleRemoveWorkout(work);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: SURFACE,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadiusGeometry.circular(
-                                            4,
-                                          ),
+                          Container(
+                            decoration: BoxDecoration(color: SURFACE2),
+                            child: Padding(
+                              padding:  EdgeInsets.only(right: 8.0.r,bottom: 4.r),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      handleRemoveWorkout(work);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadiusGeometry.circular(
+                                          4,
                                         ),
                                       ),
-                                      child: Text("Remove"),
                                     ),
-                                  ],
-                                ),
+                                    child: Text("Remove"),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
+                        
                         ],
                       ),
                     ),

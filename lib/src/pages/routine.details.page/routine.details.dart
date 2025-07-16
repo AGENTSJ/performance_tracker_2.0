@@ -30,21 +30,20 @@ class RoutineDetailsState extends State<RoutineDetails> {
   @override
   void initState() {
     routineDescriptionController.text = widget.routine.desc;
-      routineDescriptionController.addListener(() {
-        if(!isEditModeOn)
-        {
-          setState(() {
-            this.isEditModeOn = true;
-          });
-        }
-      });
+    routineDescriptionController.addListener(() {
+      if (!isEditModeOn) {
+        setState(() {
+          this.isEditModeOn = true;
+        });
+      }
+    });
     setRoutineUi();
     super.initState();
   }
 
   setRoutineUi() async {
     routineNameController.text = widget.routine.name;
-    
+
     if (widget.isCreateMode) {
       var routineKey = await routineService.addRoutine(widget.routine);
       routine = await routineService.getRoutineById(routineKey);
@@ -159,7 +158,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10.h,),
+                      SizedBox(height: 10.h),
                       Material(
                         borderRadius: BorderRadius.circular(8.r),
                         child: Column(
@@ -188,31 +187,48 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                 ),
                               ),
                             ...workouts.map(
-                              (work) => Padding(
-                                padding: EdgeInsets.all(12.0.r),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(work.name),
-                                    Material(
-                                      child: InkWell(
-                                        onTap: () {
-                                          handleRemoveWorkout(work);
-                                        },
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8.0.r,
-                                            horizontal: 5.r,
-                                          ),
-                                          child: Icon(
-                                            FontAwesomeIcons.trash,
-                                            size: 12.sp,
-                                          ),
+                              (work) => Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey.shade300,
                                         ),
                                       ),
+                                      borderRadius: BorderRadius.circular(8.r),
                                     ),
-                                  ],
+                                    child: Padding(
+                                      padding: EdgeInsets.all(12.0.r),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(work.name),
+                                          Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: () {
+                                                handleRemoveWorkout(work);
+                                              },
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 8.0.r,
+                                                  horizontal: 5.r,
+                                                ),
+                                                child: Icon(
+                                                  FontAwesomeIcons.xmark,
+                                                  size: 14.sp,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -406,7 +422,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
     refreshState();
   }
 
-  handleRemoveWorkout(Workout work)async {
+  handleRemoveWorkout(Workout work) async {
     workouts.remove(work);
     widget.routine.workoutsIds.remove(work.key);
     await routineService.updateRoutine(widget.routine);
