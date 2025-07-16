@@ -299,6 +299,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                   padding: EdgeInsets.all(14.0.r),
                   child: Column(
                     children: [
+                      SizedBox(height: 8.h,),
                       Row(
                         children: [
                           Text(

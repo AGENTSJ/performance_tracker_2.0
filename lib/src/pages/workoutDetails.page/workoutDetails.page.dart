@@ -5,6 +5,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/workout.service.dart';
+import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/progressChart.dart';
 import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/setDetails.component.dart';
 
 class WorkoutDetailsPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   bool isEditModeOn = false;
   bool isNameEdit = false;
   Workout? workout;
+  WorkSet? selectedSetForProgress;
   // bool
   @override
   void initState() {
@@ -33,9 +35,11 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     Future.microtask(() async {
       workNameController.text = widget.workout.name;
       workDescriptionController.text = widget.workout.desc;
+      if (widget.workout.sets.isNotEmpty) {
+        selectedSetForProgress = widget.workout.sets[0];
+      }
       workDescriptionController.addListener(() {
-        if(!isEditModeOn)
-        {
+        if (!isEditModeOn) {
           setState(() {
             this.isEditModeOn = true;
           });
@@ -165,15 +169,54 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
               ),
               SizedBox(height: 20.h),
               // Progress
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.r),
+              if (selectedSetForProgress != null) ...[
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  constraints: BoxConstraints(
+                    minHeight: 300.h,
+                    maxHeight: 400.h,
+                  ),
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.0.w),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Progress",style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w600),),
+                            DropdownButton<WorkSet>(
+                              value: selectedSetForProgress,
+                              hint: Text('Select an option'),
+                              items: widget.workout.sets.map((WorkSet workSet) {
+                                return DropdownMenuItem<WorkSet>(
+                                  value: workSet,
+                                  child: Text(workSet.value.toString()),
+                                );
+                              }).toList(),
+                              onChanged: (WorkSet? newValue) {
+                                setState(() {
+                                  selectedSetForProgress = newValue;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ProgressChart(set: selectedSetForProgress!,key: ValueKey(selectedSetForProgress!.value),),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                height: 200.h,
-                width: double.infinity,
-                child: Center(child: Text("Progress")),
-              ),
+              ],
               SizedBox(height: 20.h),
               Row(
                 children: [

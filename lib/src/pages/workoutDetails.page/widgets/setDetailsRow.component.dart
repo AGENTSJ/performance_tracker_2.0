@@ -13,6 +13,7 @@ class SetDetailRowComponent extends StatefulWidget {
     fillColor: SURFACE,
     filled: true,
     border: OutlineInputBorder(borderSide: BorderSide.none),
+    hintText: 'Reps',
     contentPadding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 0),
   );
   static final fieldDecor = TextStyle(
