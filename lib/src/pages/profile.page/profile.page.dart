@@ -39,7 +39,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       heightController.text = user!.height.toString();
       weightController.text = user!.weight.toString();
       _selectedGender = user!.gender;
-      ignoreChanges=false;
+      ignoreChanges = false;
       isUserFormUpdated = false;
       setState(() {});
     });
@@ -54,9 +54,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       ..gender = _selectedGender;
     await userService.updateUser(user!);
     this.isUserFormUpdated = false;
-    setState(() {
-      
-    });
+    setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile updated successfully!')),
     );
@@ -81,18 +79,17 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide(color: Colors.red,width: 0.5.w)
+        borderSide: BorderSide(color: Colors.red, width: 0.5.w),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.r),
-        borderSide: BorderSide(color: Colors.red,width: 1.w)
-      )
+        borderSide: BorderSide(color: Colors.red, width: 1.w),
+      ),
     );
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     nameController.dispose();
     ageController.dispose();
     genderController.dispose();
@@ -112,12 +109,10 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
           child: Column(
             children: [
               Form(
-                onChanged: (){
-                  if(ignoreChanges) return;
+                onChanged: () {
+                  if (ignoreChanges) return;
                   isUserFormUpdated = true;
-                  setState(() {
-                    
-                  });
+                  setState(() {});
                 },
                 key: _formKey,
                 child: Container(
@@ -150,10 +145,18 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                     ),
                                   ),
                                 ),
-                                avatarService.getDefaultAvatar(
-                                  width: 100.w,
-                                  height: 100.h,
-                                ),
+                                if (this.user?.gender == Gender.female) ...[
+                                  avatarService.getGreetingAvatar(
+                                    width: 100.w,
+                                    height: 100.h,
+                                  ),
+                                ]
+                                else ...[
+                                  avatarService.getMaleAvatar(
+                                    width: 100.w,
+                                    height: 100.h,
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -173,10 +176,10 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly
+                                      FilteringTextInputFormatter.digitsOnly,
                                     ],
-                                    validator: (value){
-                                     return validateAge(value);
+                                    validator: (value) {
+                                      return validateAge(value);
                                     },
                                     decoration: getInputDecoration("Age"),
                                     controller: ageController,
@@ -217,12 +220,16 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(r'^\d*\.?\d*'),
+                                      ),
                                     ],
                                     validator: (value) {
                                       return validateHeight(value);
                                     },
-                                    decoration: getInputDecoration("Height (Cm)"),
+                                    decoration: getInputDecoration(
+                                      "Height (Cm)",
+                                    ),
                                     controller: heightController,
                                   ),
                                 ),
@@ -231,12 +238,16 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(r'^\d*\.?\d*'),
+                                      ),
                                     ],
-                                    validator: (value){
+                                    validator: (value) {
                                       return validateWeight(value);
                                     },
-                                    decoration: getInputDecoration("Weight (Kg)"),
+                                    decoration: getInputDecoration(
+                                      "Weight (Kg)",
+                                    ),
                                     controller: weightController,
                                   ),
                                 ),
@@ -244,28 +255,25 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                             ),
                           ),
                         ),
-                        if(isUserFormUpdated)
-                        ElevatedButton(
-                          onPressed: () {
-                            if(_formKey.currentState!.validate())
-                            {
-                              _saveUserData();
-                            }
-                            else
-                            {
-                              Fluttertoast.showToast(msg: "Error in values");
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: SURFACE,
-                            elevation: 0,
-                            minimumSize: Size(double.infinity, 40.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
+                        if (isUserFormUpdated)
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _saveUserData();
+                              } else {
+                                Fluttertoast.showToast(msg: "Error in values");
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: SURFACE,
+                              elevation: 0,
+                              minimumSize: Size(double.infinity, 40.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
                             ),
+                            child: Text('Save'),
                           ),
-                          child: Text('Save'),
-                        ),
                       ],
                     ),
                   ),
@@ -280,26 +288,24 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
     );
   }
 
-  validateAge(String? value)
-  {
+  validateAge(String? value) {
     int intVal = int.tryParse(value ?? '0') ?? 0;
-    if(intVal<=0 || intVal>200)
-    {
+    if (intVal <= 0 || intVal > 200) {
       return 'Invalid age';
     }
   }
+
   validateWeight(String? value) {
     double weight = double.tryParse(value ?? '0') ?? 0;
     if (weight < minimumHumanWeightInKg || weight > maximumHumanWeightInKg) {
       return 'Invalid weight';
     }
   }
-  validateHeight(String? value)
-  {
+
+  validateHeight(String? value) {
     double height = double.tryParse(value ?? '0') ?? 0;
-    
-    if(height<minimumHumanHeightInCm || height> maximumHumanHeightInCm)
-    {
+
+    if (height < minimumHumanHeightInCm || height > maximumHumanHeightInCm) {
       return 'Invalid height';
     }
   }
