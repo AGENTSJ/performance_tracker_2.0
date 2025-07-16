@@ -16,6 +16,6 @@ class CommonService {
     var month = date.month;
     var dayOfMonth = date.day;
     // return "$year-$month-$dayOfMonth"; 
-    return "$dayOfMonth ${Months.values[month].name} $year";
+    return "$dayOfMonth ${Months.values[month-1].name} $year";
   }
 }

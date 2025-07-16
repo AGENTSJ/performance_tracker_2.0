@@ -1,14 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/user.model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/pages/profile.page/widgets/goals.widget.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 
 class ProfilePageModule extends StatefulWidget {
   const ProfilePageModule({super.key});
@@ -20,6 +28,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   final _formKey = GlobalKey<FormState>();
   final userService = locator<UserService>();
   final avatarService = locator<AvatarService>();
+  final dataservice = locator<DataService>();
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final genderController = TextEditingController();
@@ -150,8 +159,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                     width: 100.w,
                                     height: 100.h,
                                   ),
-                                ]
-                                else ...[
+                                ] else ...[
                                   avatarService.getMaleAvatar(
                                     width: 100.w,
                                     height: 100.h,
@@ -281,11 +289,101 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
               ),
               SizedBox(height: 20.h),
               if (user != null) GoalsWidget(user: user!),
+              SizedBox(height: 20.h),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(14.0.r),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "Backup",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
+                      Row(
+                        children: [
+                          TextButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: SURFACE,
+                            ),
+                            onPressed: () {
+                              handleUpload();
+                            },
+                            child: Row(
+                              children: [
+                                Icon(FontAwesomeIcons.download),
+                                SizedBox(width: 10.w),
+                                Text('Import'),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          TextButton(
+                            onPressed: () {},
+                            child: Row(
+                              children: [
+                                Icon(FontAwesomeIcons.upload),
+                                SizedBox(width: 10.w),
+                                Text('Export'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  handleUpload() async {
+    try {
+      final result = await FilePicker.platform.pickFiles();
+      if (result != null && result.files.single.path != null) {
+        File file = File(result.files.single.path!);
+        String contents = await file.readAsString();
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Container(
+              height: 200.h,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SpinKitSpinningLines(color: PRIMARY, size: 60.sp),
+                  SizedBox(height: 10.h),
+                  Text("Wait a few seconds"),
+                ],
+              ),
+            ),
+          ),
+        );
+        final jsonData = jsonDecode(contents);
+        await dataservice.restoreDataFromBackup(jsonData);
+        Navigator.of(context).pop();
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => WorkoutsPage()));
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error has occurred.");
+    }
   }
 
   validateAge(String? value) {

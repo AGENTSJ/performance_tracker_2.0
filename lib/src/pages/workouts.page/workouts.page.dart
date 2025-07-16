@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -47,9 +46,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       SizedBox(
                         height: 150,
                         width: 150,
-                        child: SvgPicture.asset(
-                          "assets/man-hold-dumbell.svg",
-                        ),
+                        child: empty,
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -58,8 +55,9 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           Text(
                             "Resting huh 🤨 ?",
                             style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w500
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: TEXT_SECONDARY
                             ),
                           ),
                         ],
