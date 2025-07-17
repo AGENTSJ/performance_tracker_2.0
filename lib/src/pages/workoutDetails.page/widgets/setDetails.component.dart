@@ -44,14 +44,23 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     ),
   );
   var workoutService = locator<WorkoutService>();
+  List<WorkSet> enabledSets = [];
   @override
   void initState() {
     super.initState();
+    setEnabledSets();
   }
-
+  setEnabledSets()
+  {
+    enabledSets = [];
+    for (var set in widget.workout.sets) {
+      if (set.enabled) {
+        enabledSets.add(set);
+      }
+    }
+  }
   setSets(bool setsUpdated) async {
-    if(setsUpdated)
-    {
+    if (setsUpdated) {
       var work = await workoutService.getWorkOutById(widget.workout.key);
       widget.workout.sets = work!.sets;
     }
@@ -82,6 +91,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                     TextButton(
                       onPressed: () {
                         showTrack = true;
+                        setEnabledSets();
                         refreshState();
                       },
                       style: showTrack
@@ -265,15 +275,14 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                     ),
                     SizedBox(height: 10.h),
                     SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ...widget.workout.sets.map(
-                            (set) => Padding(
-                              padding: EdgeInsets.only(
-                                top: 5.0.h,
-                                bottom: 5.0.h,
-                              ),
-                              child: SetDetailRowComponent(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        decoration: BoxDecoration(color: SURFACE,borderRadius: BorderRadius.circular(8.r)),
+                        child: Column(
+                          children: [
+                            ...(showTrack? enabledSets :widget.workout.sets).map(
+                              (set) => SetDetailRowComponent(
+                                key: ValueKey(DateTime.now()),
                                 set: set,
                                 showTrack: showTrack,
                                 workout: widget.workout,
@@ -282,8 +291,8 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                 },
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ] else ...[
@@ -291,8 +300,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                     Material(
                       color: SURFACE2,
                       child: InkWell(
-                        onTap: () {
-                        },
+                        onTap: () {},
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -328,10 +336,10 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       ),
     );
   }
-  handleAddNewSet(double weight)
-  {
+
+  handleAddNewSet(double weight) {
     for (var set in widget.workout.sets) {
-      if(set.value == weight) {
+      if (set.value == weight) {
         Fluttertoast.showToast(msg: "Already exist");
         return;
       }
@@ -340,6 +348,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     widget.workout.sets.add(set);
     workoutService.updateWorkout(widget.workout);
   }
+
   handleGoToWorkOutDetails() async {
     await Navigator.push(
       context,

@@ -9,13 +9,6 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 
 class SetDetailRowComponent extends StatefulWidget {
-  static final inputDecor = InputDecoration(
-    fillColor: SURFACE,
-    filled: true,
-    border: OutlineInputBorder(borderSide: BorderSide.none),
-    hintText: 'Reps',
-    contentPadding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 0),
-  );
   static final fieldDecor = TextStyle(
     fontSize: 15.sp,
     fontWeight: FontWeight.w400,
@@ -38,6 +31,14 @@ class SetDetailRowComponent extends StatefulWidget {
 }
 
 class SetDetailRowComponentState extends State<SetDetailRowComponent> {
+  var inputDecor = InputDecoration(
+    fillColor: SURFACE2,
+    filled: true,
+    border: OutlineInputBorder(borderSide: BorderSide.none),
+    hintText: 'Reps..',
+    hintStyle: TextStyle(color: TEXT_SECONDARY,fontSize: 12.sp),
+    contentPadding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 0),
+  );
   late bool isEnabled;
   var workoutService = locator<WorkoutService>();
   final commonService = locator<CommonService>();
@@ -87,107 +88,115 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 27.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              "${widget.set.value}",
-              style: SetDetailRowComponent.fieldDecor,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              "${widget.set.pr}",
-              style: SetDetailRowComponent.fieldDecor,
-            ),
-          ),
-          if (widget.showTrack) ...[
+    return Container(
+      decoration: BoxDecoration(color: SURFACE,border: Border(bottom: BorderSide(color: BORDER_PRIMARY),),borderRadius: BorderRadius.circular(8.r)),
+      height: 40.h,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.0.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             Expanded(
-              child: TextField(
-                decoration: SetDetailRowComponent.inputDecor,
-                textAlign: TextAlign.center,
+              child: Text(
+                "${widget.set.value}",
                 style: SetDetailRowComponent.fieldDecor,
-                controller: trackController,
               ),
             ),
             Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      handleTrack();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0.w),
-                        child: Icon(
-                          FontAwesomeIcons.check,
-                          size: 12.w,
-                          color: Colors.green.shade400,
+              child: Text(
+                "${widget.set.pr}",
+                style: SetDetailRowComponent.fieldDecor,
+              ),
+            ),
+            if (widget.showTrack) ...[
+              Expanded(
+                child: SizedBox(
+                  height: 27.h,
+                  child: TextField(
+                    
+                    decoration: inputDecor,
+                    textAlign: TextAlign.center,
+                    style: SetDetailRowComponent.fieldDecor,
+                    controller: trackController,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        handleTrack();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0.w),
+                          child: Icon(
+                            FontAwesomeIcons.check,
+                            size: 12.w,
+                            color: Colors.green.shade400,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ] else ...[
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TextButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(20.w, 20.h),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: const Color.fromARGB(104, 255, 163, 163),
-                      foregroundColor: const Color.fromARGB(104, 255, 147, 147),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(4.r),
+            ] else ...[
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(20.w, 20.h),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: const Color.fromARGB(104, 255, 163, 163),
+                        foregroundColor: const Color.fromARGB(104, 255, 147, 147),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(4.r),
+                        ),
+                      ),
+                      onPressed: () async {
+                        var remove = await showConfirmDialog(
+                          context,
+                          widget.set.value,
+                        );
+                        if (remove != null && remove) {
+                          handleRemoveSet(widget.set);
+                        }
+                      },
+                      child: Icon(
+                        FontAwesomeIcons.trash,
+                        size: 12.w,
+                        color: const Color.fromARGB(149, 255, 111, 111),
                       ),
                     ),
-                    onPressed: () async {
-                      var remove = await showConfirmDialog(
-                        context,
-                        widget.set.value,
-                      );
-                      if (remove != null && remove) {
-                        handleRemoveSet(widget.set);
-                      }
-                    },
-                    child: Icon(
-                      FontAwesomeIcons.trash,
-                      size: 12.w,
-                      color: const Color.fromARGB(149, 255, 111, 111),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Transform.scale(
-                    scale: 0.6,
-                    child: Switch(
-                      value: isEnabled,
-                      onChanged: handleToggleEnable,
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Transform.scale(
+                      scale: 0.6,
+                      child: Switch(
+                        value: isEnabled,
+                        onChanged: handleToggleEnable,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
