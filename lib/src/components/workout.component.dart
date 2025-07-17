@@ -64,7 +64,8 @@ class WorkoutComponentState extends State<WorkoutComponent> {
                         maxLines: 1,
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,
-                          color: TEXT_SECONDARY,
+                          // color: TEXT_SECONDARY,
+                          color: TEXT_TERTIARY,
                           fontWeight: FontWeight.w600,
                           fontSize: 17.sp,
                         ),

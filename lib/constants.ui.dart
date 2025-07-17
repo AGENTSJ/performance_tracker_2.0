@@ -8,6 +8,7 @@ const Color SURFACE2 = Color.fromARGB(255, 255, 255, 255);
 const Color CONT_BACKGROUND = Colors.white;     // Container Background
 const Color TEXT_PRIMARY = Color(0xff1E1E1E);  // Dark Gray
 const Color TEXT_SECONDARY = Color(0xff6E7C7C); // Muted Gray
+const Color TEXT_TERTIARY = const Color.fromARGB(255, 108, 108, 108); // Muted Gray
 Color BORDER_PRIMARY = Colors.grey.shade300;
 Color BORDER_SECONDARY = Colors.grey.shade100;
 // Dark mode colors

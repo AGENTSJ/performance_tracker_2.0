@@ -126,7 +126,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                     SizedBox(width: 20.w),
                                     Text(
                                       "Routines",
-                                      style: TextStyle(color: TEXT_SECONDARY),
+                                      style: TextStyle(
+                                        color: TEXT_TERTIARY,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -162,7 +165,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                     SizedBox(width: 20.w),
                                     Text(
                                       "Workouts",
-                                      style: TextStyle(color: TEXT_SECONDARY),
+                                      style: TextStyle(
+                                        color: TEXT_TERTIARY,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -195,7 +201,11 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                     onPressed: () {
                       handleAddWorkout();
                     },
-                    icon: Icon(FontAwesomeIcons.plus, size: 15.sp,color: Colors.white,),
+                    icon: Icon(
+                      FontAwesomeIcons.plus,
+                      size: 15.sp,
+                      color: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -208,7 +218,17 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                 child: ReorderableListView(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  onReorder: (oldIndex,newIndex){},
+                  onReorder: (oldIndex, newIndex) {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    var work = workouts.removeAt(oldIndex);
+                    var id = routine!.workoutsIds.removeAt(oldIndex);
+                    workouts.insert(newIndex, work);
+                    routine!.workoutsIds.insert(newIndex, id);
+                    routineService.updateRoutine(routine!);
+                    refreshState();
+                  },  
                   children: [
                     ...workouts.map(
                       (work) => Container(
