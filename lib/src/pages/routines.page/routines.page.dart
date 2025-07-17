@@ -104,7 +104,6 @@ class RoutinesPageState extends State<RoutinesPage> {
                     Text(
                       "Your routines",
                       style: TextStyle(
-                        color: TEXT_SECONDARY,
                         fontWeight: FontWeight.w500,
                         fontSize: 16.sp,
                       ),
@@ -149,7 +148,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                     SizedBox(width: 20.w),
                                     Text(
                                       "${routine.name} (${routine.workoutsIds.length})",
-                                      style: TextStyle(color: TEXT_SECONDARY),
+                                      style: TextStyle(color: TEXT_SECONDARY,fontSize: 14.sp,fontWeight: FontWeight.w500),
                                     ),
                                   ],
                                 ),
@@ -169,7 +168,6 @@ class RoutinesPageState extends State<RoutinesPage> {
                   Text(
                     "Previous workouts",
                     style: TextStyle(
-                      color: TEXT_SECONDARY,
                       fontWeight: FontWeight.w500,
                       fontSize: 16.sp,
                     ),
@@ -214,7 +212,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                   SizedBox(width: 20.w),
                                   Text(
                                     "${routine.name} (${routine.workoutsIds.length})",
-                                    style: TextStyle(color: TEXT_SECONDARY),
+                                    style: TextStyle(color: TEXT_SECONDARY,fontSize: 14.sp,fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),

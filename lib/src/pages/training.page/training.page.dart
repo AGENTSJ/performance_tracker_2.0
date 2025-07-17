@@ -44,20 +44,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
   User? user;
   Day? today;
   var dayService = locator<DayService>();
-  final PageController _selectionPageController = PageController();
-  int _currentPage = 0;
   @override
   void initState() {
     setRoutineUi();
-    _selectionPageController.addListener(() {
-      int newPage = _selectionPageController.page!.round();
-      if (newPage != _currentPage) {
-        setState(() {
-          _currentPage = newPage;
-          print('state $_currentPage');
-        });
-      }
-    });
     super.initState();
   }
 
@@ -100,11 +89,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
               SizedBox(height: 10.h),
               Text(
                 "Manage",
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 20),
               SingleChildScrollView(
@@ -191,13 +176,28 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                 ),
               ),
               SizedBox(height: 20.h),
-              Text(
-                "Todays workouts",
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Todays workouts",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  IconButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: PRIMARY,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: Size(5.w, 5.h),
+                    ),
+                    onPressed: () {
+                      handleAddWorkout();
+                    },
+                    icon: Icon(FontAwesomeIcons.plus, size: 15.sp,color: Colors.white,),
+                  ),
+                ],
               ),
               SizedBox(height: 20.h),
               Container(
@@ -205,10 +205,14 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                   color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Column(
+                child: ReorderableListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  onReorder: (oldIndex,newIndex){},
                   children: [
                     ...workouts.map(
                       (work) => Container(
+                        key: ValueKey(work),
                         decoration: BoxDecoration(
                           color: SURFACE2,
                           border: Border(
@@ -231,8 +235,14 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                   onPressed: () {
                                     handleRemoveWorkout(work);
                                   },
-                                  style: ElevatedButton.styleFrom(backgroundColor: SURFACE),
-                                  icon: Icon(FontAwesomeIcons.xmark,size: 18.sp,color: TEXT_SECONDARY,),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: SURFACE,
+                                  ),
+                                  icon: Icon(
+                                    FontAwesomeIcons.xmark,
+                                    size: 18.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
                                 ),
                               ),
                             ],
@@ -269,14 +279,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: PRIMARY,
-        elevation: 0,
-        onPressed: () {
-          handleAddWorkout();
-        },
-        child: Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
@@ -304,7 +306,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
             children: [
               Expanded(
                 child: PageView(
-                  controller: _selectionPageController,
                   children: [
                     SelectWorkout(selectedWorkouts: workouts),
                     RoutineSelection(selectedWorkouts: workouts),

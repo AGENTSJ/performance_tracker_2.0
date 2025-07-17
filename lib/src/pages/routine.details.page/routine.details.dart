@@ -160,84 +160,114 @@ class RoutineDetailsState extends State<RoutineDetails> {
                         ],
                       ),
                       SizedBox(height: 10.h),
-                      Material(
-                        borderRadius: BorderRadius.circular(8.r),
-                        child: Column(
-                          children: [
-                            if (workouts.isEmpty)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: SURFACE2,
-                                  borderRadius: BorderRadius.circular(8),
+                      if (workouts.isEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: SURFACE2,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.faceGrinWink,
+                                  color: Colors.grey,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        FontAwesomeIcons.faceGrinWink,
-                                        color: Colors.grey,
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      Text(
-                                        "Add workouts to routine",
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  "Add workouts to routine",
+                                  style: TextStyle(color: Colors.grey),
                                 ),
-                              ),
-                            ...workouts.map(
-                              (work) => Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    handleGoToWorkOutDetails(work);
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: BORDER_PRIMARY,
+                              ],
+                            ),
+                          ),
+                        ),
+                      if (workouts.isNotEmpty)
+                        Material(
+                          borderRadius: BorderRadius.circular(8.r),
+                          child: ReorderableListView(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              ...workouts.map(
+                                (work) => Material(
+                                  key: ValueKey(work),
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      handleGoToWorkOutDetails(work);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: BORDER_PRIMARY,
+                                          ),
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
                                         ),
                                       ),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(12.0.r),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(work.name),
-                                          Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                handleRemoveWorkout(work);
-                                              },
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: 8.0.r,
-                                                  horizontal: 5.r,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(12.0.r),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.drag_handle,
+                                                  size: 17.sp,
+                                                  color: TEXT_SECONDARY,
                                                 ),
-                                                child: Icon(
-                                                  FontAwesomeIcons.xmark,
-                                                  size: 14.sp,
+                                                SizedBox(width: 10.w),
+                                                Text(work.name,style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w500),),
+                                              ],
+                                            ),
+                                            Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  handleRemoveWorkout(work);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.symmetric(
+                                                        vertical: 8.0.r,
+                                                        horizontal: 5.r,
+                                                      ),
+                                                  child: Icon(
+                                                    FontAwesomeIcons.xmark,
+                                                    size: 14.sp,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                            onReorder: (oldIndex, newIndex) {
+                              if (newIndex > oldIndex) {
+                                newIndex -= 1;
+                              }
+                              var work = workouts.removeAt(oldIndex);
+                              var id = widget.routine.workoutsIds.removeAt(
+                                oldIndex,
+                              );
+                              workouts.insert(newIndex, work);
+                              widget.routine.workoutsIds.insert(newIndex, id);
+                              refreshState();
+                              routineService.updateRoutine(routine!);    
+                            },
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -361,8 +391,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
             WorkoutDetailsPage(workout: workout, isCreateMode: false),
       ),
     );
-    if(removed!=null)
-    {
+    if (removed != null) {
       this.workouts.remove(workout);
       this.routine!.workoutsIds.remove(workout.key);
       await handleUpdateRoutine();
@@ -370,7 +399,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
     refreshState();
   }
 
-  handleUpdateRoutine()async {
+  handleUpdateRoutine() async {
     routine?.name = routineNameController.text;
     routine?.desc = routineDescriptionController.text;
     await routineService.updateRoutine(routine!);
