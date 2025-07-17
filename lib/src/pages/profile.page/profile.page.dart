@@ -292,7 +292,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
               SizedBox(height: 20.h),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Padding(
