@@ -86,6 +86,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
             ),
             SizedBox(height: 20.h),
             Material(
+              color: SURFACE,
               borderRadius: BorderRadius.circular(8.r),
               child: SizedBox(
                 height: 300,
@@ -121,6 +122,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
                       ],
                       ...workouts.map(
                         (work) => Material(
+                          color: Colors.transparent,
                           child: InkWell(
                             onTap: () {
                               handleSelectWorkout(work);
@@ -129,10 +131,10 @@ class SelectWorkoutState extends State<SelectWorkout> {
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: TEXT_SECONDARY,
-                                    width: 0.5,
+                                    color: BORDER_PRIMARY,
                                   ),
                                 ),
+                                borderRadius: BorderRadius.circular(8.r)
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(14.0),

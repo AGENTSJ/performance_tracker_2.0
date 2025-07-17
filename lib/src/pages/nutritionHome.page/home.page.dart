@@ -75,7 +75,6 @@ class NutritionModuleState extends State<NutritionModule> {
             ),
             TextButton(
               onPressed: () {
-                // toggleDateSelector();
                 handleDatePickerEnable();
               },
               onLongPress: () async {
@@ -153,6 +152,9 @@ class NutritionModuleState extends State<NutritionModule> {
                                     ),
                                   ),
                                   IconButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE
+                                    ),
                                     onPressed: () {
                                       Navigator.push(
                                         context,

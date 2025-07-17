@@ -18,10 +18,6 @@ class WorkoutComponent extends StatefulWidget {
 }
 
 class WorkoutComponentState extends State<WorkoutComponent> {
-  // static const _headingTextDecor = TextStyle(
-  //   fontWeight: FontWeight.w500,
-  //   color: TEXT_SECONDARY,
-  // );
   List<WorkSet> enabledSets = [];
 
   @override

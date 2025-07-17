@@ -79,7 +79,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       ...workouts.map(
                         (work) => Container(
                           decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+                            border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
                             borderRadius: BorderRadius.circular(8.r)
                           ),
                           child: WorkoutComponent(

@@ -195,7 +195,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors.grey.shade300,
+                                          color: BORDER_PRIMARY,
                                         ),
                                       ),
                                       borderRadius: BorderRadius.circular(8.r),

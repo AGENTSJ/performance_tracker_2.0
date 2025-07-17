@@ -40,20 +40,22 @@ class _MealTrackerState extends State<MealTrackerPage> {
     super.initState();
     foodService.suggestFoods(widget.meal, widget.day).then((suggestions) {
       suggestedFoods = suggestions;
-      suggestedFoods = suggestedFoods.where((element) => !_isPresentInSelected(element)).toList();
+      suggestedFoods = suggestedFoods
+          .where((element) => !_isPresentInSelected(element))
+          .toList();
       setState(() {});
     });
   }
-  bool _isPresentInSelected(Food food)
-  {
+
+  bool _isPresentInSelected(Food food) {
     for (var selectedFood in widget.meal.foods) {
-      if(selectedFood.name == food.name)
-      {
+      if (selectedFood.name == food.name) {
         return true;
       }
     }
     return false;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,11 +109,11 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   children: [
                     Text(
                       'Search results',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
                     ),
                     IconButton(
                       onPressed: handleSearchClose,
-                      icon: Icon(Icons.close),
+                      icon: Icon(Icons.close,color: TEXT_SECONDARY,size: 18.sp,),
                     ),
                   ],
                 ),
@@ -155,9 +157,15 @@ class _MealTrackerState extends State<MealTrackerPage> {
                               onTap: () {
                                 showAddFoodModal(food);
                               },
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0.w),
-                                child: Row(children: [Text('${food.name}')]),
+                              child: Container(
+                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: BORDER_PRIMARY),),borderRadius: BorderRadius.circular(8.r)),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0.w,
+                                    vertical: 14.h,
+                                  ),
+                                  child: Row(children: [Text(food.name)]),
+                                ),
                               ),
                             ),
                           ),
@@ -166,6 +174,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ),
                 ),
               ] else ...[
+                if(suggestedFoods.isNotEmpty)
                 Column(
                   // suggested
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +185,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                       children: [
                         Text(
                           'Suggested',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
                         ),
                         if (showSuggested) ...[
                           IconButton(
@@ -185,7 +194,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                 showSuggested = false;
                               });
                             },
-                            icon: const Icon(Icons.close),
+                            icon: Icon(Icons.close,color: TEXT_SECONDARY,size: 18.sp,),
                           ),
                         ] else ...[
                           IconButton(
@@ -220,7 +229,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors.grey.shade300,
+                                          color: BORDER_PRIMARY,
                                         ),
                                       ),
                                       borderRadius: BorderRadius.circular(8.r),
@@ -250,7 +259,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                     children: [
                       Text(
                         'Selected',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
                       ),
                     ],
                   ),
@@ -274,9 +283,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey.shade300,
-                                    ),
+                                    bottom: BorderSide(color: BORDER_PRIMARY),
                                   ),
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
@@ -365,14 +372,15 @@ class _MealTrackerState extends State<MealTrackerPage> {
     searchfoods = [];
     setState(() {});
   }
-  handleSelectSuggestedFood(Food food)
-  {
+
+  handleSelectSuggestedFood(Food food) {
     var newFood = food.clone();
-    widget.meal.foods.add(newFood); 
+    widget.meal.foods.add(newFood);
     suggestedFoods.remove(food);
     dayService.updateDayData(widget.day);
     setState(() {});
   }
+
   showAddFoodModalUpdateMode(Food food) async {
     await Navigator.push(
       context,
@@ -423,7 +431,7 @@ class EmptyResultsWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 100.h,width: 100.w,child: empty),
+            SizedBox(height: 100.h, width: 100.w, child: empty),
             SizedBox(height: 10.h),
             Text(insideText, style: TextStyle(fontWeight: FontWeight.w500)),
           ],

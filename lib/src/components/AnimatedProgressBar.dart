@@ -54,7 +54,7 @@ class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTi
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,
                     toY: 1,
-                    color: Colors.grey.shade300,
+                    color: BORDER_PRIMARY,
                   ),
                 ),
               ],

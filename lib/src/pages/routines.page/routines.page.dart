@@ -99,56 +99,89 @@ class RoutinesPageState extends State<RoutinesPage> {
           child: Column(
             children: [
               if (customRoutines.isNotEmpty) ...[
-                Row(children: [Text("Your workouts")]),
+                Row(
+                  children: [
+                    Text(
+                      "Your routines",
+                      style: TextStyle(
+                        color: TEXT_SECONDARY,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16.sp,
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 20.h),
               ],
-              ...customRoutines.map(
-                (routine) => Padding(
-                  padding: EdgeInsets.only(bottom: 0.0.r),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        handleShowRoutine(routine);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: SURFACE2,
-                          border: Border(
-                            bottom: BorderSide(color: Colors.grey.shade300),
-                          ),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 20.r,
-                            horizontal: 15.r,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                size: 18.sp,
-                                FontAwesomeIcons.layerGroup,
-                                color: TEXT_SECONDARY,
+              Container(
+                decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8.r)),
+                child: Column(
+                  children: [
+                    ...customRoutines.map(
+                      (routine) => Padding(
+                        padding: EdgeInsets.only(bottom: 0.0.r),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              handleShowRoutine(routine);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: SURFACE2,
+                                border: Border(
+                                  bottom: BorderSide(color: BORDER_PRIMARY),
+                                ),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
-                              SizedBox(width: 20.w),
-                              Text(
-                                "${routine.name} (${routine.workoutsIds.length})",
-                                style: TextStyle(color: TEXT_SECONDARY),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 20.r,
+                                  horizontal: 15.r,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      size: 18.sp,
+                                      FontAwesomeIcons.layerGroup,
+                                      color: TEXT_SECONDARY,
+                                    ),
+                                    SizedBox(width: 20.w),
+                                    Text(
+                                      "${routine.name} (${routine.workoutsIds.length})",
+                                      style: TextStyle(color: TEXT_SECONDARY),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-              SizedBox(height: 10.h),
-              Row(children: [Text("Previous workouts")]),
+
+              SizedBox(height: 20.h),
+              Row(
+                children: [
+                  Text(
+                    "Previous workouts",
+                    style: TextStyle(
+                      color: TEXT_SECONDARY,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: 20.h),
               Container(
-                decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8.r)),
+                decoration: BoxDecoration(
+                  color: SURFACE2,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
                 child: Column(
                   children: [
                     ...routines.map(
@@ -161,8 +194,10 @@ class RoutinesPageState extends State<RoutinesPage> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-                              borderRadius: BorderRadius.circular(8.r)
+                              border: Border(
+                                bottom: BorderSide(color: BORDER_PRIMARY),
+                              ),
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Padding(
                               padding: EdgeInsets.symmetric(

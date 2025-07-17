@@ -313,6 +313,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                       ),
                       SizedBox(height: 20.h),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
                             style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
@@ -55,106 +56,112 @@ class _MealContainerState extends State<MealContainer>
                   Text("${caloriesInMeal.round().toString()} Cal"),
                   SizedBox(width: 10.w),
                   TextButton(
-                    onPressed: () {handleNavigation();},
+                    onPressed: () {
+                      handleNavigation();
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: PRIMARY,
                       foregroundColor: Colors.white,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: Size(5.w, 5.h),
-                      padding: EdgeInsets.all(4.sp)
+                      padding: EdgeInsets.all(4.sp),
                     ),
-                    child: Icon(Icons.add,size: 20.sp,),
+                    child: Icon(Icons.add, size: 20.sp),
                   ),
                 ],
               ),
             ],
           ),
           SizedBox(height: 10.h),
-          Container(
-            decoration: BoxDecoration(
-              color: CONT_BACKGROUND,
-              borderRadius: BorderRadius.all(Radius.circular(8.r)),
+          if (widget.meal.foods.isEmpty) ...[
+            Container(
+              decoration: BoxDecoration(
+                color: CONT_BACKGROUND,
+                borderRadius: BorderRadius.all(Radius.circular(8.r)),
+              ),
+              width: double.infinity,
+              constraints: BoxConstraints(minHeight: 90.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(FontAwesomeIcons.bowlRice, color: Colors.grey, size: 20.w),
+                  SizedBox(height: 10.w),
+                  Text(
+                    "Track you meals for ${widget.meal.mealName}",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: const Color.fromARGB(255, 124, 124, 124),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            width: double.infinity,
-            constraints: BoxConstraints(minHeight: 80.h),
-            child: Padding(
-              padding: EdgeInsets.all(14.0.w),
+          ] else ...[
+            Container(
+              decoration: BoxDecoration(
+                color: CONT_BACKGROUND,
+                borderRadius: BorderRadius.all(Radius.circular(8.r)),
+              ),
+              width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (widget.meal.foods.isEmpty) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  ...widget.meal.foods.map(
+                    (food) => Column(
                       children: [
-                        Text(
-                          "Track you meals for ${widget.meal.mealName}",
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: const Color.fromARGB(255, 124, 124, 124),
-                          ),
-                        ),
-                        SizedBox(width: 10.w),
-                        Icon(Icons.fastfood, color: Colors.grey, size: 20.w),
-                      ],
-                    ),
-                  ] else
-                    ...widget.meal.foods.map(
-                      (food) => Column(
-                        children: [
-                          SingleChildScrollView(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  handleFoodClick(food);
-                                },
-                                splashColor: const Color.fromARGB(
-                                  91,
-                                  188,
-                                  188,
-                                  188,
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              handleFoodClick(food);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: BORDER_SECONDARY,
+                                  ),
                                 ),
-                                highlightColor: const Color.fromARGB(
-                                  91,
-                                  188,
-                                  188,
-                                  188,
-                                ),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(12.0.r),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: 180.w,
-                                          child: Text(
-                                            food.name,
-                                            style: TextStyle(fontSize: 15.sp),
-                                          ),
-                                        ),
-                                        Text(
-                                          "${food.quantity.value.round().toString()} ${food.quantity.unit}",
-                                          textAlign: TextAlign.start,
-                                          style: TextStyle(
-                                            color: const Color.fromARGB(
-                                              255,
-                                              109,
-                                              109,
-                                              109,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            child: Text(
+                                              food.name,
+                                              style: TextStyle(fontSize: 15.sp),
                                             ),
-                                            fontSize: 14.sp,
                                           ),
-                                        ),
-                                      ],
+                                          Text(
+                                            "${food.quantity.value.round().toString()} ${food.quantity.unit}",
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                255,
+                                                109,
+                                                109,
+                                                109,
+                                              ),
+                                              fontSize: 14.sp,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     Row(
                                       children: [
                                         SizedBox(
-                                          width: 50.w,
+                                          width: 80.w,
                                           child: Text(
                                             "${food.macros.calories.round().toString()} Cal",
                                             textAlign: TextAlign.right,
@@ -166,9 +173,9 @@ class _MealContainerState extends State<MealContainer>
                                             removeFoodFromMeal(food);
                                           },
                                           child: Icon(
-                                            Icons.delete,
+                                            FontAwesomeIcons.xmark,
                                             color: Colors.grey,
-                                            size: 20.w,
+                                            size: 15.w,
                                           ),
                                         ),
                                       ],
@@ -178,14 +185,15 @@ class _MealContainerState extends State<MealContainer>
                               ),
                             ),
                           ),
-                          SizedBox(height: 20.h),
-                        ],
-                      ),
+                        ),
+                        // SizedBox(height: 20.h),
+                      ],
                     ),
+                  ),
                 ],
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
