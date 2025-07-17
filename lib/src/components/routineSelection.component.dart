@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -30,34 +31,33 @@ class _RoutineSelectionState extends State<RoutineSelection> {
           padding: EdgeInsets.all(14.0.r),
           child: Column(
             children: [
-              SizedBox(height: 10.h),
-              Row(children: [Text("Select a routine")]),
-              SizedBox(height: 10.h),
+              SizedBox(height: 15.h),
+              Row(children: [Text("Select a routine",style: TextStyle(color: TEXT_SECONDARY,fontSize: 16.sp,fontWeight: FontWeight.w500),)]),
+              SizedBox(height: 20.h),
               Material(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(8.r),topRight: Radius.circular(8.r)),
+                color: SURFACE,
+                borderRadius: BorderRadius.circular(8.r),
                 child: Column(
                   children: [
                     ...routines.map(
-                      (routine) => Padding(
-                        padding: EdgeInsets.only(bottom: 4.0.r),
-                        child: Material(
-                          child: InkWell(
-                            onTap: () {
-                              handleSaveRoutine(routine);
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: TEXT_SECONDARY,
-                                    width: 0.5,
-                                  ),
+                      (routine) => Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            handleSaveRoutine(routine);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: BORDER_PRIMARY,
                                 ),
                               ),
-                              child: Padding(
-                                padding: EdgeInsets.all(14.0.r),
-                                child: Row(children: [Text(routine.name)]),
-                              ),
+                              borderRadius: BorderRadius.circular(8.r)
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(14.0.r),
+                              child: Row(children: [Icon(FontAwesomeIcons.layerGroup,size: 18.sp,color: TEXT_SECONDARY,),SizedBox(width: 20.w,),Text(routine.name)]),
                             ),
                           ),
                         ),

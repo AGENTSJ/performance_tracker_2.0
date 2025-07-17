@@ -44,9 +44,20 @@ class TrainingModulePageState extends State<TrainingModulePage> {
   User? user;
   Day? today;
   var dayService = locator<DayService>();
+  final PageController _selectionPageController = PageController();
+  int _currentPage = 0;
   @override
   void initState() {
     setRoutineUi();
+    _selectionPageController.addListener(() {
+      int newPage = _selectionPageController.page!.round();
+      if (newPage != _currentPage) {
+        setState(() {
+          _currentPage = newPage;
+          print('state $_currentPage');
+        });
+      }
+    });
     super.initState();
   }
 
@@ -128,7 +139,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                       color: TEXT_SECONDARY,
                                     ),
                                     SizedBox(width: 20.w),
-                                    Text("Routines" ,style: TextStyle(color: TEXT_SECONDARY),),
+                                    Text(
+                                      "Routines",
+                                      style: TextStyle(color: TEXT_SECONDARY),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -161,7 +175,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                       color: TEXT_SECONDARY,
                                     ),
                                     SizedBox(width: 20.w),
-                                    Text("Workouts",style: TextStyle(color: TEXT_SECONDARY),),
+                                    Text(
+                                      "Workouts",
+                                      style: TextStyle(color: TEXT_SECONDARY),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -183,54 +200,50 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                 ),
               ),
               SizedBox(height: 20.h),
-              ...workouts.map(
-                (work) => Padding(
-                  padding: EdgeInsets.only(bottom: 20.0.r),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: SURFACE2,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(1.0),
-                      child: Column(
-                        children: [
-                          WorkoutComponent(
-                            workout: work,
-                            onUpdated: (value) {},
+              Container(
+                decoration: BoxDecoration(
+                  color: SURFACE2,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Column(
+                  children: [
+                    ...workouts.map(
+                      (work) => Container(
+                        decoration: BoxDecoration(
+                          color: SURFACE2,
+                          border: Border(
+                            bottom: BorderSide(color: BORDER_PRIMARY),
                           ),
-                          Container(
-                            decoration: BoxDecoration(color: SURFACE2),
-                            child: Padding(
-                              padding:  EdgeInsets.only(right: 8.0.r,bottom: 4.r),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      handleRemoveWorkout(work);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: SURFACE,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadiusGeometry.circular(
-                                          4,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Text("Remove"),
-                                  ),
-                                ],
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: Stack(
+                            children: [
+                              WorkoutComponent(
+                                workout: work,
+                                onUpdated: (value) {},
                               ),
-                            ),
+                              Positioned(
+                                right: 0,
+                                bottom: 12.r,
+                                child: IconButton(
+                                  onPressed: () {
+                                    handleRemoveWorkout(work);
+                                  },
+                                  style: ElevatedButton.styleFrom(backgroundColor: SURFACE),
+                                  icon: Icon(FontAwesomeIcons.xmark,size: 18.sp,color: TEXT_SECONDARY,),
+                                ),
+                              ),
+                            ],
                           ),
-                        
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+
               if (workouts.isEmpty) ...[
                 Container(
                   width: double.infinity,
@@ -285,11 +298,33 @@ class TrainingModulePageState extends State<TrainingModulePage> {
       ),
       context: context,
       builder: (BuildContext context) => SizedBox(
-        child: PageView(
-          children: [
-            SelectWorkout(selectedWorkouts: workouts),
-            RoutineSelection(selectedWorkouts: workouts,),
-          ],
+        child: SizedBox(
+          height: 600.h,
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: _selectionPageController,
+                  children: [
+                    SelectWorkout(selectedWorkouts: workouts),
+                    RoutineSelection(selectedWorkouts: workouts),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.0.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Swipe to select from workouts or routines",
+                      style: TextStyle(color: TEXT_SECONDARY),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

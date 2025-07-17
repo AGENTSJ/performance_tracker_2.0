@@ -35,12 +35,26 @@ class RoutineService {
   Future<List<Workout>> getRoutinesWorkouts(Routine routine) async
   {
     List<Workout> workouts = [];
+    bool invalidKeysFound = false;
+    List<int> invalidKeys = [];
     for (var workId in routine.workoutsIds) {
       var work = await _workService.getWorkOutById(workId);
       if(work!=null)
       {
         workouts.add(work);
       }
+      else
+      {
+        invalidKeysFound = true;
+        invalidKeys.add(workId);
+      }
+    }
+    if(invalidKeysFound==true)
+    {
+      for (var invKey in invalidKeys) {
+        routine.workoutsIds.remove(invKey);
+      }
+      await updateRoutine(routine);
     }
     return workouts;
   }

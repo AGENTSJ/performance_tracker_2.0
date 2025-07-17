@@ -6,6 +6,7 @@ import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
+import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
 
 class RoutineDetails extends StatefulWidget {
   final Routine routine;
@@ -190,7 +191,9 @@ class RoutineDetailsState extends State<RoutineDetails> {
                               (work) => Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    handleGoToWorkOutDetails(work);
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       border: Border(
@@ -350,10 +353,27 @@ class RoutineDetailsState extends State<RoutineDetails> {
     refreshState();
   }
 
-  handleUpdateRoutine() {
+  handleGoToWorkOutDetails(Workout workout) async {
+    var removed = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            WorkoutDetailsPage(workout: workout, isCreateMode: false),
+      ),
+    );
+    if(removed!=null)
+    {
+      this.workouts.remove(workout);
+      this.routine!.workoutsIds.remove(workout.key);
+      await handleUpdateRoutine();
+    }
+    refreshState();
+  }
+
+  handleUpdateRoutine()async {
     routine?.name = routineNameController.text;
     routine?.desc = routineDescriptionController.text;
-    routineService.updateRoutine(routine!);
+    await routineService.updateRoutine(routine!);
     isEditModeOn = false;
     isNameEdit = false;
     refreshState();
