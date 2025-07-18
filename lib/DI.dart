@@ -10,6 +10,7 @@ import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
 import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
@@ -36,6 +37,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<RoutineService>(()=>RoutineService());
   locator.registerLazySingleton<MaintainanceService>(()=>MaintainanceService());
   locator.registerLazySingleton<DataService>(()=>DataService());
+  locator.registerLazySingleton<HealthService>(()=>HealthService());
 
   // Repo
   locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());

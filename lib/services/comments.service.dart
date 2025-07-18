@@ -4,7 +4,6 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
-import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';

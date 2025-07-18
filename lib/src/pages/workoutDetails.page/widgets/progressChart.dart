@@ -24,7 +24,7 @@ class ProgressChartState extends State<ProgressChart> {
       dataPoints.add(FlSpot(i.toDouble(), entry.value.toDouble()));
       i++;
     }
-    print('initRan ${dataPoints.length}');
+    // print('initRan ${dataPoints.length}');
   }
 
   @override

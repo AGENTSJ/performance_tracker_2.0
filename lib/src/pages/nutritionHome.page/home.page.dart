@@ -9,6 +9,7 @@ import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
+import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/mealContainer.dart';
 import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';
@@ -193,39 +194,10 @@ class NutritionModuleState extends State<NutritionModule> {
                       ),
                     ),
                   ],
-                  Positioned(
-                    child: Column(
-                      children: [
-                        // AnimatedContainer(
-                        //   duration: Duration(milliseconds: 250),
-                        //   curve: Curves.easeInOut,
-                        //   height: showDateSelector ? 66 : 0,
-                        //   width: double.infinity,
-                        //   child: SingleChildScrollView(
-                        //     child: DateSelector(
-                        //       selectedDate: currentDay!.dayTime,
-                        //       onDateChanged: (value) {
-                        //         handleDateChange(value);
-                        //       },
-                        //     ),
-                        //   ),
-                        // ),
-                        // if (showDateSelector)
-                        //   Expanded(
-                        //     child: GestureDetector(
-                        //       onTap: () {
-                        //         toggleDateSelector();
-                        //       },
-                        //       child: Container(color: Colors.transparent),
-                        //     ),
-                        //   ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             )
-          : Center(child: SpinKitSpinningLines(color: PRIMARY)),
+          : LoadingPage(),
     );
   }
 

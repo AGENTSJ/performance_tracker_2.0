@@ -1,0 +1,64 @@
+import 'package:health/health.dart';
+
+class HealthService {
+  late Health _health;
+  bool _authorized = false;
+  bool Function()? authorized;
+
+  HealthService() {
+    _health = Health();
+    _health.configure();
+    authorized = () => _authorized;
+  }
+  Future<bool> _makeHealthServiceAvailable() async {
+    if (!_authorized) {
+      if (!(await _health.isHealthConnectAvailable())) {
+        print("Health Connect not available. Prompting user to install...");
+        return false;
+      }
+      final types = [HealthDataType.STEPS];
+      final permissions = [HealthDataAccess.READ_WRITE];
+      this._authorized = await _health.requestAuthorization(
+        types,
+        permissions: permissions,
+      );
+      return _authorized;
+    } else {
+      return true;
+    }
+  }
+
+  Future<int> getTodaysSteps() async {
+    bool valid = await _makeHealthServiceAvailable();
+    if (!valid) {
+      return 0;
+    }
+    DateTime now = DateTime.now();
+    final midnight = DateTime(now.year, now.month, now.day);
+    int? steps = await _health.getTotalStepsInInterval(midnight, now);
+    return steps ?? 0;
+  }
+
+  Future<Duration> getMoveMin() async {
+    bool valid = await _makeHealthServiceAvailable();
+    if (!valid) {
+      return Duration(seconds: 0);
+    }
+    const secondToTakeAStep = 0.5;
+    var steps = await getTodaysSteps();
+    var totalSeconds = (steps * secondToTakeAStep).round();
+    return Duration(seconds: totalSeconds);
+  }
+
+  Future<double> getMoveKm() async {
+    bool valid = await _makeHealthServiceAvailable();
+    if (!valid) {
+      return 0;
+    }
+    const metersInOneStep = 0.762;
+    var steps = await getTodaysSteps();
+    var totalMeters = (steps * metersInOneStep).round();
+    var totalKm = totalMeters / 1000;
+    return totalKm;
+  }
+}
