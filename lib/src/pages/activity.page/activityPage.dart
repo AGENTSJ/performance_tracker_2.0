@@ -64,16 +64,19 @@ class _ActivityPageState extends State<ActivityPage> {
       var day = await dayService.getDayDataByDate(date);
       previousDays.insert(0, day!);
     }
-    // daysScrollController.jumpTo(
-    //     daysScrollController.position.maxScrollExtent,
-    //   );
   }
 
   @override
   void initState() {
     super.initState();
-
     setUpUi();
+    Future.delayed(Duration(seconds: 1), () {
+      daysScrollController.animateTo(
+        daysScrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300), 
+        curve: Curves.easeIn,
+      );
+    });
   }
 
   @override
