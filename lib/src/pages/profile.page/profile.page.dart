@@ -14,6 +14,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
+import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 import 'package:performance_tracker/src/pages/profile.page/widgets/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
@@ -38,20 +39,23 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   bool isUserFormUpdated = false;
   bool ignoreChanges = false;
   User? user;
-
+  bool isLoaded = false;
   _ProfilePageModuleState() {
-    Future.microtask(() async {
-      user = await userService.getUserData();
-      ignoreChanges = true;
-      nameController.text = user!.name;
-      ageController.text = user!.age.toString();
-      heightController.text = user!.height.toString();
-      weightController.text = user!.weight.toString();
-      _selectedGender = user!.gender;
-      ignoreChanges = false;
-      isUserFormUpdated = false;
-      setState(() {});
-    });
+    setUpProfilePageUi();
+  }
+  setUpProfilePageUi() async {
+    user = await userService.getUserData();
+    ignoreChanges = true;
+    nameController.text = user!.name;
+    ageController.text = user!.age.toString();
+    heightController.text = user!.height.toString();
+    weightController.text = user!.weight.toString();
+    _selectedGender = user!.gender;
+    ignoreChanges = false;
+    isUserFormUpdated = false;
+    isLoaded = true;
+    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    setState(() {});
   }
 
   void _saveUserData() async {
@@ -111,246 +115,260 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BACKGROUND,
-      appBar: AppBar(title: const Text('Profile'), backgroundColor: BACKGROUND),
-      body: Padding(
-        padding: EdgeInsets.all(16.0.w),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Form(
-                onChanged: () {
-                  if (ignoreChanges) return;
-                  isUserFormUpdated = true;
-                  setState(() {});
-                },
-                key: _formKey,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: CONT_BACKGROUND,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15.h,
-                      horizontal: 16.w,
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 100.h,
-                          child: Center(
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  top: 27.h,
-                                  left: 4.5.w,
-                                  child: Container(
-                                    width: 90.w,
-                                    height: 90.h,
-                                    decoration: BoxDecoration(
-                                      color: PRIMARY,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                if (this.user?.gender == Gender.female) ...[
-                                  avatarService.getGreetingAvatar(
-                                    width: 100.w,
-                                    height: 100.h,
-                                  ),
-                                ] else ...[
-                                  avatarService.getMaleAvatar(
-                                    width: 100.w,
-                                    height: 100.h,
-                                  ),
-                                ],
-                              ],
-                            ),
+      appBar: AppBar(title: const Text('Profile'), backgroundColor: BACKGROUND,scrolledUnderElevation: 0,),
+      body: !isLoaded
+          ? LoadingPage()
+          : Padding(
+              padding: EdgeInsets.all(16.0.w),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Form(
+                      onChanged: () {
+                        if (ignoreChanges) return;
+                        isUserFormUpdated = true;
+                        setState(() {});
+                      },
+                      key: _formKey,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: CONT_BACKGROUND,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 15.h,
+                            horizontal: 16.w,
                           ),
-                        ),
-                        SizedBox(height: 20.h),
-                        TextFormField(
-                          decoration: getInputDecoration("Name"),
-                          controller: nameController,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
-                          child: Container(
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    validator: (value) {
-                                      return validateAge(value);
-                                    },
-                                    decoration: getInputDecoration("Age"),
-                                    controller: ageController,
-                                  ),
-                                ),
-                                SizedBox(width: 10.w),
-                                Expanded(
-                                  child: DropdownButtonFormField(
-                                    value: _selectedGender,
-                                    decoration: getInputDecoration("Gender"),
-                                    items: Gender.values.map((gender) {
-                                      return DropdownMenuItem(
-                                        value: gender,
-                                        child: Text(
-                                          gender.name,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                height: 100.h,
+                                child: Center(
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        top: 27.h,
+                                        left: 4.5.w,
+                                        child: Container(
+                                          width: 90.w,
+                                          height: 90.h,
+                                          decoration: BoxDecoration(
+                                            color: PRIMARY,
+                                            shape: BoxShape.circle,
                                           ),
                                         ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (genderVal) {
-                                      _selectedGender = genderVal!;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d*\.?\d*'),
                                       ),
+                                      if (this.user?.gender ==
+                                          Gender.female) ...[
+                                        avatarService.getGreetingAvatar(
+                                          width: 100.w,
+                                          height: 100.h,
+                                        ),
+                                      ] else ...[
+                                        avatarService.getMaleAvatar(
+                                          width: 100.w,
+                                          height: 100.h,
+                                        ),
+                                      ],
                                     ],
-                                    validator: (value) {
-                                      return validateHeight(value);
-                                    },
-                                    decoration: getInputDecoration(
-                                      "Height (Cm)",
-                                    ),
-                                    controller: heightController,
                                   ),
                                 ),
-                                SizedBox(width: 10.w),
-                                Expanded(
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d*\.?\d*'),
-                                      ),
-                                    ],
-                                    validator: (value) {
-                                      return validateWeight(value);
-                                    },
-                                    decoration: getInputDecoration(
-                                      "Weight (Kg)",
-                                    ),
-                                    controller: weightController,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (isUserFormUpdated)
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _saveUserData();
-                              } else {
-                                Fluttertoast.showToast(msg: "Error in values");
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: SURFACE,
-                              elevation: 0,
-                              minimumSize: Size(double.infinity, 40.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.r),
                               ),
-                            ),
-                            child: Text('Save'),
+                              SizedBox(height: 20.h),
+                              TextFormField(
+                                decoration: getInputDecoration("Name"),
+                                controller: nameController,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 16.h,
+                                  bottom: 16.h,
+                                ),
+                                child: Container(
+                                  width: double.infinity,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                          ],
+                                          validator: (value) {
+                                            return validateAge(value);
+                                          },
+                                          decoration: getInputDecoration("Age"),
+                                          controller: ageController,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Expanded(
+                                        child: DropdownButtonFormField(
+                                          value: _selectedGender,
+                                          decoration: getInputDecoration(
+                                            "Gender",
+                                          ),
+                                          items: Gender.values.map((gender) {
+                                            return DropdownMenuItem(
+                                              value: gender,
+                                              child: Text(
+                                                gender.name,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (genderVal) {
+                                            _selectedGender = genderVal!;
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 16.h,
+                                  bottom: 16.h,
+                                ),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(
+                                              RegExp(r'^\d*\.?\d*'),
+                                            ),
+                                          ],
+                                          validator: (value) {
+                                            return validateHeight(value);
+                                          },
+                                          decoration: getInputDecoration(
+                                            "Height (Cm)",
+                                          ),
+                                          controller: heightController,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Expanded(
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(
+                                              RegExp(r'^\d*\.?\d*'),
+                                            ),
+                                          ],
+                                          validator: (value) {
+                                            return validateWeight(value);
+                                          },
+                                          decoration: getInputDecoration(
+                                            "Weight (Kg)",
+                                          ),
+                                          controller: weightController,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (isUserFormUpdated)
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      _saveUserData();
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: "Error in values",
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: SURFACE,
+                                    elevation: 0,
+                                    minimumSize: Size(double.infinity, 40.h),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  child: Text('Save'),
+                                ),
+                            ],
                           ),
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              if (user != null) GoalsWidget(user: user!),
-              SizedBox(height: 20.h),
-              Container(
-                decoration: BoxDecoration(
-                  color: SURFACE2,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(14.0.r),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 8.h,),
-                      Row(
-                        children: [
-                          Text(
-                            "Backup",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15.sp,
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: 20.h),
+                    if (user != null) GoalsWidget(user: user!),
+                    SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: SURFACE2,
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                      SizedBox(height: 20.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: SURFACE,
-                            ),
-                            onPressed: () {
-                              handleUpload();
-                            },
-                            child: Row(
+                      child: Padding(
+                        padding: EdgeInsets.all(14.0.r),
+                        child: Column(
+                          children: [
+                            SizedBox(height: 8.h),
+                            Row(
                               children: [
-                                Icon(FontAwesomeIcons.download),
-                                SizedBox(width: 10.w),
-                                Text('Import'),
+                                Text(
+                                  "Backup",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15.sp,
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                          SizedBox(width: 10.w),
-                          TextButton(
-                            onPressed: () {},
-                            child: Row(
+                            SizedBox(height: 20.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Icon(FontAwesomeIcons.upload),
+                                TextButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: SURFACE,
+                                  ),
+                                  onPressed: () {
+                                    handleUpload();
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(FontAwesomeIcons.download),
+                                      SizedBox(width: 10.w),
+                                      Text('Import'),
+                                    ],
+                                  ),
+                                ),
                                 SizedBox(width: 10.w),
-                                Text('Export'),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Row(
+                                    children: [
+                                      Icon(FontAwesomeIcons.upload),
+                                      SizedBox(width: 10.w),
+                                      Text('Export'),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 

@@ -28,6 +28,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       appBar: AppBar(
         title: const Text('Workouts'),
         backgroundColor: BACKGROUND,
+        scrolledUnderElevation: 0,
       ),
       body: workouts.isEmpty
           ? Column(

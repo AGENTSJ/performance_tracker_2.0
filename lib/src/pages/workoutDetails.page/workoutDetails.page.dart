@@ -60,6 +60,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
       appBar: AppBar(
         backgroundColor: BACKGROUND,
         title: const Text('Workout Details'),
+        scrolledUnderElevation: 0,
       ),
       body: Padding(
         padding: EdgeInsets.all(14.0.w),
@@ -156,7 +157,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         maxLines: null,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: const Color.fromARGB(53, 202, 202, 202),
+                          fillColor: SURFACE,
                           hintText: "Add some notes about this workout",
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,

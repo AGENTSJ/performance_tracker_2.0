@@ -135,8 +135,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
               ],
             ),
             SizedBox(height: 10.h),
-            Container(
-              constraints: BoxConstraints(maxHeight: 500.h, minHeight: 0),
+            SizedBox(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

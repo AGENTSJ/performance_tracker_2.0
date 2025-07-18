@@ -31,6 +31,7 @@ class _ActivityPageState extends State<ActivityPage> {
   bool isLoading = true;
   UserGoals? userGoals;
   List<Day> previousDays = [];
+  ScrollController daysScrollController = ScrollController();
   var smallLabelHeadingDecor = TextStyle(
     color: TEXT_SECONDARY,
     fontWeight: FontWeight.w500,
@@ -51,6 +52,7 @@ class _ActivityPageState extends State<ActivityPage> {
     await dayService.updateDayData(day!);
     await setUpActivityTab();
     isLoading = false;
+    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     setState(() {});
   }
 
@@ -62,11 +64,15 @@ class _ActivityPageState extends State<ActivityPage> {
       var day = await dayService.getDayDataByDate(date);
       previousDays.insert(0, day!);
     }
+    // daysScrollController.jumpTo(
+    //     daysScrollController.position.maxScrollExtent,
+    //   );
   }
 
   @override
   void initState() {
     super.initState();
+
     setUpUi();
   }
 
@@ -75,8 +81,9 @@ class _ActivityPageState extends State<ActivityPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
-        title: const Text('Activity Page'),
+        title: const Text(''),
         backgroundColor: BACKGROUND,
+        scrolledUnderElevation: 0,
       ),
       body: isLoading
           ? LoadingPage()
@@ -153,9 +160,26 @@ class _ActivityPageState extends State<ActivityPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 30.h),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Last 7 days",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.sp,
+                                color: TEXT_TERTIARY,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
+                        controller: daysScrollController,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
@@ -174,7 +198,10 @@ class _ActivityPageState extends State<ActivityPage> {
                                     border: Border.all(color: BORDER_PRIMARY),
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0.w,
+                                      vertical: 12.h,
+                                    ),
                                     child: Column(
                                       children: [
                                         SizedBox(
@@ -220,7 +247,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                               style: TextStyle(
                                                 color: PRIMARY,
                                                 fontSize: 17.sp,
-                                                fontWeight: FontWeight.w500
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                           ),

@@ -61,6 +61,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
       appBar: AppBar(
         backgroundColor: BACKGROUND,
         title: const Text('Routine Details'),
+        scrolledUnderElevation: 0,
       ),
       body: Padding(
         padding: EdgeInsets.all(14.0.w),

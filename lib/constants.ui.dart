@@ -11,6 +11,7 @@ const Color TEXT_SECONDARY = Color(0xff6E7C7C); // Muted Gray
 const Color TEXT_TERTIARY = const Color.fromARGB(255, 108, 108, 108); // Muted Gray
 Color BORDER_PRIMARY = Colors.grey.shade300;
 Color BORDER_SECONDARY = Colors.grey.shade100;
+const int WAITING_PERIOD_PAGE_SWITCH_MS = 250; //
 // Dark mode colors
 // const Color PRIMARY = Color(0xff2C5C53);     // Darker Teal Green
 // const Color BACKGROUND = Color(0xFF181A1B);  // Almost Black

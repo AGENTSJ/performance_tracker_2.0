@@ -46,6 +46,7 @@ class NutritionModuleState extends State<NutritionModule> {
     _setCurrentDayMarker();
     setCaloriesInDay();
     isHomePageLoading = false;
+    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     refreshState();
   }
 
@@ -62,7 +63,9 @@ class NutritionModuleState extends State<NutritionModule> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
+        scrolledUnderElevation:0,
         title: Row(
           children: [
             Text(

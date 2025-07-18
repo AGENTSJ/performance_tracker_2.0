@@ -91,7 +91,7 @@ class RoutinesPageState extends State<RoutinesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Routines"), backgroundColor: BACKGROUND),
+      appBar: AppBar(title: Text("Routines"), backgroundColor: BACKGROUND,scrolledUnderElevation: 0,),
       body: Padding(
         padding: EdgeInsets.all(14.r),
         child: SingleChildScrollView(

@@ -64,6 +64,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       appBar: AppBar(
         title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18.sp)),
         backgroundColor: BACKGROUND,
+        scrolledUnderElevation: 0,
       ),
       body: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
