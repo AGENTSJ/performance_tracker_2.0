@@ -460,6 +460,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
 
   handleAddRoutine() async {
     await showModalBottomSheet(
+      backgroundColor: SURFACE2,
       context: context,
       builder: (context) => SelectWorkout(selectedWorkouts: workouts),
     );

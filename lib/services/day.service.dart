@@ -1,4 +1,5 @@
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/models/activity.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -20,6 +21,7 @@ class DayService {
     Day? newDay = Day(dayTime: date);
     var goal = await goalService.getUserGoals();
     newDay.goalForToday = goal;
+    newDay.activity = Activity(steps: 0);
     var todaysRoutine = Routine(
       name: _commonService.getDateString(date),
       workoutsIds: [],
@@ -33,6 +35,7 @@ class DayService {
     newDay = await _dayRepo.addDayData(newDay);
     return newDay;
   }
+
   updateDayData(Day day) async {
     await _dayRepo.updateDayData(day);
   }

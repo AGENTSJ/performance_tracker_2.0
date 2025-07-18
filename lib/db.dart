@@ -1,5 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/models/activity.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -38,6 +39,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(RoutineAdapter());
   Hive.registerAdapter(WorkSetAdapter());
   Hive.registerAdapter(TrackEntryAdapter());
+  Hive.registerAdapter(ActivityAdapter());
 
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);

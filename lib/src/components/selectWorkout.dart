@@ -84,7 +84,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
           SizedBox(
             height: 250.h,
             child: Material(
-              color: SURFACE,
+              color: SURFACE2,
               borderRadius: BorderRadius.circular(8.r),
               child: SingleChildScrollView(
                 child: Column(
