@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
@@ -186,6 +187,42 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                   ),
                                 ),
                               ),
+
+                              SizedBox(width: 10.w),
+                              Material(
+                                color: SURFACE2,
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: InkWell(
+                                  onTap: () {
+                                    handleAnalyze();
+                                  },
+                                  child: SizedBox(
+                                    height: 60.h,
+                                    width: 140.w,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(14.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.layerGroup,
+                                            size: 16.sp,
+                                            color: TEXT_SECONDARY,
+                                          ),
+                                          SizedBox(width: 20.w),
+                                          Text(
+                                            "Analyze",
+                                            style: TextStyle(
+                                              color: TEXT_TERTIARY,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
                             ],
                           ),
                         ],
@@ -324,7 +361,11 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     await routineService.updateRoutine(routine!);
     setState(() {});
   }
-
+  var trainerService = locator<TrainerAgentService>();
+  handleAnalyze()
+  {
+    var resp = trainerService.analyzePerformance();
+  }
   handleAddWorkout() async {
     await showModalBottomSheet(
       backgroundColor: SURFACE2,
