@@ -247,11 +247,12 @@ class _ActivityPageState extends State<ActivityPage> {
                               ...previousDays.map(
                                 (day) => Material(
                                   color: SURFACE2,
+                                  borderRadius: BorderRadius.circular(8.r),
                                   child: InkWell(
                                     onTap: () {
-                                      isLoading = true;
-                                      refreshState();
-                                      setUpUi(day.dayTime, true);
+                                      // isLoading = true;
+                                      // refreshState();
+                                      // setUpUi(day.dayTime, true);
                                     },
                                     child: Container(
                                       width: 90.w,
