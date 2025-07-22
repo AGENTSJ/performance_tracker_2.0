@@ -187,7 +187,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                   ),
                                 ),
                               ),
-
                               SizedBox(width: 10.w),
                               Material(
                                 color: SURFACE2,

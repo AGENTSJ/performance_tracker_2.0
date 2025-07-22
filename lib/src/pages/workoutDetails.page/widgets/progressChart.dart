@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 
@@ -55,17 +56,12 @@ class ProgressChartState extends State<ProgressChart> {
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true,
-              interval: 2,
-              reservedSize: 30.w,
-              getTitlesWidget: (value, meta) {
-                return Text(value.toInt().toString());
-              },
+              showTitles: false,
             ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true,
+              showTitles: false,
               interval: 1,
               getTitlesWidget: (value, meta) {
                 var text = "";
@@ -75,23 +71,17 @@ class ProgressChartState extends State<ProgressChart> {
           ),
           topTitles: AxisTitles(),
           rightTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                return Text("");
-              },
-            )
           ),
         ),
         gridData: FlGridData(show: false),
-        borderData: FlBorderData(show: true),
+        borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
             spots: dataPoints,
-            isCurved: true,
-            barWidth: 2,
-            color: Colors.blue,
-            dotData: FlDotData(show: false),
+            isCurved: false,
+            barWidth: 1,
+            color: PRIMARY,
+            dotData: FlDotData(show: true),
           ),
         ],
       ),

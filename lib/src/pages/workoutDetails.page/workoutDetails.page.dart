@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -28,6 +29,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   bool isNameEdit = false;
   Workout? workout;
   WorkSet? selectedSetForProgress;
+  double graphWidth = 25;
+  double widthPerPoint = 25;
   // bool
   @override
   void initState() {
@@ -37,6 +40,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
       workDescriptionController.text = widget.workout.desc;
       if (widget.workout.sets.isNotEmpty) {
         selectedSetForProgress = widget.workout.sets[0];
+        graphWidth = widthPerPoint * widget.workout.sets[0].history.length;
       }
       workDescriptionController.addListener(() {
         if (!isEditModeOn) {
@@ -170,54 +174,160 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
               ),
               SizedBox(height: 20.h),
               // Progress
-              if (selectedSetForProgress != null) ...[
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  constraints: BoxConstraints(
-                    minHeight: 300.h,
-                    maxHeight: 400.h,
-                  ),
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.0.w),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: BORDER_SECONDARY),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 4.0.r,
+                          horizontal: 12.r,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Progress",style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w600),),
-                            DropdownButton<WorkSet>(
-                              value: selectedSetForProgress,
-                              hint: Text('Select an option'),
-                              items: widget.workout.sets.map((WorkSet workSet) {
-                                return DropdownMenuItem<WorkSet>(
-                                  value: workSet,
-                                  child: Text(workSet.value.toString()),
-                                );
-                              }).toList(),
-                              onChanged: (WorkSet? newValue) {
-                                setState(() {
-                                  selectedSetForProgress = newValue;
-                                });
-                              },
+                            Text(
+                              "Progress",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15.sp,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 100.w,
+                              height: 50.h,
+                              child: DropdownButton2<WorkSet>(
+                                isExpanded: true,
+                                isDense: true,
+                                value: selectedSetForProgress,
+                                hint: Text('Select an option'),
+                                items: widget.workout.sets.map((
+                                  WorkSet workSet,
+                                ) {
+                                  return DropdownMenuItem<WorkSet>(
+                                    value: workSet,
+                                    child: Container(
+                                      padding: EdgeInsets.zero,
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: BORDER_PRIMARY,
+                                          ),
+                                        ),
+                                      ),
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          workSet.value.toString(),
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (WorkSet? newValue) {
+                                  setState(() {
+                                    selectedSetForProgress = newValue;
+                                  });
+                                },
+                                buttonStyleData: ButtonStyleData(
+                                  height: 50.h,
+                                  width: 100.w, 
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  padding: EdgeInsets.zero,
+                                  width: 100.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                ),
+                                underline: Container(
+                                  height: 1,
+                                  color: Colors.transparent,
+                                ),
+                                menuItemStyleData: MenuItemStyleData(
+                                  height: 40.h,
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10.h),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ProgressChart(set: selectedSetForProgress!,key: ValueKey(selectedSetForProgress!.value),),
-                        ),
+                    ),
+                    if (selectedSetForProgress != null &&
+                        selectedSetForProgress!.history.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          RotatedBox(
+                            quarterTurns: 3,
+                            child: Row(children: [Text("Reps")]),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  minHeight: 200.h,
+                                  maxHeight: 200.h,
+                                ),
+                                width: graphWidth.w,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ProgressChart(
+                                          set: selectedSetForProgress!,
+                                          key: ValueKey(
+                                            selectedSetForProgress!.value,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Text("Attempts")],
+                      ),
+                      SizedBox(height: 10.h),
+                    ] else ...[
+                      SizedBox(height: 200.h, width: 200.w, child: empty),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Not enough data!!",
+                            style: TextStyle(color: TEXT_SECONDARY),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20.h),
                     ],
-                  ),
+                  ],
                 ),
-              ],
+              ),
               SizedBox(height: 20.h),
               Row(
                 children: [

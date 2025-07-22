@@ -128,6 +128,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                   color: SURFACE2,
                   borderRadius: BorderRadius.circular(8),
                 ),
+                width: double.infinity,
                 child: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Column(
@@ -167,6 +168,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                             color: SURFACE2,
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          width: double.infinity,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
@@ -200,6 +202,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                       handleGoToWorkOutDetails(work);
                                     },
                                     child: Container(
+                                      width: double.infinity,
                                       decoration: BoxDecoration(
                                         border: Border(
                                           bottom: BorderSide(
@@ -213,19 +216,23 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                       child: Padding(
                                         padding: EdgeInsets.all(12.0.r),
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.drag_handle,
-                                                  size: 17.sp,
-                                                  color: TEXT_SECONDARY,
+                                            Icon(
+                                              Icons.drag_handle,
+                                              size: 17.sp,
+                                              color: TEXT_SECONDARY,
+                                            ),
+                                            SizedBox(width: 10.w),
+                                            Expanded(
+                                              child: Text(
+                                                work.name,
+                                                style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                SizedBox(width: 10.w),
-                                                Text(work.name,style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w500),),
-                                              ],
+                                              ),
                                             ),
                                             Material(
                                               color: Colors.transparent,
@@ -234,11 +241,10 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                                   handleRemoveWorkout(work);
                                                 },
                                                 child: Padding(
-                                                  padding:
-                                                      EdgeInsets.symmetric(
-                                                        vertical: 8.0.r,
-                                                        horizontal: 5.r,
-                                                      ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 8.0.r,
+                                                    horizontal: 5.r,
+                                                  ),
                                                   child: Icon(
                                                     FontAwesomeIcons.xmark,
                                                     size: 14.sp,
@@ -265,7 +271,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                               workouts.insert(newIndex, work);
                               widget.routine.workoutsIds.insert(newIndex, id);
                               refreshState();
-                              routineService.updateRoutine(routine!);    
+                              routineService.updateRoutine(routine!);
                             },
                           ),
                         ),

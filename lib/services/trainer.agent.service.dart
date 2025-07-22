@@ -60,7 +60,9 @@ class TrainerAgentService {
     }
   }
 
-  _generateTrainingSummary() {}
+  _generateTrainingSummary() {
+    
+  }
 
   _generateNutritionSummary() {}
 
