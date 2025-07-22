@@ -80,7 +80,6 @@ class _ActivityPageState extends State<ActivityPage> {
       return;
     }
     daysLoading = true;
-    refreshState();
     const dayLimit = 6;
     var now = DateTime.now();
     for (var i = daysLoaded; i <= dayLimit + daysLoaded; i++) {
