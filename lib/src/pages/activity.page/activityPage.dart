@@ -45,6 +45,20 @@ class _ActivityPageState extends State<ActivityPage> {
   bool daysLoading = false;
   int daysLoaded = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    setUpUi(DateTime.now(), false);
+    daysScrollController.addListener(() async {
+      if (daysScrollController.hasClients &&
+          (daysScrollController.position.pixels >=
+              daysScrollController.position.maxScrollExtent - 10)) {
+        await setUpActivityTab();
+        refreshState();
+      }
+    });
+  }
+
   setUpUi(DateTime date, bool refresh) async {
     userGoals = await userGoalsService.getUserGoals();
     steps = await healthService.getStepsByDate(date);
@@ -58,15 +72,6 @@ class _ActivityPageState extends State<ActivityPage> {
     }
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     isLoading = false;
-    Future.delayed(Duration(seconds: 2), () {
-      if (daysScrollController.hasClients) {
-        daysScrollController.animateTo(
-          daysScrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-        );
-      }
-    });
     refreshState();
   }
 
@@ -82,11 +87,11 @@ class _ActivityPageState extends State<ActivityPage> {
       var date = now.subtract(Duration(days: i));
       var day = await dayService.getDayDataByDate(date);
       var steps = await healthService.getStepsByDate(date);
-      if (day!.activity!.steps != steps) {
+      if (day!.activity!.steps < steps) {
         day.activity!.steps = steps;
         await dayService.updateDayData(day);
       }
-      previousDays.insert(0, day!);
+      previousDays.add(day!);
     }
     daysLoaded = daysLoaded + 7;
     daysLoading = false;
@@ -95,12 +100,6 @@ class _ActivityPageState extends State<ActivityPage> {
   refreshState() {
     if (!mounted) return;
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setUpUi(DateTime.now(), false);
   }
 
   @override
@@ -221,135 +220,114 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      if (daysLoading) ...[
-                        Container(
-                          decoration: BoxDecoration(
-                            color: SURFACE2,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          width: double.infinity,
-                          height: 150.h,
-                          child: Center(
-                            child: SpinKitSpinningLines(
-                              color: PRIMARY,
-                              size: 30.sp,
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          controller: daysScrollController,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              ...previousDays.map(
-                                (day) => Material(
-                                  color: SURFACE2,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  child: InkWell(
-                                    onTap: () {
-                                      // isLoading = true;
-                                      // refreshState();
-                                      // setUpUi(day.dayTime, true);
-                                    },
-                                    child: Container(
-                                      width: 90.w,
-                                      height: 150.h,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          8.r,
-                                        ),
-                                        border: Border.all(
-                                          color: BORDER_PRIMARY,
-                                        ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        controller: daysScrollController,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            ...previousDays.map(
+                              (day) => Material(
+                                color: SURFACE2,
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: InkWell(
+                                  onTap: () {
+                                    // isLoading = true;
+                                    // refreshState();
+                                    // setUpUi(day.dayTime, true);
+                                  },
+                                  child: Container(
+                                    width: 90.w,
+                                    height: 150.h,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      border: Border.all(color: BORDER_PRIMARY),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0.w,
+                                        vertical: 12.h,
                                       ),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 8.0.w,
-                                          vertical: 12.h,
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 40.h,
-                                              child: Stack(
-                                                children: [
-                                                  StepsChart(
-                                                    lineRadius: 9,
-                                                    centerSpace: 17,
-                                                    showCenterPart: false,
-                                                    totalCount: day
-                                                        .goalForToday!
-                                                        .stepGoal
-                                                        .toDouble(),
-                                                    count: day.activity!.steps
-                                                        .toDouble(),
-                                                  ),
-                                                  Positioned(
-                                                    child: SizedBox(
-                                                      width: double.infinity,
-                                                      height: double.infinity,
-                                                      child: Center(
-                                                        child: RotatedBox(
-                                                          quarterTurns: 3,
-                                                          child: Icon(
-                                                            FontAwesomeIcons
-                                                                .shoePrints,
-                                                            size: 10.sp,
-                                                            color: PRIMARY,
-                                                          ),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 40.h,
+                                            child: Stack(
+                                              children: [
+                                                StepsChart(
+                                                  lineRadius: 9,
+                                                  centerSpace: 17,
+                                                  showCenterPart: false,
+                                                  totalCount: day
+                                                      .goalForToday!
+                                                      .stepGoal
+                                                      .toDouble(),
+                                                  count: day.activity!.steps
+                                                      .toDouble(),
+                                                ),
+                                                Positioned(
+                                                  child: SizedBox(
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                    child: Center(
+                                                      child: RotatedBox(
+                                                        quarterTurns: 3,
+                                                        child: Icon(
+                                                          FontAwesomeIcons
+                                                              .shoePrints,
+                                                          size: 10.sp,
+                                                          color: PRIMARY,
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(height: 10.h),
-                                            Expanded(
-                                              child: Center(
-                                                child: Text(
-                                                  "${day.activity!.steps}",
-                                                  style: TextStyle(
-                                                    color: PRIMARY,
-                                                    fontSize: 17.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          Expanded(
+                                            child: Center(
+                                              child: Text(
+                                                "${day.activity!.steps}",
+                                                style: TextStyle(
+                                                  color: PRIMARY,
+                                                  fontSize: 17.sp,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(height: 10.h),
-                                            Text(
-                                              "${day.dayTime.day}",
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                color: TEXT_SECONDARY,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          Text(
+                                            "${day.dayTime.day}",
+                                            style: TextStyle(
+                                              fontSize: 16.sp,
+                                              color: TEXT_SECONDARY,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                            Text(
-                                              Months
-                                                  .values[day.dayTime.month]
-                                                  .name,
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: TEXT_SECONDARY,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                          ),
+                                          Text(
+                                            Months
+                                                .values[day.dayTime.month]
+                                                .name,
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: TEXT_SECONDARY,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ),

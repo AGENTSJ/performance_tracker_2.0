@@ -37,7 +37,6 @@ class DataService {
       var workout = Workout(name: name, sets: sets, enabled: true, desc: desc);
       await workService.addWorkout(workout);
     }
-    print("done");
   }
 
   DateTime getDateFromString(String date)
