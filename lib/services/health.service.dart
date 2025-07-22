@@ -28,35 +28,35 @@ class HealthService {
     }
   }
 
-  Future<int> getTodaysSteps() async {
+  Future<int> getStepsByDate(DateTime date) async {
     bool valid = await _makeHealthServiceAvailable();
     if (!valid) {
       return 0;
     }
-    DateTime now = DateTime.now();
-    final midnight = DateTime(now.year, now.month, now.day);
-    int? steps = await _health.getTotalStepsInInterval(midnight, now);
+    final morningStart = DateTime(date.year, date.month, date.day);
+    final night = morningStart.add(Duration(hours: 23,minutes: 59));
+    int? steps = await _health.getTotalStepsInInterval(morningStart, night);
     return steps ?? 0;
   }
 
-  Future<Duration> getMoveMin() async {
+  Future<Duration> getMoveMin(DateTime date) async {
     bool valid = await _makeHealthServiceAvailable();
     if (!valid) {
       return Duration(seconds: 0);
     }
     const secondToTakeAStep = 0.5;
-    var steps = await getTodaysSteps();
+    var steps = await getStepsByDate(date);
     var totalSeconds = (steps * secondToTakeAStep).round();
     return Duration(seconds: totalSeconds);
   }
 
-  Future<double> getMoveKm() async {
+  Future<double> getMoveKm(DateTime date) async {
     bool valid = await _makeHealthServiceAvailable();
     if (!valid) {
       return 0;
     }
     const metersInOneStep = 0.762;
-    var steps = await getTodaysSteps();
+    var steps = await getStepsByDate(date);
     var totalMeters = (steps * metersInOneStep).round();
     var totalKm = totalMeters / 1000;
     return totalKm;

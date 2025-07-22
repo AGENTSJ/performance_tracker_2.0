@@ -35,7 +35,6 @@ class ProgressChartState extends State<ProgressChart> {
         // maxX: 6,
         // minY: 0,
         lineTouchData: LineTouchData(
-      
           touchTooltipData: LineTouchTooltipData(
             fitInsideHorizontally: true,
             fitInsideVertically: true, 

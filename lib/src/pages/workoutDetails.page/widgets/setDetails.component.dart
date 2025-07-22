@@ -273,25 +273,22 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       ),
                     ),
                     SizedBox(height: 10.h),
-                    SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Container(
-                        decoration: BoxDecoration(color: SURFACE,borderRadius: BorderRadius.circular(8.r)),
-                        child: Column(
-                          children: [
-                            ...(showTrack? enabledSets :widget.workout.sets).map(
-                              (set) => SetDetailRowComponent(
-                                key: ValueKey(DateTime.now()),
-                                set: set,
-                                showTrack: showTrack,
-                                workout: widget.workout,
-                                onSetUpdated: (value) {
-                                  setSets(value);
-                                },
-                              ),
+                    Container(
+                      decoration: BoxDecoration(color: SURFACE,borderRadius: BorderRadius.circular(8.r)),
+                      child: Column(
+                        children: [
+                          ...(showTrack? enabledSets :widget.workout.sets).map(
+                            (set) => SetDetailRowComponent(
+                              key: ValueKey(DateTime.now()),
+                              set: set,
+                              showTrack: showTrack,
+                              workout: widget.workout,
+                              onSetUpdated: (value) {
+                                setSets(value);
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ] else ...[
@@ -345,7 +342,9 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     }
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
+    enabledSets.add(set);
     workoutService.updateWorkout(widget.workout);
+    refreshState();
   }
 
   handleGoToWorkOutDetails() async {
