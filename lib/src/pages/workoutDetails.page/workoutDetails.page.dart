@@ -25,6 +25,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   var workoutService = locator<WorkoutService>();
   var workNameController = TextEditingController();
   var workDescriptionController = TextEditingController();
+  var progressChartScrollController = ScrollController();
+  List<WorkSet> enabledSets = [];
   bool isEditModeOn = false;
   bool isNameEdit = false;
   Workout? workout;
@@ -35,26 +37,45 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-      workNameController.text = widget.workout.name;
-      workDescriptionController.text = widget.workout.desc;
-      if (widget.workout.sets.isNotEmpty) {
-        selectedSetForProgress = widget.workout.sets[0];
-        graphWidth = widthPerPoint * widget.workout.sets[0].history.length;
+    setUpUi();
+  }
+
+  setUpUi() async {
+    workNameController.text = widget.workout.name;
+    workDescriptionController.text = widget.workout.desc;
+    if (widget.workout.sets.isNotEmpty) {
+      selectedSetForProgress = widget.workout.sets[0];
+      setGraphHeight();
+    }
+    workDescriptionController.addListener(() {
+      if (!isEditModeOn) {
+        setState(() {
+          this.isEditModeOn = true;
+        });
       }
-      workDescriptionController.addListener(() {
-        if (!isEditModeOn) {
-          setState(() {
-            this.isEditModeOn = true;
-          });
-        }
-      });
-      if (widget.isCreateMode) {
-        workout = await workoutService.addWorkout(widget.workout);
-      } else {
-        workout = widget.workout;
+    });
+    if (widget.isCreateMode) {
+      workout = await workoutService.addWorkout(widget.workout);
+    } else {
+      workout = widget.workout;
+    }
+    setEnabledSets();
+    refreshState();
+  }
+
+  setEnabledSets() {
+    enabledSets = [];
+    for (var set in widget.workout.sets) {
+      if (set.enabled) {
+        enabledSets.add(set);
       }
-      refreshState();
+    }
+  }
+
+  setGraphHeight() {
+    graphWidth = widthPerPoint * selectedSetForProgress!.history.length;
+    Future.delayed(Duration(seconds: 2),(){
+      progressChartScrollController.animateTo(progressChartScrollController.position.maxScrollExtent, duration: Duration(milliseconds: 400), curve: Curves.bounceIn);
     });
   }
 
@@ -203,68 +224,70 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                 fontSize: 15.sp,
                               ),
                             ),
-                            SizedBox(
-                              width: 100.w,
-                              height: 50.h,
-                              child: DropdownButton2<WorkSet>(
-                                isExpanded: true,
-                                isDense: true,
-                                value: selectedSetForProgress,
-                                hint: Text('Select an option'),
-                                items: widget.workout.sets.map((
-                                  WorkSet workSet,
-                                ) {
-                                  return DropdownMenuItem<WorkSet>(
-                                    value: workSet,
-                                    child: Container(
-                                      padding: EdgeInsets.zero,
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: BORDER_PRIMARY,
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 100.w,
+                                  height: 50.h,
+                                  child: DropdownButton2<WorkSet>(
+                                    isExpanded: true,
+                                    isDense: true,
+                                    value: selectedSetForProgress,
+                                    hint: Text('Select an option'),
+                                    items: widget.workout.sets.map((
+                                      WorkSet workSet,
+                                    ) {
+                                      return DropdownMenuItem<WorkSet>(
+                                        value: workSet,
+                                        child: Container(
+                                          padding: EdgeInsets.zero,
+                                          decoration: BoxDecoration(),
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              workSet.value.toString(),
+                                              style: TextStyle(fontSize: 14),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          workSet.value.toString(),
-                                          style: TextStyle(fontSize: 14),
-                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (WorkSet? newValue) {
+                                      setState(() {
+                                        selectedSetForProgress = newValue;
+                                        setGraphHeight();
+                                      });
+                                    },
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 50.h,
+                                      width: 100.w,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                  );
-                                }).toList(),
-                                onChanged: (WorkSet? newValue) {
-                                  setState(() {
-                                    selectedSetForProgress = newValue;
-                                  });
-                                },
-                                buttonStyleData: ButtonStyleData(
-                                  height: 50.h,
-                                  width: 100.w, 
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
+                                    dropdownStyleData: DropdownStyleData(
+                                      padding: EdgeInsets.zero,
+                                      width: 100.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
+                                        ),
+                                        color: SURFACE2,
+                                      ),
+                                    ),
+                                    underline: Container(
+                                      height: 1,
+                                      color: Colors.transparent,
+                                    ),
+                                    menuItemStyleData: MenuItemStyleData(
+                                      height: 40.h,
+                                      padding: EdgeInsets.zero,
+                                    ),
                                   ),
                                 ),
-                                dropdownStyleData: DropdownStyleData(
-                                  padding: EdgeInsets.zero,
-                                  width: 100.h,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                ),
-                                underline: Container(
-                                  height: 1,
-                                  color: Colors.transparent,
-                                ),
-                                menuItemStyleData: MenuItemStyleData(
-                                  height: 40.h,
-                                  padding: EdgeInsets.zero,
-                                ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -276,11 +299,31 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         children: [
                           RotatedBox(
                             quarterTurns: 3,
-                            child: Row(children: [Text("Reps")]),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Reps",
+                                    style: TextStyle(
+                                      color: TEXT_SECONDARY,
+                                      fontSize: 12.sp,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Icon(
+                                    FontAwesomeIcons.arrowRight,
+                                    size: 12.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           Expanded(
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
+                              controller: progressChartScrollController,
                               child: Container(
                                 constraints: BoxConstraints(
                                   minHeight: 200.h,
@@ -309,7 +352,21 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [Text("Attempts")],
+                        children: [
+                          Text(
+                            "Attempts",
+                            style: TextStyle(
+                              color: TEXT_SECONDARY,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Icon(
+                            FontAwesomeIcons.arrowRight,
+                            size: 12.sp,
+                            color: TEXT_SECONDARY,
+                          ),
+                        ],
                       ),
                       SizedBox(height: 10.h),
                     ] else ...[

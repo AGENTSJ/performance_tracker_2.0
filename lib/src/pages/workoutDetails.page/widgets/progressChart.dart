@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
@@ -25,7 +24,6 @@ class ProgressChartState extends State<ProgressChart> {
       dataPoints.add(FlSpot(i.toDouble(), entry.value.toDouble()));
       i++;
     }
-    // print('initRan ${dataPoints.length}');
   }
 
   @override
@@ -37,7 +35,10 @@ class ProgressChartState extends State<ProgressChart> {
         // maxX: 6,
         // minY: 0,
         lineTouchData: LineTouchData(
+      
           touchTooltipData: LineTouchTooltipData(
+            fitInsideHorizontally: true,
+            fitInsideVertically: true, 
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((touchedSpot) {
                 final x = touchedSpot.x.toInt(); 
