@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
+import 'package:performance_tracker/src/pages/goal.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/home.page.dart';
 import 'package:performance_tracker/src/pages/training.page/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
@@ -54,6 +55,7 @@ class _MainAppEntryState extends State<MainAppEntry> {
   TrainingModulePage? trainingModulePage;
   ProfilePageModule? profilePageModule;
   ActivityPage? activityPage;
+  GoalPage? goalPage;
 
   @override
   void initState() {
@@ -80,6 +82,9 @@ class _MainAppEntryState extends State<MainAppEntry> {
         activityPage ??= ActivityPage();
         return activityPage;
       case 3:
+        goalPage ??= GoalPage();
+        return goalPage;
+      case 4:
         profilePageModule ??= ProfilePageModule();
         return profilePageModule;
     }

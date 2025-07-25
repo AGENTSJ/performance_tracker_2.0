@@ -3,6 +3,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/activity.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/journey.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
@@ -13,7 +14,8 @@ enum Collections
   days('daysCollection'),
   users('usersCollection'),
   routines('routines'),
-  workouts('workouts');
+  workouts('workouts'),
+  journey('journey');
   
   final String value;
   const Collections(this.value);
@@ -40,6 +42,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(WorkSetAdapter());
   Hive.registerAdapter(TrackEntryAdapter());
   Hive.registerAdapter(ActivityAdapter());
+  Hive.registerAdapter(JourneyAdapter());
 
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);
