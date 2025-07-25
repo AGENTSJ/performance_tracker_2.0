@@ -49,6 +49,7 @@ Future<void> setupHiveDb() async
   await Hive.openBox<User>(Collections.users.value);
   await Hive.openBox<Routine>(Collections.routines.value);
   await Hive.openBox<Workout>(Collections.workouts.value);
+  await Hive.openBox<Journey>(Collections.journey.value);
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);

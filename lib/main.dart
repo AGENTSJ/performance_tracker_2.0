@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/src/pages/goal.page.dart';
+import 'package:performance_tracker/src/pages/goal.page/goal.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/home.page.dart';
 import 'package:performance_tracker/src/pages/training.page/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
@@ -63,7 +63,7 @@ class _MainAppEntryState extends State<MainAppEntry> {
   }
 
   _handleIndexChange(int index) {
-    if (index > 3) {
+    if (index > 4) {
       return;
     }
     selectedIndex = index;

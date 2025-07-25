@@ -11,7 +11,8 @@ import 'package:performance_tracker/services/userGoals.service.dart';
 
 class GoalsWidget extends StatefulWidget {
   final User user;
-  const GoalsWidget({super.key, required this.user});
+  final Function()? onUpdate;
+  const GoalsWidget({super.key, required this.user, this.onUpdate});
   @override
   State<GoalsWidget> createState() => _GoalsWidgetState();
 }
@@ -23,7 +24,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   late TextEditingController caloricBurn;
   late TextEditingController caloricLimit;
   final userService = locator<UserService>();
-  final dayService  = locator<DayService>();
+  final dayService = locator<DayService>();
   final userGoalService = locator<UserGoalsService>();
   bool formChanged = false;
 
@@ -99,10 +100,20 @@ class _GoalsWidgetState extends State<GoalsWidget> {
           padding: EdgeInsets.all(16.0.w),
           child: Column(
             children: [
-              Row(children: [Padding(
-                padding: EdgeInsets.only(top:8.0.h,bottom: 8.0.h),
-                child: Text('Goals',style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w500),),
-              )]),
+              Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
+                    child: Text(
+                      'Goals',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Padding(
                 padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                 child: Column(
@@ -146,7 +157,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: getInputDecoration("Target steps"),
                             controller: targetSteps,
@@ -167,7 +178,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                                 style: TextStyle(
                                   color: TEXT_PRIMARY,
                                   fontWeight: FontWeight.w400,
-                                  height: 1.5
+                                  height: 1.5,
                                 ), // default style
                                 children: [
                                   TextSpan(text: 'Eat '),
@@ -259,10 +270,16 @@ class _GoalsWidgetState extends State<GoalsWidget> {
       await dayService.updateDayData(currentDay!);
       updateFormUi(widget.user);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),
+        const SnackBar(
+          content: Text('Goals updated successfully!'),
+          showCloseIcon: true,
+        ),
       );
       this.formChanged = false;
       setState(() {});
+      if (widget.onUpdate != null) {
+        widget.onUpdate!();
+      }
     }
   }
 
@@ -273,11 +290,17 @@ class _GoalsWidgetState extends State<GoalsWidget> {
       currentDay?.goalForToday = widget.user.userGoals;
       await dayService.updateDayData(currentDay!);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Goals updated successfully!'),showCloseIcon: true,),
+        const SnackBar(
+          content: Text('Goals updated successfully!'),
+          showCloseIcon: true,
+        ),
       );
       setState(() {
         updateFormUi(widget.user);
       });
+      if (widget.onUpdate != null) {
+        widget.onUpdate!();
+      }
     }
   }
 

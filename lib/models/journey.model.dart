@@ -20,7 +20,7 @@ class Journey {
   bool onProgress;
 
   @HiveField(5)
-  DateTime lastUpdated;
+  DateTime? lastUpdated;
 
   Journey({
     required this.startDate,

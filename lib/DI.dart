@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
 import 'package:performance_tracker/repositories/food.repository.dart';
+import 'package:performance_tracker/repositories/journey.repository.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/repositories/user.repository.dart';
 import 'package:performance_tracker/services/ai.service.dart';
@@ -11,6 +12,7 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
+import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
 import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
@@ -40,10 +42,12 @@ setUpDependencyInjection()
   locator.registerLazySingleton<DataService>(()=>DataService());
   locator.registerLazySingleton<HealthService>(()=>HealthService());
   locator.registerLazySingleton<TrainerAgentService>(()=>TrainerAgentService());
+  locator.registerLazySingleton<JourneyService>(()=>JourneyService());
 
   // Repo
   locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());
   locator.registerLazySingleton<DayRepository>(()=>DayRepository());
   locator.registerLazySingleton<UserRepository>(()=>UserRepository());
   locator.registerLazySingleton<RoutineRepository>(()=>RoutineRepository());
+  locator.registerLazySingleton<JourneyRepository>(()=>JourneyRepository());
 }

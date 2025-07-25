@@ -15,7 +15,7 @@ import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
-import 'package:performance_tracker/src/pages/profile.page/widgets/goals.widget.dart';
+import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 
