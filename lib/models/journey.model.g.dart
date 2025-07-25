@@ -18,11 +18,11 @@ class JourneyAdapter extends TypeAdapter<Journey> {
     };
     return Journey(
       startDate: fields[0] as DateTime,
-      userTarget: fields[1] as UserGoals,
+      userAtStart: fields[1] as User,
       caloriesChangeAchieved: fields[2] as double,
       stepsWalked: fields[3] as int,
       onProgress: fields[4] as bool,
-      lastUpdated: fields[5] as DateTime,
+      lastUpdated: fields[5] as DateTime?,
     );
   }
 
@@ -33,7 +33,7 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
-      ..write(obj.userTarget)
+      ..write(obj.userAtStart)
       ..writeByte(2)
       ..write(obj.caloriesChangeAchieved)
       ..writeByte(3)

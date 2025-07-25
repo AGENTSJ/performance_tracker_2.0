@@ -57,5 +57,6 @@ Future<void> setupHiveDb() async
   // await Hive.deleteBoxFromDisk(Collections.users.value);
   // await Hive.deleteBoxFromDisk(Collections.routines.value);
   // await Hive.deleteBoxFromDisk(Collections.workouts.value);
+  // await Hive.deleteBoxFromDisk(Collections.journey.value);
 }
 

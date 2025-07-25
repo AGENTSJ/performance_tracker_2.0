@@ -16,8 +16,8 @@ class JourneyRepository {
     return selectedJourney;
   }
 
-  Future<void> addJourney(Journey journey) async {
-    await _journeyBox.add(journey);
+  Future<int> addJourney(Journey journey) async {
+    return await _journeyBox.add(journey);
   }
 
   Future<void> updateJourney(int key, Journey journey) async {

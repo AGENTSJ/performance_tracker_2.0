@@ -3,12 +3,12 @@ import 'package:performance_tracker/models/user.model.dart';
 part 'journey.model.g.dart';
 
 @HiveType(typeId: 18)
-class Journey {
+class Journey extends HiveObject{
   @HiveField(0)
   DateTime startDate;
 
   @HiveField(1)
-  UserGoals userTarget;
+  User userAtStart;
 
   @HiveField(2)
   double caloriesChangeAchieved;
@@ -24,7 +24,7 @@ class Journey {
 
   Journey({
     required this.startDate,
-    required this.userTarget,
+    required this.userAtStart,
     required this.caloriesChangeAchieved,
     required this.stepsWalked,
     required this.onProgress,
