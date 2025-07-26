@@ -29,11 +29,7 @@ class ProgressChartState extends State<ProgressChart> {
   @override
   Widget build(BuildContext context) {
     return LineChart(
-      
       LineChartData(
-        // minX: 0,
-        // maxX: 6,
-        // minY: 0,
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             fitInsideHorizontally: true,

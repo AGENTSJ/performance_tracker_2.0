@@ -132,12 +132,11 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                         handleTrack();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: SURFACE,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         minimumSize: Size(30.w, 30.h),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.r))
                       ),
-                      child: Icon(FontAwesomeIcons.check, size: 12.w),
+                      child: Icon(FontAwesomeIcons.check, size: 14.w),
                     ),
                   ],
                 ),
@@ -151,12 +150,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(20.w, 20.h),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        backgroundColor: const Color.fromARGB(
-                          104,
-                          255,
-                          163,
-                          163,
-                        ),
+
                         foregroundColor: const Color.fromARGB(
                           104,
                           255,
