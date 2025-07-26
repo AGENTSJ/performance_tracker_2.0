@@ -13,6 +13,7 @@ import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/pages/advices.page/advices.page.dart';
 import 'package:performance_tracker/src/pages/coach.page/coach.page.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
@@ -194,7 +195,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                 borderRadius: BorderRadius.circular(12.r),
                                 child: InkWell(
                                   onTap: () {
-                                    handleNavigateToCoach();
+                                    handleNavigateToAdvices();
                                   },
                                   child: SizedBox(
                                     height: 60.h,
@@ -210,7 +211,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                           ),
                                           SizedBox(width: 20.w),
                                           Text(
-                                            "Coach",
+                                            "Advices",
                                             style: TextStyle(
                                               color: TEXT_TERTIARY,
                                               fontWeight: FontWeight.w500,
@@ -362,9 +363,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     setState(() {});
   }
   var trainerService = locator<TrainerAgentService>();
-  handleNavigateToCoach()
+  handleNavigateToAdvices()
   {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CoachPage()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AdvicesPage()));
   }
   handleAddWorkout() async {
     await showModalBottomSheet(

@@ -135,7 +135,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                               ),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                  vertical: 20.r,
+                                  vertical: 25.h,
                                   horizontal: 15.r,
                                 ),
                                 child: Row(
@@ -148,7 +148,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                     SizedBox(width: 20.w),
                                     Text(
                                       "${routine.name} (${routine.workoutsIds.length})",
-                                      style: TextStyle(color: TEXT_SECONDARY,fontSize: 14.sp,fontWeight: FontWeight.w500),
+                                      style: TextStyle(color: TEXT_TERTIARY,fontSize: 15.sp,fontWeight: FontWeight.w600),
                                     ),
                                   ],
                                 ),
@@ -199,7 +199,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                vertical: 20.r,
+                                vertical: 25.h,
                                 horizontal: 15.r,
                               ),
                               child: Row(
@@ -212,7 +212,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                   SizedBox(width: 20.w),
                                   Text(
                                     "${routine.name} (${routine.workoutsIds.length})",
-                                    style: TextStyle(color: TEXT_SECONDARY,fontSize: 14.sp,fontWeight: FontWeight.w500),
+                                    style: TextStyle(color: TEXT_TERTIARY,fontSize: 15.sp,fontWeight: FontWeight.w600),
                                   ),
                                 ],
                               ),

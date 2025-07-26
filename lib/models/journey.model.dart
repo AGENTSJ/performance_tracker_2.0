@@ -22,12 +22,17 @@ class Journey extends HiveObject{
   @HiveField(5)
   DateTime? lastUpdated;
 
+  @HiveField(6)
+  double? lastCaloriesValue;
+
+  @HiveField(7)
+  int? lastStepValue;
+  
   Journey({
     required this.startDate,
     required this.userAtStart,
     required this.caloriesChangeAchieved,
     required this.stepsWalked,
     required this.onProgress,
-    required this.lastUpdated,
   });
 }

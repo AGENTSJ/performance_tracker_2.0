@@ -22,14 +22,16 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       caloriesChangeAchieved: fields[2] as double,
       stepsWalked: fields[3] as int,
       onProgress: fields[4] as bool,
-      lastUpdated: fields[5] as DateTime?,
-    );
+    )
+      ..lastUpdated = fields[5] as DateTime?
+      ..lastCaloriesValue = fields[6] as double?
+      ..lastStepValue = fields[7] as int?;
   }
 
   @override
   void write(BinaryWriter writer, Journey obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(4)
       ..write(obj.onProgress)
       ..writeByte(5)
-      ..write(obj.lastUpdated);
+      ..write(obj.lastUpdated)
+      ..writeByte(6)
+      ..write(obj.lastCaloriesValue)
+      ..writeByte(7)
+      ..write(obj.lastStepValue);
   }
 
   @override
