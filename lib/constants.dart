@@ -10,3 +10,24 @@ final int STANDARD_STEP_LIMIT = 5000;
 final double CALORIES_IN_1KG_FAT = 7700;
 
 final double RECOMMENDED_B_M_I = 21.0;
+final List<String> TRAINABLE_MUSCLES = [
+  'Chest',
+  'Back',
+  'Shoulders',
+  'Biceps',
+  'Triceps',
+  'Forearms',
+  'Abdominals',
+  'Obliques',
+  'Glutes',
+  'Quadriceps',
+  'Hamstrings',
+  'Calves',
+  'Traps',
+  'Lats',
+  'Neck',
+  'Lower Back',
+  'Hip Flexors',
+  'Adductors',
+  'Abductors',
+];

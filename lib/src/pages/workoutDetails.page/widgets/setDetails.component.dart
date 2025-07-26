@@ -306,31 +306,34 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                     ),
                   ),
                 ] else ...[
-                  Material(
-                    color: SURFACE2,
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: SURFACE,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0.w),
-                          child: Column(
-                            children: [
-                              SizedBox(height: 5.h),
-                              Icon(
-                                FontAwesomeIcons.faceGrinWink,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                "Lets start by adding some sets",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
+                  Padding(
+                    padding: EdgeInsets.all(12.0.r),
+                    child: Material(
+                      color: SURFACE2,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: SURFACE2,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0.w),
+                            child: Column(
+                              children: [
+                                SizedBox(height: 5.h),
+                                Icon(
+                                  FontAwesomeIcons.faceGrinWink,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  "Lets start by adding some sets",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

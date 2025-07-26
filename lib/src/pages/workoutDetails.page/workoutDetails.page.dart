@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/workout.service.dart';
@@ -88,8 +89,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   }
 
   handleAddVolume() async {
-    final nameController = TextEditingController();
     final volController = TextEditingController();
+    String? selectedMuscle = TRAINABLE_MUSCLES[0];
     var vol = await showDialog<WorkoutVolume>(
       barrierColor: const Color.fromARGB(87, 90, 90, 90),
       context: context,
@@ -101,31 +102,74 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
           content: Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    hintText: 'e.g. chest',
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(width: 0.5),
+                child: DropdownButton2<String>(
+                  isExpanded: true,
+                  isDense: true,
+                  value: selectedMuscle,
+                  hint: Text('Select an option'),
+                  items: TRAINABLE_MUSCLES.map((String muscle) {
+                    return DropdownMenuItem<String>(
+                      value: muscle,
+                      child: Container(
+                        padding: EdgeInsets.zero,
+                        decoration: BoxDecoration(),
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            muscle,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedMuscle = newValue;
+                    });
+                  },
+                  buttonStyleData: ButtonStyleData(
+                    height: 50.h,
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4.r),
+                      border: Border.all(color: BORDER_PRIMARY)
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 10.h,
+                  ),
+                  dropdownStyleData: DropdownStyleData(
+                    padding: EdgeInsets.zero,
+                    width: 100.h,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4.r),
+                      color: SURFACE2,
                     ),
+                  ),
+                  underline: Container(height: 1, color: Colors.transparent),
+                  menuItemStyleData: MenuItemStyleData(
+                    height: 40.h,
+                    padding: EdgeInsets.zero,
                   ),
                 ),
               ),
               SizedBox(width: 10.w),
               Expanded(
-                child: TextField(
-                  controller: volController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'e.g. 1',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 10.h,
+                child: Container(
+                  decoration: BoxDecoration(border: Border.all(color: BORDER_PRIMARY),borderRadius: BorderRadius.circular(4.r)),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 3.0.r,horizontal: 3.0.r),
+                    child: TextField(
+                      controller: volController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'e.g. 1',
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 10.h,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -148,7 +192,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
               ),
               onPressed: () {
                 final WorkoutVolume vol = WorkoutVolume(
-                  muscleName: nameController.text,
+                  muscleName: selectedMuscle ??'',
                   volume: double.tryParse(volController.text) ?? 0,
                 );
                 Navigator.of(context).pop(vol);
@@ -169,12 +213,13 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     await workoutService.updateWorkout(widget.workout);
     refreshState();
   }
-  handleRemoveVolume(WorkoutVolume vol)async
-  {
+
+  handleRemoveVolume(WorkoutVolume vol) async {
     widget.workout.volumes.remove(vol);
     await workoutService.updateWorkout(widget.workout);
     refreshState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -290,7 +335,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 minimumSize: Size(30.w, 30.h),
                               ),
-                              child: Icon(Icons.add,size: 20.w,),
+                              child: Icon(Icons.add, size: 20.w),
                             ),
                           ],
                         ),
@@ -339,7 +384,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                             MaterialTapTargetSize.shrinkWrap,
                                         minimumSize: Size(30.w, 30.h),
                                       ),
-                                      child: Icon(Icons.close,size: 20.w,),
+                                      child: Icon(Icons.close, size: 20.w),
                                     ),
                                   ],
                                 ),
@@ -351,6 +396,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                   ],
                 ),
               ),
+              
               SizedBox(height: 20.h),
               // Notes
               Container(
