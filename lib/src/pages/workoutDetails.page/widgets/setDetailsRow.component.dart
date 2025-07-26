@@ -36,7 +36,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     filled: true,
     border: OutlineInputBorder(borderSide: BorderSide.none),
     hintText: 'Reps..',
-    hintStyle: TextStyle(color: TEXT_SECONDARY,fontSize: 12.sp),
+    hintStyle: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
     contentPadding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 0),
   );
   late bool isEnabled;
@@ -72,13 +72,12 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     refreshState();
     Fluttertoast.showToast(msg: "Rep tracked");
   }
-  refreshState()
-  {
-    if(!mounted) return;
-    setState(() {
-      
-    });
+
+  refreshState() {
+    if (!mounted) return;
+    setState(() {});
   }
+
   void handleToggleEnable(bool val) async {
     isEnabled = val;
     widget.set.enabled = val;
@@ -89,7 +88,11 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: SURFACE,border: Border(bottom: BorderSide(color: BORDER_PRIMARY),),borderRadius: BorderRadius.circular(8.r)),
+      decoration: BoxDecoration(
+        color: SURFACE2,
+        border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
       height: 40.h,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.0.h),
@@ -113,7 +116,6 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 child: SizedBox(
                   height: 27.h,
                   child: TextField(
-                    
                     decoration: inputDecor,
                     textAlign: TextAlign.center,
                     style: SetDetailRowComponent.fieldDecor,
@@ -125,24 +127,17 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    GestureDetector(
-                      onTap: () {
+                    TextButton(
+                      onPressed: () {
                         handleTrack();
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade100,
-                          borderRadius: BorderRadius.circular(4.r),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0.w),
-                          child: Icon(
-                            FontAwesomeIcons.check,
-                            size: 12.w,
-                            color: Colors.green.shade400,
-                          ),
-                        ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: SURFACE,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        minimumSize: Size(30.w, 30.h),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.r))
                       ),
+                      child: Icon(FontAwesomeIcons.check, size: 12.w),
                     ),
                   ],
                 ),
@@ -156,8 +151,18 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(20.w, 20.h),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        backgroundColor: const Color.fromARGB(104, 255, 163, 163),
-                        foregroundColor: const Color.fromARGB(104, 255, 147, 147),
+                        backgroundColor: const Color.fromARGB(
+                          104,
+                          255,
+                          163,
+                          163,
+                        ),
+                        foregroundColor: const Color.fromARGB(
+                          104,
+                          255,
+                          147,
+                          147,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusGeometry.circular(4.r),
                         ),

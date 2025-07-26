@@ -50,8 +50,8 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     super.initState();
     setEnabledSets();
   }
-  setEnabledSets()
-  {
+
+  setEnabledSets() {
     enabledSets = [];
     for (var set in widget.workout.sets) {
       if (set.enabled) {
@@ -59,6 +59,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       }
     }
   }
+
   setSets(bool setsUpdated) async {
     if (setsUpdated) {
       var work = await workoutService.getWorkOutById(widget.workout.key);
@@ -74,74 +75,84 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
         color: SURFACE2,
         borderRadius: BorderRadius.circular(8.r),
       ),
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: 15.h,
-          bottom: 15.h,
-          left: 15.w,
-          right: 15.w,
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        showTrack = true;
-                        setEnabledSets();
-                        refreshState();
-                      },
-                      style: showTrack
-                          ? enabledButtonDecor
-                          : disabledButtonDecor,
-                      child: Text(
-                        "Track",
-                        style: TextStyle(
-                          color: showTrack ? PRIMARY : Colors.grey,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        showTrack = false;
-                        refreshState();
-                      },
-                      style: !showTrack
-                          ? enabledButtonDecor
-                          : disabledButtonDecor,
-                      child: Text(
-                        "Status",
-                        style: TextStyle(
-                          color: !showTrack ? PRIMARY : Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () async {
-                    var weight = await showMaterialNumberInput(context);
-                    if (weight != null) {
-                      handleAddNewSet(weight);
-                      widget.onSetUpdated(true);
-                    }
-                  },
-                  style: enabledButtonDecor,
-                  child: Icon(Icons.add, size: 20.w),
-                ),
-              ],
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+              borderRadius: BorderRadius.circular(8.r),
             ),
-            SizedBox(height: 10.h),
-            SizedBox(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+            child: Padding(
+              padding: EdgeInsets.all(15.0.r),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (widget.workout.sets.isNotEmpty) ...[
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          showTrack = true;
+                          setEnabledSets();
+                          refreshState();
+                        },
+                        style: showTrack
+                            ? enabledButtonDecor
+                            : disabledButtonDecor,
+                        child: Text(
+                          "Track",
+                          style: TextStyle(
+                            color: showTrack ? PRIMARY : Colors.grey,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          showTrack = false;
+                          refreshState();
+                        },
+                        style: !showTrack
+                            ? enabledButtonDecor
+                            : disabledButtonDecor,
+                        child: Text(
+                          "Status",
+                          style: TextStyle(
+                            color: !showTrack ? PRIMARY : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      var weight = await showMaterialNumberInput(context);
+                      if (weight != null) {
+                        handleAddNewSet(weight);
+                        widget.onSetUpdated(true);
+                      }
+                    },
+                    style: enabledButtonDecor,
+                    child: Icon(Icons.add, size: 20.w),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.workout.sets.isNotEmpty) ...[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: BORDER_SECONDARY),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.0.h,
+                        horizontal: 12.r,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -272,63 +283,64 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10.h),
-                    Container(
-                      decoration: BoxDecoration(color: SURFACE,borderRadius: BorderRadius.circular(8.r)),
-                      child: Column(
-                        children: [
-                          ...(showTrack? enabledSets :widget.workout.sets).map(
-                            (set) => SetDetailRowComponent(
-                              key: ValueKey(DateTime.now()),
-                              set: set,
-                              showTrack: showTrack,
-                              workout: widget.workout,
-                              onSetUpdated: (value) {
-                                setSets(value);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ] else ...[
-                    SizedBox(height: 20.h),
-                    Material(
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
                       color: SURFACE2,
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: SURFACE,
-                            borderRadius: BorderRadius.circular(8.r),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Column(
+                      children: [
+                        ...(showTrack ? enabledSets : widget.workout.sets).map(
+                          (set) => SetDetailRowComponent(
+                            key: ValueKey(DateTime.now()),
+                            set: set,
+                            showTrack: showTrack,
+                            workout: widget.workout,
+                            onSetUpdated: (value) {
+                              setSets(value);
+                            },
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0.w),
-                            child: Column(
-                              children: [
-                                SizedBox(height: 5.h),
-                                Icon(
-                                  FontAwesomeIcons.faceGrinWink,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 10.h),
-                                Text(
-                                  "Lets start by adding some sets",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ],
-                            ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  Material(
+                    color: SURFACE2,
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: SURFACE,
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0.w),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 5.h),
+                              Icon(
+                                FontAwesomeIcons.faceGrinWink,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 10.h),
+                              Text(
+                                "Lets start by adding some sets",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

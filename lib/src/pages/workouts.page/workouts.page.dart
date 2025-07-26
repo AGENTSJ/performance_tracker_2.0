@@ -115,7 +115,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
       context,
       MaterialPageRoute(
         builder: (context) => WorkoutDetailsPage(
-          workout: Workout(name: "New One", sets: [], enabled: true,desc: ''),
+          workout: Workout(name: "New One", sets: [], enabled: true,desc: '',volumes: []),
           isCreateMode: true,
         ),
       ),

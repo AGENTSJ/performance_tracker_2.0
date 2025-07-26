@@ -87,6 +87,94 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     } catch (e) {}
   }
 
+  handleAddVolume() async {
+    final nameController = TextEditingController();
+    final volController = TextEditingController();
+    var vol = await showDialog<WorkoutVolume>(
+      barrierColor: const Color.fromARGB(87, 90, 90, 90),
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: SURFACE2,
+          title: Text('Add volume'),
+          content: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. chest',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 0.5),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 10.h,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Expanded(
+                child: TextField(
+                  controller: volController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. 1',
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 10.h,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: () {
+                final WorkoutVolume vol = WorkoutVolume(
+                  muscleName: nameController.text,
+                  volume: double.tryParse(volController.text) ?? 0,
+                );
+                Navigator.of(context).pop(vol);
+              },
+              child: Text('OK'),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+        );
+      },
+    );
+
+    if (vol != null) {
+      widget.workout.volumes.add(vol);
+    }
+    await workoutService.updateWorkout(widget.workout);
+    refreshState();
+  }
+  handleRemoveVolume(WorkoutVolume vol)async
+  {
+    widget.workout.volumes.remove(vol);
+    await workoutService.updateWorkout(widget.workout);
+    refreshState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,29 +250,145 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 },
               ),
               SizedBox(height: 20.h),
+              // Volume
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: BORDER_SECONDARY),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.r),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Volume",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15.sp,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                handleAddVolume();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: SURFACE,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                minimumSize: Size(30.w, 30.h),
+                              ),
+                              child: Icon(Icons.add,size: 20.w,),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        if (widget.workout.volumes.isEmpty) ...[
+                          SizedBox(
+                            height: 100.h,
+                            width: double.infinity,
+                            child: empty,
+                          ),
+                        ] else
+                          ...widget.workout.volumes.map(
+                            (vol) => Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: BORDER_SECONDARY),
+                                ),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(12.0.r),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(vol.muscleName),
+                                    Container(
+                                      child: Center(
+                                        child: Text("${vol.volume}"),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        handleRemoveVolume(vol);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4.r,
+                                          ),
+                                        ),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        minimumSize: Size(30.w, 30.h),
+                                      ),
+                                      child: Icon(Icons.close,size: 20.w,),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.h),
               // Notes
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(12.0.w),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Workout Journal",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15.sp,
-                            ),
-                          ),
-                        ],
+                child: Column(
+                  children: [
+                    Container(
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: BORDER_SECONDARY),
+                        ),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                      SizedBox(height: 10.h),
-                      TextField(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.r),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Workout Journal",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.0.r,
+                        vertical: 8.0.r,
+                      ),
+                      child: TextField(
                         controller: workDescriptionController,
                         minLines: 3,
                         maxLines: null,
@@ -197,8 +401,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 20.h),

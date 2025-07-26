@@ -27,19 +27,21 @@ class Routine extends HiveObject {
 class Workout extends HiveObject {
   @HiveField(0)
   String name;
-
   @HiveField(1)
   List<WorkSet> sets;
-
   @HiveField(2)
   bool enabled;
   @HiveField(3)
   String desc;
+  @HiveField(4)
+  List<WorkoutVolume> volumes;
+
   Workout({
     required this.name,
     required this.sets,
     required this.enabled,
     required this.desc,
+    required this.volumes
   });
 }
 
@@ -72,4 +74,14 @@ class TrackEntry {
   @HiveField(1)
   int value;
   TrackEntry({required this.entryDate, required this.value});
+}
+
+@HiveType(typeId:19)
+class WorkoutVolume
+{
+  @HiveField(0)
+  String muscleName;
+  @HiveField(1)
+  double volume;
+  WorkoutVolume({required this.muscleName,required this.volume});
 }

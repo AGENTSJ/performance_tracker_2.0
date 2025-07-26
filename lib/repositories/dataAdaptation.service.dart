@@ -34,7 +34,7 @@ class DataService {
         );
         sets.add(workSet);
       }
-      var workout = Workout(name: name, sets: sets, enabled: true, desc: desc);
+      var workout = Workout(name: name, sets: sets, enabled: true, desc: desc,volumes: []);
       await workService.addWorkout(workout);
     }
   }

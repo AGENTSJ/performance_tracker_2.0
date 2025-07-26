@@ -67,13 +67,14 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       sets: (fields[1] as List).cast<WorkSet>(),
       enabled: fields[2] as bool,
       desc: fields[3] as String,
+      volumes: (fields[4] as List).cast<WorkoutVolume>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -81,7 +82,9 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       ..writeByte(2)
       ..write(obj.enabled)
       ..writeByte(3)
-      ..write(obj.desc);
+      ..write(obj.desc)
+      ..writeByte(4)
+      ..write(obj.volumes);
   }
 
   @override
@@ -171,6 +174,43 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TrackEntryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class WorkoutVolumeAdapter extends TypeAdapter<WorkoutVolume> {
+  @override
+  final int typeId = 19;
+
+  @override
+  WorkoutVolume read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return WorkoutVolume(
+      muscleName: fields[0] as String,
+      volume: fields[1] as double,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, WorkoutVolume obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.muscleName)
+      ..writeByte(1)
+      ..write(obj.volume);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WorkoutVolumeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

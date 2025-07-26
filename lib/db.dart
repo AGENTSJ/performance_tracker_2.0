@@ -1,6 +1,7 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/activity.model.dart';
+import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/journey.model.dart';
@@ -15,7 +16,8 @@ enum Collections
   users('usersCollection'),
   routines('routines'),
   workouts('workouts'),
-  journey('journey');
+  journey('journey'),
+  advices('advices');
   
   final String value;
   const Collections(this.value);
@@ -43,6 +45,9 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(TrackEntryAdapter());
   Hive.registerAdapter(ActivityAdapter());
   Hive.registerAdapter(JourneyAdapter());
+  Hive.registerAdapter(AdviceAdapter());
+  Hive.registerAdapter(AdviceStatusAdapter());
+  Hive.registerAdapter(WorkoutVolumeAdapter());
 
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);
@@ -50,6 +55,7 @@ Future<void> setupHiveDb() async
   await Hive.openBox<Routine>(Collections.routines.value);
   await Hive.openBox<Workout>(Collections.workouts.value);
   await Hive.openBox<Journey>(Collections.journey.value);
+  await Hive.openBox<Advice>(Collections.advices.value);
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);
@@ -58,5 +64,7 @@ Future<void> setupHiveDb() async
   // await Hive.deleteBoxFromDisk(Collections.routines.value);
   // await Hive.deleteBoxFromDisk(Collections.workouts.value);
   // await Hive.deleteBoxFromDisk(Collections.journey.value);
+  // await Hive.deleteBoxFromDisk(Collections.advices.value);
+
 }
 
