@@ -39,20 +39,47 @@ class RoutineDetailsState extends State<RoutineDetails> {
         });
       }
     });
-    setRoutineUi();
+    setRoutineUi(widget.isCreateMode);
     super.initState();
   }
 
-  setRoutineUi() async {
+  setRoutineUi(bool isCreateMode) async {
     routineNameController.text = widget.routine.name;
-    if (widget.isCreateMode) {
+    if (isCreateMode) {
       var routineKey = await routineService.addRoutine(widget.routine);
       routine = await routineService.getRoutineById(routineKey);
     } else {
       routine = widget.routine;
     }
     workouts = await routineService.getRoutinesWorkouts(routine!);
+    setVolumes();
     refreshState();
+  }
+
+  setVolumes() {
+    volumes = [];
+    for (var work in workouts) {
+      for (var vol in work.volumes) {
+        var presentVol = getVolumeByName(vol.muscleName);
+        if (presentVol == null) {
+          vol = WorkoutVolume(muscleName: vol.muscleName, volume: vol.volume);
+          vol.volume =
+              vol.volume * work.sets.where((set) => set.enabled).length;
+          volumes.add(vol);
+        } else {
+          presentVol.volume += vol.volume;
+        }
+      }
+    }
+  }
+
+  WorkoutVolume? getVolumeByName(String name) {
+    for (var vol in volumes) {
+      if (vol.muscleName == name) {
+        return vol;
+      }
+    }
+    return null;
   }
 
   @override
@@ -171,26 +198,29 @@ class RoutineDetailsState extends State<RoutineDetails> {
                       ),
                     ),
                     if (workouts.isEmpty)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: SURFACE2,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        width: double.infinity,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.faceGrinWink,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 10.h),
-                              Text(
-                                "Add workouts to routine",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
+                      Padding(
+                        padding: EdgeInsets.all(12.0.r),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: SURFACE2,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.faceGrinWink,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  "Add workouts to routine",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -343,27 +373,36 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(vol.muscleName),
-                                    Container(
-                                      child: Center(
-                                        child: Text("${vol.volume}"),
+                                    Expanded(child: Text(vol.muscleName)),
+                                    Expanded(
+                                      child: Container(
+                                        child: Center(
+                                          child: Text("${vol.volume}"),
+                                        ),
                                       ),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        // handleRemoveVolume(vol);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            4.r,
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              // handleRemoveVolume(vol);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                  4.r,
+                                                ),
+                                              ),
+                                              tapTargetSize:
+                                                  MaterialTapTargetSize.shrinkWrap,
+                                              minimumSize: Size(30.w, 30.h),
+                                            ),
+                                            child: Icon(Icons.close, size: 20.w),
                                           ),
-                                        ),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        minimumSize: Size(30.w, 30.h),
+                                        ],
                                       ),
-                                      child: Icon(Icons.close, size: 20.w),
                                     ),
                                   ],
                                 ),
@@ -375,7 +414,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                   ],
                 ),
               ),
-              SizedBox(height: 20.h,),
+              SizedBox(height: 20.h),
               // Notes
               Container(
                 decoration: BoxDecoration(
@@ -581,6 +620,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
       routine?.workoutsIds.add(work.key);
     }
     await routineService.updateRoutine(routine!);
+    setVolumes();
     refreshState();
   }
 
@@ -588,6 +628,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
     workouts.remove(work);
     widget.routine.workoutsIds.remove(work.key);
     await routineService.updateRoutine(widget.routine);
+    setVolumes();
     refreshState();
   }
 }

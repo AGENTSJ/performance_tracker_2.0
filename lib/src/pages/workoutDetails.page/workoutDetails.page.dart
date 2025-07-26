@@ -364,27 +364,36 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(vol.muscleName),
-                                    Container(
-                                      child: Center(
-                                        child: Text("${vol.volume}"),
+                                    Expanded(child: Text(vol.muscleName)),
+                                    Expanded(
+                                      child: Container(
+                                        child: Center(
+                                          child: Text("${vol.volume}"),
+                                        ),
                                       ),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        handleRemoveVolume(vol);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            4.r,
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              handleRemoveVolume(vol);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                  4.r,
+                                                ),
+                                              ),
+                                              tapTargetSize:
+                                                  MaterialTapTargetSize.shrinkWrap,
+                                              minimumSize: Size(30.w, 30.h),
+                                            ),
+                                            child: Icon(Icons.close, size: 20.w),
                                           ),
-                                        ),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        minimumSize: Size(30.w, 30.h),
+                                        ],
                                       ),
-                                      child: Icon(Icons.close, size: 20.w),
                                     ),
                                   ],
                                 ),
