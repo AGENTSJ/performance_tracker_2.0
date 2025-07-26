@@ -67,7 +67,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               vol.volume * work.sets.where((set) => set.enabled).length;
           volumes.add(vol);
         } else {
-          presentVol.volume += vol.volume;
+          presentVol.volume += vol.volume * work.sets.where((set) => set.enabled).length;
         }
       }
     }
@@ -262,7 +262,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                           SizedBox(width: 10.w),
                                           Expanded(
                                             child: Text(
-                                              work.name,
+                                              "${work.name} (${work.sets.where((s) => s.enabled).length})",
                                               style: TextStyle(
                                                 fontSize: 15.sp,
                                                 fontWeight: FontWeight.w500,
@@ -383,7 +383,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                     ),
                                     Expanded(
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           TextButton(
                                             onPressed: () {
@@ -391,15 +392,18 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                             },
                                             style: ElevatedButton.styleFrom(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(
-                                                  4.r,
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(4.r),
                                               ),
                                               tapTargetSize:
-                                                  MaterialTapTargetSize.shrinkWrap,
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap,
                                               minimumSize: Size(30.w, 30.h),
                                             ),
-                                            child: Icon(Icons.close, size: 20.w),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 20.w,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -611,9 +615,13 @@ class RoutineDetailsState extends State<RoutineDetails> {
 
   handleAddRoutine() async {
     await showModalBottomSheet(
+      isScrollControlled: true,
       backgroundColor: SURFACE2,
       context: context,
-      builder: (context) => SelectWorkout(selectedWorkouts: workouts),
+      builder: (context) => Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: SizedBox(height: 400.h,child: SelectWorkout(selectedWorkouts: workouts)),
+      ),
     );
     routine?.workoutsIds = [];
     for (var work in workouts) {

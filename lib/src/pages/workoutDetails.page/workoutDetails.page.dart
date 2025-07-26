@@ -89,120 +89,120 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   }
 
   handleAddVolume() async {
-    final volController = TextEditingController();
-    String? selectedMuscle = TRAINABLE_MUSCLES[0];
     var vol = await showDialog<WorkoutVolume>(
       barrierColor: const Color.fromARGB(87, 90, 90, 90),
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: SURFACE2,
-          title: Text('Add volume'),
-          content: Row(
-            children: [
-              Expanded(
-                child: DropdownButton2<String>(
-                  isExpanded: true,
-                  isDense: true,
-                  value: selectedMuscle,
-                  hint: Text('Select an option'),
-                  items: TRAINABLE_MUSCLES.map((String muscle) {
-                    return DropdownMenuItem<String>(
-                      value: muscle,
-                      child: Container(
+        final volController = TextEditingController();
+        String? selectedMuscle = TRAINABLE_MUSCLES[0];
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: SURFACE2,
+              title: Text('Add volume'),
+              content: Row(
+                children: [
+                  Expanded(
+                    child: DropdownButton2<String>(
+                      isExpanded: true,
+                      isDense: true,
+                      value: selectedMuscle,
+                      hint: Text('Select an option'),
+                      items: TRAINABLE_MUSCLES.map((String muscle) {
+                        return DropdownMenuItem<String>(
+                          value: muscle,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(muscle, style: TextStyle(fontSize: 14)),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        print("changed");
+                        setState(() {
+                          selectedMuscle = newValue;
+                        });
+                      },
+                      buttonStyleData: ButtonStyleData(
+                        height: 50.h,
+                        width: 100.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4.r),
+                          border: Border.all(color: BORDER_PRIMARY),
+                        ),
+                      ),
+                      dropdownStyleData: DropdownStyleData(
                         padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(),
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            muscle,
-                            style: TextStyle(fontSize: 14),
+                        width: 100.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.r),
+                          color: SURFACE2,
+                        ),
+                      ),
+                      underline: Container(
+                        height: 1,
+                        color: Colors.transparent,
+                      ),
+                      menuItemStyleData: MenuItemStyleData(
+                        height: 40.h,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: BORDER_PRIMARY),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 3.0.r,
+                          horizontal: 3.0.r,
+                        ),
+                        child: TextField(
+                          controller: volController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. 1',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 10.h,
+                            ),
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final vol = WorkoutVolume(
+                      muscleName: selectedMuscle ?? '',
+                      volume: double.tryParse(volController.text) ?? 0,
                     );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedMuscle = newValue;
-                    });
+                    Navigator.of(context).pop(vol);
                   },
-                  buttonStyleData: ButtonStyleData(
-                    height: 50.h,
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                      border: Border.all(color: BORDER_PRIMARY)
-                    ),
-                  ),
-                  dropdownStyleData: DropdownStyleData(
-                    padding: EdgeInsets.zero,
-                    width: 100.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4.r),
-                      color: SURFACE2,
-                    ),
-                  ),
-                  underline: Container(height: 1, color: Colors.transparent),
-                  menuItemStyleData: MenuItemStyleData(
-                    height: 40.h,
-                    padding: EdgeInsets.zero,
-                  ),
+                  child: Text('OK'),
                 ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
               ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(border: Border.all(color: BORDER_PRIMARY),borderRadius: BorderRadius.circular(4.r)),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 3.0.r,horizontal: 3.0.r),
-                    child: TextField(
-                      controller: volController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: 'e.g. 1',
-                        border: OutlineInputBorder(borderSide: BorderSide.none),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 10.h,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                shadowColor: Colors.transparent,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                shadowColor: Colors.transparent,
-              ),
-              onPressed: () {
-                final WorkoutVolume vol = WorkoutVolume(
-                  muscleName: selectedMuscle ??'',
-                  volume: double.tryParse(volController.text) ?? 0,
-                );
-                Navigator.of(context).pop(vol);
-              },
-              child: Text('OK'),
-            ),
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
-          ),
+            );
+          },
         );
       },
     );
@@ -374,7 +374,8 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                     ),
                                     Expanded(
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
                                           TextButton(
                                             onPressed: () {
@@ -382,15 +383,18 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                             },
                                             style: ElevatedButton.styleFrom(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(
-                                                  4.r,
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(4.r),
                                               ),
                                               tapTargetSize:
-                                                  MaterialTapTargetSize.shrinkWrap,
+                                                  MaterialTapTargetSize
+                                                      .shrinkWrap,
                                               minimumSize: Size(30.w, 30.h),
                                             ),
-                                            child: Icon(Icons.close, size: 20.w),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 20.w,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -405,7 +409,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: 20.h),
               // Notes
               Container(

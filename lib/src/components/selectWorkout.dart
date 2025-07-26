@@ -127,7 +127,7 @@ class SelectWorkoutState extends State<SelectWorkout> {
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
-                                  color: BORDER_PRIMARY,
+                                  color: BORDER_SECONDARY,
                                 ),
                               ),
                               borderRadius: BorderRadius.circular(8.r)

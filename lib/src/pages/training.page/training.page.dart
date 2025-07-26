@@ -13,6 +13,7 @@ import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/pages/coach.page/coach.page.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 import 'package:performance_tracker/src/pages/routines.page/routines.page.dart';
@@ -193,7 +194,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                 borderRadius: BorderRadius.circular(12.r),
                                 child: InkWell(
                                   onTap: () {
-                                    handleAnalyze();
+                                    handleNavigateToCoach();
                                   },
                                   child: SizedBox(
                                     height: 60.h,
@@ -203,13 +204,13 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                       child: Row(
                                         children: [
                                           Icon(
-                                            FontAwesomeIcons.layerGroup,
+                                            FontAwesomeIcons.brain,
                                             size: 16.sp,
                                             color: TEXT_SECONDARY,
                                           ),
                                           SizedBox(width: 20.w),
                                           Text(
-                                            "Analyze",
+                                            "Coach",
                                             style: TextStyle(
                                               color: TEXT_TERTIARY,
                                               fontWeight: FontWeight.w500,
@@ -361,9 +362,9 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     setState(() {});
   }
   var trainerService = locator<TrainerAgentService>();
-  handleAnalyze()
+  handleNavigateToCoach()
   {
-    var resp = trainerService.analyzePerformance();
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CoachPage()));
   }
   handleAddWorkout() async {
     await showModalBottomSheet(
