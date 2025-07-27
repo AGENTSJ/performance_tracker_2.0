@@ -55,7 +55,6 @@ class _MainAppEntryState extends State<MainAppEntry> {
   TrainingModulePage? trainingModulePage;
   ProfilePageModule? profilePageModule;
   ActivityPage? activityPage;
-  JourneyComponent? goalPage;
 
   @override
   void initState() {
@@ -63,7 +62,7 @@ class _MainAppEntryState extends State<MainAppEntry> {
   }
 
   _handleIndexChange(int index) {
-    if (index > 4) {
+    if (index > 3) {
       return;
     }
     selectedIndex = index;
@@ -82,9 +81,6 @@ class _MainAppEntryState extends State<MainAppEntry> {
         activityPage ??= ActivityPage();
         return activityPage;
       case 3:
-        goalPage ??= JourneyComponent();
-        return goalPage;
-      case 4:
         profilePageModule ??= ProfilePageModule();
         return profilePageModule;
     }

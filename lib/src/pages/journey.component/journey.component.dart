@@ -294,6 +294,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                 child: RotatedBox(
                                   quarterTurns: 1,
                                   child: BarChart(
+                                    key: ValueKey(caloriesAchievePercent),
                                     BarChartData(
                                       gridData: FlGridData(show: false),
                                       alignment:
@@ -411,6 +412,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                 child: RotatedBox(
                                   quarterTurns: 1,
                                   child: BarChart(
+                                    key: ValueKey(stepAchievePercent),
                                     BarChartData(
                                       gridData: FlGridData(show: false),
                                       alignment:

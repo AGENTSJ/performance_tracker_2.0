@@ -18,7 +18,6 @@ class BottomBar extends StatelessWidget {
         Icon(Icons.food_bank ,color: CONT_BACKGROUND,),
         Icon(Icons.directions_bike ,color: CONT_BACKGROUND,),
         Icon(Icons.directions_run,color: CONT_BACKGROUND,),
-        Icon(FontAwesomeIcons.medal,color: CONT_BACKGROUND,),
         Icon(FontAwesomeIcons.user,color: CONT_BACKGROUND,),
       ],
       onTap: (index) {
