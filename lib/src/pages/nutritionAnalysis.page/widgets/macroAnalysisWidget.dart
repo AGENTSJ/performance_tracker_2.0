@@ -27,103 +27,130 @@ class MacroAnalysisWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.r),
         color: CONT_BACKGROUND,
       ),
-      constraints: BoxConstraints(maxHeight: 310.h),
-      child: Padding(
-        padding: EdgeInsets.all(14.0.w),
-        child: Column(
-          children: [
-            // heading
-            Row(
-              children: [
-                Text(
-                  'Macro Nutrient Analysis',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17.sp),
-                ),
-              ],
+      child: Column(
+        children: [
+          // heading
+          Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+              borderRadius: BorderRadiusDirectional.circular(8.r)
             ),
-            SizedBox(height: 20.h),
-            // calories
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if(macros.calories>0) ...[
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  width: 90.w,
-                  height: 90.h,
-                  child: MacroPieChart(
-                    totalCalories: macros.calories,
-                    fats: macros.fat,
-                    carbs: macros.carbohydrate,
-                    protein: macros.protein,
-                  ),
-                ),
-                ]
-                else
-                ...[
-                  Padding(
-                    padding: EdgeInsets.all(8.0.w),
-                    child: Icon(FontAwesomeIcons.solidFaceLaughWink,size: 75.w,color: const Color.fromARGB(150, 158, 158, 158),),
-                  )
-                ],
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${macros.calories.round()} / ${totalCalLimit.round()} Cal",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16.sp,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: SizedBox(
-                              height: 1.h,
-                              width: double.infinity,
-                              child: AnimatedProgressBar(
-                                key: ValueKey(macros.calories),
-                                value:
-                                    (commonService.getPercentage(
-                                      totalCalLimit,
-                                      macros.calories,
-                                    ) /
-                                    100),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 8.w),
-                            child: Text(
-                              "${commonService.getPercentage(totalCalLimit, macros.calories).round()} %",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 22.sp,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 30.h),
-            Padding(
-              padding: EdgeInsets.all(8.0.w),
-              child: Column(
+            child: Padding(
+              padding: EdgeInsets.all(14.0.r),
+              child: Row(
                 children: [
-                  Row(
+                  Text(
+                    'Macro Nutrient Analysis',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 17.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10.h),
+          // calories
+          Container(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+              borderRadius: BorderRadiusDirectional.circular(8.r)
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(12.0.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (macros.calories > 0) ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      width: 90.w,
+                      height: 90.h,
+                      child: MacroPieChart(
+                        totalCalories: macros.calories,
+                        fats: macros.fat,
+                        carbs: macros.carbohydrate,
+                        protein: macros.protein,
+                      ),
+                    ),
+                  ] else ...[
+                    Padding(
+                      padding: EdgeInsets.all(8.0.w),
+                      child: Icon(
+                        FontAwesomeIcons.solidFaceLaughWink,
+                        size: 75.w,
+                        color: const Color.fromARGB(150, 158, 158, 158),
+                      ),
+                    ),
+                  ],
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${macros.calories.round()} / ${totalCalLimit.round()} Cal",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: SizedBox(
+                                height: 1.h,
+                                width: double.infinity,
+                                child: AnimatedProgressBar(
+                                  key: ValueKey(macros.calories),
+                                  value:
+                                      (commonService.getPercentage(
+                                        totalCalLimit,
+                                        macros.calories,
+                                      ) /
+                                      100),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8.w),
+                              child: Text(
+                                "${commonService.getPercentage(totalCalLimit, macros.calories).round()} %",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 22.sp,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+                  borderRadius: BorderRadiusDirectional.circular(8.r)
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0.h,
+                    horizontal: 8.w,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
@@ -142,8 +169,20 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+                  borderRadius: BorderRadiusDirectional.circular(8.r)
+                ),
+
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0.h,
+                    horizontal: 8.w,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
@@ -162,8 +201,19 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+                  borderRadius: BorderRadiusDirectional.circular(8.r)
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0.h,
+                    horizontal: 8.w,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
@@ -182,8 +232,20 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5.h),
-                  Row(
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: BORDER_SECONDARY)),
+                  borderRadius: BorderRadiusDirectional.circular(8.r)
+                ),
+
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.0.h,
+                    horizontal: 8.w,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
@@ -202,11 +264,11 @@ class MacroAnalysisWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }

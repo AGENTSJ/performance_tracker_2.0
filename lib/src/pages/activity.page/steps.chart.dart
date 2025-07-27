@@ -60,9 +60,9 @@ class _StepsChartState extends State<StepsChart> {
                 Text(
                   "${widget.count.round()}",
                   style: TextStyle(
-                    fontSize: 25.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
-                    color: PRIMARY,
+                    color: TEXT_SECONDARY,
                   ),
                 ),
                 SizedBox(height: 10.h),
@@ -70,7 +70,7 @@ class _StepsChartState extends State<StepsChart> {
                   quarterTurns: 3,
                   child: Icon(
                     FontAwesomeIcons.shoePrints,
-                    size: 17.sp,
+                    size: 12.sp,
                     color: PRIMARY,
                   ),
                 ),

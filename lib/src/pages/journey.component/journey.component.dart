@@ -40,6 +40,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
   double calDiffAchievedToday = 0;
   JourneyBadge? currentBadge;
   bool isLoaded = false;
+  double journeyCompleted = 0;
   @override
   void initState() {
     super.initState();
@@ -49,7 +50,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
   setupUi() async {
     this.currentJourney = journeyService.getActiveJourney();
     user = await userService.getUserData();
-    if (this.currentJourney != null) {
+    if (currentJourney != null) {
       caloriesTotal =
           (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight) *
           7700;
@@ -70,8 +71,8 @@ class _JourneyComponentState extends State<JourneyComponent> {
           )
           .roundToDouble()
           .clamp(0, 100);
-      var journeyCompleted = (calDiffAchievedToday + stepAchievePercent) / 2;
-      this.currentBadge = journeyService.getBadge(journeyCompleted);
+      journeyCompleted = (caloriesAchievePercent + stepAchievePercent) / 2;
+      currentBadge = journeyService.getBadge(journeyCompleted);
     }
     isLoaded = true;
     refreshState();
@@ -172,6 +173,25 @@ class _JourneyComponentState extends State<JourneyComponent> {
     }
   }
 
+  List<PieChartSectionData> _getSections() {
+    return [
+      PieChartSectionData(
+        color: PRIMARY,
+        value: journeyCompleted,
+        title: '',
+        radius: 10.r,
+        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      PieChartSectionData(
+        color: BORDER_PRIMARY,
+        value: (100 - journeyCompleted).clamp(0, 100),
+        title: '',
+        radius: 10.r,
+        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+    ];
+  }
+
   refreshState() {
     if (!mounted) return;
     setState(() {});
@@ -184,32 +204,32 @@ class _JourneyComponentState extends State<JourneyComponent> {
           ? LoadingPage()
           : currentJourney == null
           ? Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              color: SURFACE2
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(12.0.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  JourneyIntroduction(),
-                  ElevatedButton(
-                    onPressed: () {
-                      handleCreateJourney();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                    child: Text("Start a journey"),
-                  ),
-                ],
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: SURFACE2,
               ),
-            ),
-          )
+              child: Padding(
+                padding: EdgeInsets.all(12.0.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    JourneyIntroduction(),
+                    ElevatedButton(
+                      onPressed: () {
+                        handleCreateJourney();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child: Text("Start Journey"),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : SingleChildScrollView(
               child: Container(
                 decoration: BoxDecoration(),
@@ -226,10 +246,43 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(color: SURFACE2),
-                              height: 70.h,
-                              child: currentBadge!.badgeImage,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 100.h,
+                                  width: 100.h,
+                                  child: Stack(
+                                    children: [
+                                      PieChart(
+                                        PieChartData(
+                                          sections: _getSections(),
+                                          sectionsSpace: 0,
+                                          centerSpaceRadius: 45.r,
+                                          startDegreeOffset: -90,
+                                        ),
+                                      ),
+                                      Center(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: currentBadge!
+                                                  .badgeImage
+                                                  .image,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              100.r,
+                                            ),
+                                          ),
+                                          height: 70.h,
+                                          width: 70.h,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -260,8 +313,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                             ),
                             SizedBox(height: 10.h),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
@@ -283,6 +335,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                     fontSize: 12.sp,
                                     color: TEXT_SECONDARY,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
@@ -297,32 +350,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                     key: ValueKey(caloriesAchievePercent),
                                     BarChartData(
                                       gridData: FlGridData(show: false),
-                                      alignment:
-                                          BarChartAlignment.spaceAround,
+                                      alignment: BarChartAlignment.spaceAround,
                                       maxY: 100,
                                       barTouchData: BarTouchData(
-                                        enabled: true,
-                                        touchTooltipData: BarTouchTooltipData(
-                                          tooltipPadding:
-                                              const EdgeInsets.all(8),
-                                          getTooltipItem:
-                                              (
-                                                group,
-                                                groupIndex,
-                                                rod,
-                                                rodIndex,
-                                              ) {
-                                                return BarTooltipItem(
-                                                  '${currentJourney!.caloriesChangeAchieved.round()}\n',
-                                                  const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
-                                                );
-                                              },
-                                        ),
+                                        enabled: false
                                       ),
                                       titlesData: FlTitlesData(show: false),
                                       borderData: FlBorderData(show: false),
@@ -335,19 +366,18 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                               color: rumColor,
                                               width: 20.h,
                                               borderRadius:
-                                                  BorderRadius.circular(30.r),
+                                                  BorderRadius.circular(15.r),
                                               backDrawRodData:
                                                   BackgroundBarChartRodData(
                                                     show: true,
                                                     toY:
                                                         100, // Max value for the track
-                                                    color:
-                                                        const Color.fromARGB(
-                                                          187,
-                                                          224,
-                                                          224,
-                                                          224,
-                                                        ), // Your track color
+                                                    color: const Color.fromARGB(
+                                                      187,
+                                                      224,
+                                                      224,
+                                                      224,
+                                                    ),
                                                   ),
                                             ),
                                           ],
@@ -373,8 +403,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                             // Steps
                             SizedBox(height: 20.h),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
@@ -415,32 +444,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                     key: ValueKey(stepAchievePercent),
                                     BarChartData(
                                       gridData: FlGridData(show: false),
-                                      alignment:
-                                          BarChartAlignment.spaceAround,
+                                      alignment: BarChartAlignment.spaceAround,
                                       maxY: 100,
                                       barTouchData: BarTouchData(
-                                        enabled: true,
-                                        touchTooltipData: BarTouchTooltipData(
-                                          tooltipPadding:
-                                              const EdgeInsets.all(8),
-                                          getTooltipItem:
-                                              (
-                                                group,
-                                                groupIndex,
-                                                rod,
-                                                rodIndex,
-                                              ) {
-                                                return BarTooltipItem(
-                                                  '${currentJourney!.stepsWalked.round()}\n',
-                                                  const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
-                                                );
-                                              },
-                                        ),
+                                        enabled: false,
                                       ),
                                       titlesData: FlTitlesData(show: false),
                                       borderData: FlBorderData(show: false),
@@ -453,7 +460,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                               color: Colors.green,
                                               width: 20.h,
                                               borderRadius:
-                                                  BorderRadius.circular(30.r),
+                                                  BorderRadius.circular(15.r),
                                               backDrawRodData:
                                                   BackgroundBarChartRodData(
                                                     show: true,
@@ -531,9 +538,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                     ),
                                     child: Text(
                                       "Stop Journey",
-                                      style: TextStyle(
-                                        color: Colors.redAccent,
-                                      ),
+                                      style: TextStyle(color: Colors.redAccent),
                                     ),
                                   ),
                                 ),

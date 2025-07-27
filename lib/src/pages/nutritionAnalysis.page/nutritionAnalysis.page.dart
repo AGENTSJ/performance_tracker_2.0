@@ -62,31 +62,34 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                 ),
                 width: double.infinity,
                 height: 300.h,
-                child: Padding(
-                  padding: EdgeInsets.all(14.0.w),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(FontAwesomeIcons.seedling, size: 20.w),
-                          SizedBox(width: 20.w),
-                          Text(
-                            'Micro Nutrients Analysis',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17.sp,
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color:BORDER_SECONDARY))),
+                      child: Padding(
+                        padding: EdgeInsets.all(14.0.w),
+                        child: Row(
+                          children: [
+                            Icon(FontAwesomeIcons.seedling, size: 20.w),
+                            SizedBox(width: 20.w),
+                            Text(
+                              'Micro Nutrients Analysis',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 17.sp,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 20.h),
-                      Expanded(
-                        child: microNutrientList(totalConsumed: totalConsumed,allowScroll: allowMicroScroll,),
-                      ),
-                      if(!allowMicroScroll)
-                      TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show more',style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
-                    ],
-                  ),
+                    ),
+                    // SizedBox(height: 20.h),
+                    Expanded(
+                      child: microNutrientList(totalConsumed: totalConsumed,allowScroll: allowMicroScroll,),
+                    ),
+                    if(!allowMicroScroll)
+                    TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show more',style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
+                  ],
                 ),
               ),
               SizedBox(height: 30.h),
