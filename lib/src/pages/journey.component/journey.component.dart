@@ -12,17 +12,17 @@ import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
-import 'package:performance_tracker/src/pages/goal.page/journeyIntroduction.dart';
+import 'package:performance_tracker/src/pages/journey.component/journeyIntroduction.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
-class GoalPage extends StatefulWidget {
-  const GoalPage({Key? key}) : super(key: key);
+class JourneyComponent extends StatefulWidget {
+  const JourneyComponent({Key? key}) : super(key: key);
 
   @override
-  _GoalPageState createState() => _GoalPageState();
+  _JourneyComponentState createState() => _JourneyComponentState();
 }
 
-class _GoalPageState extends State<GoalPage> {
+class _JourneyComponentState extends State<JourneyComponent> {
   var journeyService = locator<JourneyService>();
   var userService = locator<UserService>();
   var userGoalService = locator<UserGoalsService>();

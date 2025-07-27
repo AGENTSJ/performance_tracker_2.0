@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -11,7 +10,7 @@ import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/pages/activity.page/steps.chart.dart';
-import 'package:performance_tracker/src/pages/goal.page/goal.page.dart';
+import 'package:performance_tracker/src/pages/journey.component/journey.component.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -91,7 +90,7 @@ class _ActivityPageState extends State<ActivityPage> {
         day.activity!.steps = steps;
         await dayService.updateDayData(day);
       }
-      previousDays.add(day!);
+      previousDays.add(day);
     }
     daysLoaded = daysLoaded + 7;
     daysLoading = false;
@@ -345,7 +344,7 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      GoalPage(),
+                      JourneyComponent(),
                       SizedBox(height: 30.h),
                     ],
                   ),

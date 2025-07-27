@@ -34,6 +34,7 @@ class _StepsChartState extends State<StepsChart> {
       widget.totalCount,
       widget.count,
     );
+    super.initState();
   }
 
   @override

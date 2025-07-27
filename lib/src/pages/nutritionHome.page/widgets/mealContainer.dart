@@ -40,6 +40,7 @@ class _MealContainerState extends State<MealContainer>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
       child: Column(

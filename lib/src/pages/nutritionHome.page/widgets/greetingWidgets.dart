@@ -40,14 +40,16 @@ class GreetingsWidgetState extends State<GreetingsWidget>
 
   @override
   void initState() {
-    super.initState();
     handleGetGreeting();
+    super.initState();
   }
+
   refreshState()
   {
     if(!mounted) return;
     setState(() {});
   }
+
   handleGetGreeting()async
   {
     if(isGenerating) return;
@@ -57,8 +59,10 @@ class GreetingsWidgetState extends State<GreetingsWidget>
     isGenerating = false;
     refreshState();
   }
+  
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return GestureDetector(
       onTap: () {
         handleGreetingContainerChange();

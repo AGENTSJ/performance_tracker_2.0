@@ -33,7 +33,7 @@ class RoutinesPageState extends State<RoutinesPage> {
     if (name == null || name.isEmpty) {
       return;
     }
-    var key = await routineService.addRoutine(
+    await routineService.addRoutine(
       Routine(
         name: name,
         workoutsIds: [],

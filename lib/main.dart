@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/src/pages/goal.page/goal.page.dart';
+import 'package:performance_tracker/src/pages/journey.component/journey.component.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/home.page.dart';
 import 'package:performance_tracker/src/pages/training.page/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
@@ -55,7 +55,7 @@ class _MainAppEntryState extends State<MainAppEntry> {
   TrainingModulePage? trainingModulePage;
   ProfilePageModule? profilePageModule;
   ActivityPage? activityPage;
-  GoalPage? goalPage;
+  JourneyComponent? goalPage;
 
   @override
   void initState() {
@@ -82,7 +82,7 @@ class _MainAppEntryState extends State<MainAppEntry> {
         activityPage ??= ActivityPage();
         return activityPage;
       case 3:
-        goalPage ??= GoalPage();
+        goalPage ??= JourneyComponent();
         return goalPage;
       case 4:
         profilePageModule ??= ProfilePageModule();

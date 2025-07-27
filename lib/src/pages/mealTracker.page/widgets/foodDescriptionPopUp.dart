@@ -23,7 +23,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     return AlertDialog(
       backgroundColor: CONT_BACKGROUND,
       actionsPadding: EdgeInsets.all(5),
-      titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0), 
+      titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0),
       contentPadding: EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(8),
@@ -31,23 +31,23 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
       title: Text(widget.foodName),
       content: isGenerating
           ? Container(
-            height: 150,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SpinKitSpinningLines(color: PRIMARY, size: 50),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    "Master chef is cooking ✨✨",
-                    style: TextStyle(fontSize: 14, height: 2),
+              height: 150,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SpinKitSpinningLines(color: PRIMARY, size: 50),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      "Master chef is cooking ✨✨",
+                      style: TextStyle(fontSize: 14, height: 2),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          )
+                ],
+              ),
+            )
           : SizedBox(
               height: 150,
               width: double.infinity,
@@ -55,7 +55,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadiusGeometry.circular(8),
-                    color: SURFACE
+                    color: SURFACE,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
