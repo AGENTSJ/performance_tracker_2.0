@@ -32,3 +32,4 @@ const Color CARBS_COLOR = Color(0xFF66BB6A); // Green
 const Color FIBER_COLOR = Color(0xFFAB47BC);
 
 final Image empty = Image.asset("assets/empty.png",);
+final AssetImage backgroundDoodles = AssetImage("assets/shipdoodles.png");

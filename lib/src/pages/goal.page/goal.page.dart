@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/journey.model.dart';
@@ -12,6 +13,7 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:performance_tracker/src/pages/goal.page/journeyIntroduction.dart';
+import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
 class GoalPage extends StatefulWidget {
   const GoalPage({Key? key}) : super(key: key);
@@ -26,7 +28,8 @@ class _GoalPageState extends State<GoalPage> {
   var userGoalService = locator<UserGoalsService>();
   var commonService = locator<CommonService>();
   var dayService = locator<DayService>();
-
+  final rumColor = Color(0xFF8B0000);
+  final Color goldColor = Color(0xFFFFD700);
   Journey? currentJourney;
   User? user;
   double caloriesTotal = 0;
@@ -35,6 +38,8 @@ class _GoalPageState extends State<GoalPage> {
   double caloriesAchievePercent = 0;
   double stepAchievePercent = 0;
   double calDiffAchievedToday = 0;
+  JourneyBadge? currentBadge;
+  bool isLoaded = false;
   @override
   void initState() {
     super.initState();
@@ -55,14 +60,20 @@ class _GoalPageState extends State<GoalPage> {
       stepsTotal =
           estimatedDays * currentJourney!.userAtStart.userGoals.stepGoal;
       caloriesAchievePercent = commonService
-          .getPercentage(caloriesTotal, 2000)
+          .getPercentage(caloriesTotal, currentJourney!.caloriesChangeAchieved)
           .roundToDouble()
           .clamp(0, 100);
       stepAchievePercent = commonService
-          .getPercentage(stepsTotal.toDouble(), 2000)
+          .getPercentage(
+            stepsTotal.toDouble(),
+            currentJourney!.stepsWalked.toDouble(),
+          )
           .roundToDouble()
           .clamp(0, 100);
+      var journeyCompleted = (calDiffAchievedToday + stepAchievePercent) / 2;
+      this.currentBadge = journeyService.getBadge(journeyCompleted);
     }
+    isLoaded = true;
     refreshState();
   }
 
@@ -169,15 +180,13 @@ class _GoalPageState extends State<GoalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        backgroundColor: BACKGROUND,
-        title: const Text('Goal Page'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(14.0.r),
-        child: currentJourney == null
-            ? Column(
+      appBar: AppBar(scrolledUnderElevation: 0, backgroundColor: BACKGROUND),
+      body: !isLoaded
+          ? LoadingPage()
+          : currentJourney == null
+          ? Padding(
+              padding: EdgeInsets.all(14.0.r),
+              child: Column(
                 children: [
                   JourneyIntroduction(),
                   ElevatedButton(
@@ -193,279 +202,259 @@ class _GoalPageState extends State<GoalPage> {
                     child: Text("Start a journey"),
                   ),
                 ],
-              )
-            : Column(
-                children: [
-                  Container(
-                    height: 400.h,
-                    child: Column(
-                      children: [
-                        Row(children: [Text("$estimatedDays")]),
-                        Expanded(
-                          child: Row(
+              ),
+            )
+          : SingleChildScrollView(
+              child: Container(
+                decoration: BoxDecoration(
+                  // image: DecorationImage(
+                  //   image: backgroundDoodles,
+                  //   fit: BoxFit.cover,
+                  // ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(14.0.r),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(color: SURFACE2),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0.r),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).round()}",
-                                            ),
-                                            Text("More to go"),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: BarChart(
-                                          BarChartData(
-                                            gridData: FlGridData(show: false),
-                                            alignment:
-                                                BarChartAlignment.spaceAround,
-                                            maxY: 100,
-                                            barTouchData: BarTouchData(
-                                              enabled: true,
-                                              touchTooltipData: BarTouchTooltipData(
-                                                tooltipPadding:
-                                                    const EdgeInsets.all(8),
-                                                getTooltipItem:
-                                                    (
-                                                      group,
-                                                      groupIndex,
-                                                      rod,
-                                                      rodIndex,
-                                                    ) {
-                                                      return BarTooltipItem(
-                                                        '${currentJourney!.caloriesChangeAchieved.round()}\n',
-                                                        const TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 14,
-                                                        ),
-                                                      );
-                                                    },
-                                              ),
-                                            ),
-                                            titlesData: FlTitlesData(
-                                              topTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              rightTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              leftTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              bottomTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                  getTitlesWidget:
-                                                      (value, meta) {
-                                                        final titles = [
-                                                          'Calories',
-                                                        ];
-                                                        return Text(
-                                                          titles[value.toInt()],
-                                                        );
-                                                      },
-                                                  reservedSize: 30,
-                                                ),
-                                              ),
-                                            ),
-                                            borderData: FlBorderData(
-                                              show: false,
-                                            ),
-                                            barGroups: [
-                                              BarChartGroupData(
-                                                x: 0,
-                                                barRods: [
-                                                  BarChartRodData(
-                                                    toY: caloriesAchievePercent,
-                                                    color: Colors.blue,
-                                                    width: 100.w,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          2.r,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              Container(
+                                decoration: BoxDecoration(color: SURFACE2),
+                                height: 70.h,
+                                child: currentBadge!.badgeImage,
                               ),
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              "${stepsTotal - this.currentJourney!.stepsWalked}",
-                                            ),
-                                            Text("More to go"),
-                                          ],
+                              SizedBox(height: 10.h),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0.h),
+                                    child: Column(
+                                      children: [
+                                        Text("$estimatedDays"),
+                                        Text(
+                                          "Till we reach our destination ${currentBadge!.title}",
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: BarChart(
-                                          BarChartData(
-                                            gridData: FlGridData(show: false),
-                                            alignment:
-                                                BarChartAlignment.spaceAround,
-                                            maxY: 100,
-                                            barTouchData: BarTouchData(
-                                              enabled: true,
-                                              touchTooltipData: BarTouchTooltipData(
-                                                tooltipPadding:
-                                                    const EdgeInsets.all(8),
-                                                getTooltipItem:
-                                                    (
-                                                      group,
-                                                      groupIndex,
-                                                      rod,
-                                                      rodIndex,
-                                                    ) {
-                                                      return BarTooltipItem(
-                                                        '${currentJourney!.stepsWalked.round()}\n',
-                                                        const TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 14,
-                                                        ),
-                                                      );
-                                                    },
-                                              ),
-                                            ),
-                                            titlesData: FlTitlesData(
-                                              topTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              rightTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              leftTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              bottomTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                  getTitlesWidget:
-                                                      (value, meta) {
-                                                        final titles = [
-                                                          'Steps',
-                                                        ];
-                                                        return Text(
-                                                          titles[value.toInt()],
-                                                        );
-                                                      },
-                                                  reservedSize: 30,
-                                                ),
-                                              ),
-                                            ),
-                                            borderData: FlBorderData(
-                                              show: false,
-                                            ),
-                                            barGroups: [
-                                              BarChartGroupData(
-                                                x: 0,
-                                                barRods: [
-                                                  BarChartRodData(
-                                                    toY: stepAchievePercent,
-                                                    color: Colors.green,
-                                                    width: 100.w,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          2.r,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            handleLogJourney();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor: SURFACE2,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(color: PRIMARY, width: 0.5),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                          ),
-                          child: Text("Log Journey"),
-                        ),
                       ),
-                    ],
-                  ),
-                  Expanded(child: Container()),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            handleRestart();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor: SURFACE2,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: Colors.redAccent,
-                                width: 0.5,
+                      Column(
+                        children: [
+                          // Calories
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(FontAwesomeIcons.fire, size: 19.sp),
+                                  SizedBox(width: 10.w),
+                                  Text(
+                                    "Calories",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              borderRadius: BorderRadius.circular(8.r),
+                              Text(
+                                "( ${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining )",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // SizedBox(height: 10.h),
+                          SizedBox(
+                            height: 20.h,
+                            width: double.infinity,
+                            child: RotatedBox(
+                              quarterTurns: 1,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: FlGridData(show: false),
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: 100,
+                                  barTouchData: BarTouchData(
+                                    enabled: true,
+                                    touchTooltipData: BarTouchTooltipData(
+                                      tooltipPadding: const EdgeInsets.all(8),
+                                      getTooltipItem:
+                                          (group, groupIndex, rod, rodIndex) {
+                                            return BarTooltipItem(
+                                              '${currentJourney!.caloriesChangeAchieved.round()}\n',
+                                              const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            );
+                                          },
+                                    ),
+                                  ),
+                                  titlesData: FlTitlesData(show: false),
+                                  borderData: FlBorderData(show: false),
+                                  barGroups: [
+                                    BarChartGroupData(
+                                      x: 0,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: caloriesAchievePercent,
+                                          color: rumColor,
+                                          width: 20.h,
+                                          borderRadius: BorderRadius.circular(
+                                            30.r,
+                                          ),
+                                          backDrawRodData:
+                                              BackgroundBarChartRodData(
+                                                show: true,
+                                                toY:
+                                                    100, // Max value for the track
+                                                color: const Color.fromARGB(
+                                                  187,
+                                                  224,
+                                                  224,
+                                                  224,
+                                                ), // Your track color
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                          child: Text(
-                            "Stop journey",
-                            style: TextStyle(color: Colors.redAccent),
+                          Row(
+                            children: [
+                              Text(
+                                "${currentJourney!.caloriesChangeAchieved.round()} / ${caloriesTotal.round()} Cal"
+                                ,style: TextStyle(fontWeight: FontWeight.w500,fontSize: 14.sp),
+                              ),
+                            ],
                           ),
-                        ),
+                          // Steps
+                          SizedBox(
+                            height: 50.h,
+                            child: RotatedBox(
+                              quarterTurns: 1,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: FlGridData(show: false),
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: 100,
+                                  barTouchData: BarTouchData(
+                                    enabled: true,
+                                    touchTooltipData: BarTouchTooltipData(
+                                      tooltipPadding: const EdgeInsets.all(8),
+                                      getTooltipItem:
+                                          (group, groupIndex, rod, rodIndex) {
+                                            return BarTooltipItem(
+                                              '${currentJourney!.stepsWalked.round()}\n',
+                                              const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            );
+                                          },
+                                    ),
+                                  ),
+                                  titlesData: FlTitlesData(show: false),
+                                  borderData: FlBorderData(show: false),
+                                  barGroups: [
+                                    BarChartGroupData(
+                                      x: 0,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: stepAchievePercent,
+                                          color: Colors.green,
+                                          width: 20.h,
+                                          borderRadius: BorderRadius.circular(
+                                            30.r,
+                                          ),
+                                          backDrawRodData: BackgroundBarChartRodData(
+                                            show: true,
+                                            toY: 100, // Max value for the track
+                                            color: Colors
+                                                .grey[300], // Your track color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                handleLogJourney();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: SURFACE2,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(color: PRIMARY, width: 0.5),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                              ),
+                              child: Text("Log Journey"),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Expanded(child: Container()),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                handleRestart();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: SURFACE2,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                    color: Colors.redAccent,
+                                    width: 0.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                              ),
+                              child: Text(
+                                "Stop journey",
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-      ),
+            ),
     );
   }
 }
