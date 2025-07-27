@@ -11,6 +11,7 @@ import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/pages/activity.page/steps.chart.dart';
+import 'package:performance_tracker/src/pages/goal.page/goal.page.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -327,6 +328,25 @@ class _ActivityPageState extends State<ActivityPage> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 30.h),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Journey",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15.sp,
+                                color: TEXT_TERTIARY,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20.h),
+                      GoalPage(),
+                      SizedBox(height: 30.h),
                     ],
                   ),
                 ),

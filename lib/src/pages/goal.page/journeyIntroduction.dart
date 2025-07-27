@@ -41,32 +41,29 @@ class _JourneyIntroductionState extends State<JourneyIntroduction> {
         borderRadius: BorderRadius.circular(8.r),
       ),
       width: double.infinity,
-      child: Padding(
-        padding: EdgeInsets.all(12.0.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(child: avatar),
-                SizedBox(width: 5.w),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: SURFACE,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0.r),
-                      child: Text(introText, style: TextStyle(height: 1.5.h)),
-                    ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(child: avatar),
+              SizedBox(width: 5.w),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: SURFACE,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0.r),
+                    child: Text(introText, style: TextStyle(height: 1.5.h)),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
