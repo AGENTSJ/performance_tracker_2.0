@@ -96,7 +96,16 @@ class _JourneyComponentState extends State<JourneyComponent> {
       steps: day!.activity!.steps,
     );
     var calToday = dayService.getDaysCalories(day).calories;
-    calDiffAchievedToday = maintenance - calToday;
+    if(user!.userGoals.targetWeight<=user!.weight)
+    {
+      // user in cut
+      calDiffAchievedToday = maintenance - calToday;
+    }
+    else
+    {
+      // user in bulk
+      calDiffAchievedToday = calToday - maintenance;
+    }
     currentJourney!.lastCaloriesValue ??= 0;
     currentJourney!.lastStepValue ??= 0;
     if (nowDateString != lastLoggedDate) {
@@ -299,7 +308,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                         ),
                                       ),
                                       Text(
-                                        "Days till we reach",
+                                        "Days Remaining",
                                         style: TextStyle(
                                           color: TEXT_SECONDARY,
                                           fontSize: 15.sp,
