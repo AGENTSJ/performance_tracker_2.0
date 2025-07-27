@@ -12,7 +12,7 @@ import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
-import 'package:performance_tracker/src/pages/journey.component/journeyIntroduction.dart';
+import 'package:performance_tracker/src/components/journeyIntroduction.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
 class JourneyComponent extends StatefulWidget {
@@ -41,6 +41,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
   JourneyBadge? currentBadge;
   bool isLoaded = false;
   double journeyCompleted = 0;
+  bool userInCut = true;
   @override
   void initState() {
     super.initState();
@@ -55,7 +56,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
           (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight) *
           7700;
       estimatedDays =
-          (caloriesTotal /
+          ((caloriesTotal - currentJourney!.caloriesChangeAchieved) /
                   currentJourney!.userAtStart.userGoals.caloricChangeGoal)
               .round();
       stepsTotal =
@@ -75,6 +76,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentBadge = journeyService.getBadge(journeyCompleted);
     }
     isLoaded = true;
+    if (user!.userGoals.targetWeight <= user!.weight) {
+      // user in cut
+      userInCut = true;
+    } else {
+      // user in bulk
+      userInCut = false;
+    }
     refreshState();
   }
 
@@ -96,16 +104,14 @@ class _JourneyComponentState extends State<JourneyComponent> {
       steps: day!.activity!.steps,
     );
     var calToday = dayService.getDaysCalories(day).calories;
-    if(user!.userGoals.targetWeight<=user!.weight)
-    {
+    if (userInCut) {
       // user in cut
       calDiffAchievedToday = maintenance - calToday;
-    }
-    else
-    {
+    } else {
       // user in bulk
       calDiffAchievedToday = calToday - maintenance;
     }
+
     currentJourney!.lastCaloriesValue ??= 0;
     currentJourney!.lastStepValue ??= 0;
     if (nowDateString != lastLoggedDate) {
@@ -223,6 +229,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     JourneyIntroduction(),
+                    SizedBox(height: 10.h),
                     ElevatedButton(
                       onPressed: () {
                         handleCreateJourney();
@@ -329,16 +336,18 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                     Icon(FontAwesomeIcons.fire, size: 15.sp),
                                     SizedBox(width: 10.w),
                                     Text(
-                                      "Calories",
+                                      userInCut
+                                          ? "Calories To Cut"
+                                          : "Calories to gain",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 18.sp,
+                                        fontSize: 15.sp,
                                       ),
                                     ),
                                   ],
                                 ),
                                 Text(
-                                  "( ${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining )",
+                                  "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12.sp,
@@ -362,7 +371,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                       alignment: BarChartAlignment.spaceAround,
                                       maxY: 100,
                                       barTouchData: BarTouchData(
-                                        enabled: false
+                                        enabled: false,
                                       ),
                                       titlesData: FlTitlesData(show: false),
                                       borderData: FlBorderData(show: false),
@@ -400,7 +409,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                             Row(
                               children: [
                                 Text(
-                                  "${currentJourney!.caloriesChangeAchieved.round()} / ${caloriesTotal.round()} Cal",
+                                  " ${currentJourney!.caloriesChangeAchieved >= 0 ? currentJourney!.caloriesChangeAchieved.round() : 0} / ${currentJourney!.caloriesChangeAchieved >= 0 ? caloriesTotal.round() : (caloriesTotal + currentJourney!.caloriesChangeAchieved).round()} Cal",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12.sp,
@@ -428,13 +437,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                       "Steps",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 18.sp,
+                                        fontSize: 15.sp,
                                       ),
                                     ),
                                   ],
                                 ),
                                 Text(
-                                  "( ${(stepsTotal - currentJourney!.stepsWalked).clamp(0, double.infinity).round()} Steps remaining )",
+                                  "${(stepsTotal - currentJourney!.stepsWalked).clamp(0, double.infinity).round()} Steps remaining",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12.sp,

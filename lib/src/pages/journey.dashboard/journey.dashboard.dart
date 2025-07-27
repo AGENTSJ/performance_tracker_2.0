@@ -9,10 +9,11 @@ import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
+import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
-import 'package:performance_tracker/src/pages/activity.page/calorie.chart.dart';
-import 'package:performance_tracker/src/pages/activity.page/steps.chart.dart';
-import 'package:performance_tracker/src/pages/journey.component/journey.component.dart';
+import 'package:performance_tracker/src/pages/journey.dashboard/calorie.chart.dart';
+import 'package:performance_tracker/src/pages/journey.dashboard/steps.chart.dart';
+import 'package:performance_tracker/src/components/journey.component.dart';
 import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -24,12 +25,14 @@ class ActivityPage extends StatefulWidget {
 
 class _ActivityPageState extends State<ActivityPage> {
   int steps = 0;
-  Duration? moveMin;
+  double? maintenance;
   var moveKm = 0.0;
   Day? day;
+  User? user;
   var healthService = locator<HealthService>();
-  var userGoalsService = locator<UserGoalsService>();
   var commonService = locator<CommonService>();
+  var userGoalsService = locator<UserGoalsService>();
+  var userService = locator<UserService>();
   var dayService = locator<DayService>();
   bool isLoading = true;
   UserGoals? userGoals;
@@ -38,11 +41,12 @@ class _ActivityPageState extends State<ActivityPage> {
   var smallLabelHeadingDecor = TextStyle(
     color: TEXT_SECONDARY,
     fontWeight: FontWeight.w500,
+    fontSize: 12.sp
   );
   var smallLabelDecor = TextStyle(
     color: TEXT_PRIMARY,
     fontWeight: FontWeight.w500,
-    fontSize: 17.sp,
+    fontSize: 15.sp,
   );
   bool daysLoading = false;
   int daysLoaded = 0;
@@ -65,7 +69,8 @@ class _ActivityPageState extends State<ActivityPage> {
   setUpUi(DateTime date, bool refresh) async {
     userGoals = await userGoalsService.getUserGoals();
     steps = await healthService.getStepsByDate(date);
-    moveMin = await healthService.getMoveMin(date);
+    user = await userService.getUserData();
+    maintenance = userGoalsService.fetchMaintenanceCalories(user!,steps: steps);
     moveKm = await healthService.getMoveKm(date);
     day = await dayService.getDayDataByDate(date);
     nutrientsForToday = dayService.getDaysCalories(day!);
@@ -158,13 +163,14 @@ class _ActivityPageState extends State<ActivityPage> {
                                 border: Border(
                                   bottom: BorderSide(color: BORDER_SECONDARY),
                                 ),
+                                borderRadius: BorderRadius.circular(8.r)
                               ),
                               child: Row(
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.all(14.0.r),
                                     child: Text(
-                                      "Todays Activity",
+                                      "Todays Stats",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16.sp,
@@ -236,7 +242,23 @@ class _ActivityPageState extends State<ActivityPage> {
                                           ),
                                           SizedBox(height: 5.h),
                                           Text(
-                                            "Calorie Limit",
+                                            "Calorie Goal",
+                                            style: smallLabelHeadingDecor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "${(maintenance!).round()}",
+                                            style: smallLabelDecor,
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            "Calorie Max",
                                             style: smallLabelHeadingDecor,
                                           ),
                                         ],
@@ -252,7 +274,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                           ),
                                           SizedBox(height: 5.h),
                                           Text(
-                                            "Current Goal",
+                                            "Step Goal",
                                             style: smallLabelHeadingDecor,
                                           ),
                                         ],
@@ -268,7 +290,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                           ),
                                           SizedBox(height: 5.h),
                                           Text(
-                                            "Total Km",
+                                            "Km Traveled",
                                             style: smallLabelHeadingDecor,
                                           ),
                                         ],
