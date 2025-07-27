@@ -181,7 +181,9 @@ class _GoalPageState extends State<GoalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(scrolledUnderElevation: 0, backgroundColor: BACKGROUND),
-      body:currentJourney == null
+      body: !isLoaded
+          ? LoadingPage()
+          : currentJourney == null
           ? Padding(
               padding: EdgeInsets.all(14.0.r),
               child: Column(
