@@ -96,7 +96,7 @@ class _CalorieChartState extends State<CalorieChart> {
                                   color: TEXT_SECONDARY,
                                 ),
                               ),
-                              SizedBox(height: 5.h),
+                              SizedBox(height: 4.h),
                               Icon(
                                 FontAwesomeIcons.apple,
                                 size: 20.sp,
