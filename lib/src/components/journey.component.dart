@@ -16,8 +16,8 @@ import 'package:performance_tracker/src/components/journeyIntroduction.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyComponent extends StatefulWidget {
-  const JourneyComponent({super.key});
-
+  final Function()? onChange;
+  const JourneyComponent({super.key,required this.onChange});
   @override
   _JourneyComponentState createState() => _JourneyComponentState();
 }

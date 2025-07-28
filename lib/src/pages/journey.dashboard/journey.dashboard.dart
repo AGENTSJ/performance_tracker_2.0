@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -41,7 +40,6 @@ class _ActivityPageState extends State<ActivityPage> {
   var journeyService = locator<JourneyService>();
   bool isLoading = true;
   UserGoals? userGoals;
-  List<Day> previousDays = [];
   ScrollController daysScrollController = ScrollController();
   var smallLabelHeadingDecor = TextStyle(
     color: TEXT_SECONDARY,
@@ -53,25 +51,15 @@ class _ActivityPageState extends State<ActivityPage> {
     fontWeight: FontWeight.w500,
     fontSize: 15.sp,
   );
-  bool daysLoading = false;
-  int daysLoaded = 0;
   MacroNutrients? nutrientsForToday;
 
   @override
   void initState() {
     super.initState();
-    setUpUi(DateTime.now(), false);
-    daysScrollController.addListener(() async {
-      if (daysScrollController.hasClients &&
-          (daysScrollController.position.pixels >=
-              daysScrollController.position.maxScrollExtent - 10)) {
-        await setUpActivityTab();
-        refreshState();
-      }
-    });
+    setUpUi(DateTime.now(),);
   }
 
-  setUpUi(DateTime date, bool refresh) async {
+  setUpUi(DateTime date) async {
     userGoals = await userGoalsService.getUserGoals();
     steps = await healthService.getStepsByDate(date);
     user = await userService.getUserData();
@@ -85,33 +73,9 @@ class _ActivityPageState extends State<ActivityPage> {
     currentJourney = journeyService.getActiveJourney();
     day!.activity!.steps = steps;
     await dayService.updateDayData(day!);
-    if (!refresh) {
-      await setUpActivityTab();
-    }
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     isLoading = false;
     refreshState();
-  }
-
-  setUpActivityTab() async {
-    if (daysLoading) {
-      return;
-    }
-    daysLoading = true;
-    const dayLimit = 6;
-    var now = DateTime.now();
-    for (var i = daysLoaded; i <= dayLimit + daysLoaded; i++) {
-      var date = now.subtract(Duration(days: i));
-      var day = await dayService.getDayDataByDate(date);
-      var steps = await healthService.getStepsByDate(date);
-      if (day!.activity!.steps < steps) {
-        day.activity!.steps = steps;
-        await dayService.updateDayData(day);
-      }
-      previousDays.add(day);
-    }
-    daysLoaded = daysLoaded + 7;
-    daysLoading = false;
   }
 
   refreshState() {
@@ -146,9 +110,7 @@ class _ActivityPageState extends State<ActivityPage> {
           ? LoadingPage()
           : RefreshIndicator(
               onRefresh: () async {
-                daysLoaded = 0;
-                previousDays = [];
-                await setUpUi(DateTime.now(), true);
+                await setUpUi(DateTime.now());
               },
               child: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
@@ -158,7 +120,10 @@ class _ActivityPageState extends State<ActivityPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10.h),
-                      JourneyComponent(),
+                      JourneyComponent(onChange: () {
+                        setUpUi(DateTime.now());
+                        refreshState();
+                      },),
                       SizedBox(height: 20.h),
                       Container(
                         decoration: BoxDecoration(
