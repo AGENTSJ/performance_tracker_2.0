@@ -31,6 +31,12 @@ class Journey extends HiveObject {
   @HiveField(8)
   List<JourneyLog> logs;
 
+  @HiveField(9)
+  JourneyStatus status;
+  
+  @HiveField(10)
+  String? reasonToStop;
+
   Journey({
     required this.startDate,
     required this.userAtStart,
@@ -38,6 +44,7 @@ class Journey extends HiveObject {
     required this.stepsWalked,
     required this.onProgress,
     required this.logs,
+    required this.status
   });
 }
 
@@ -49,4 +56,16 @@ class JourneyLog {
   User userAtDay;
 
   JourneyLog({required this.dayId,required this.userAtDay});
+}
+
+@HiveType(typeId:23)
+enum JourneyStatus
+{
+  @HiveField(0)
+  onProgress,
+  @HiveField(1)
+  failed,
+  @HiveField(2)
+  completed
+
 }

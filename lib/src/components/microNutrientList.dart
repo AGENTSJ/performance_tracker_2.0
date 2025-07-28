@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
@@ -23,11 +22,9 @@ class microNutrientList extends StatelessWidget {
       children: totalConsumed.entries.map((entry) {
         final MeasuredUnit? microNutrient = entry.value;
         return Padding(
-          padding: EdgeInsets.only(
-            top: 3.0.h,
-            bottom: 3.0.h,
-            left: 8.w,
-            right: 8.w,
+          padding: EdgeInsets.symmetric(
+            vertical: 10.h,
+            horizontal: 14.w
           ),
           child: Material(
             color: Colors.transparent,

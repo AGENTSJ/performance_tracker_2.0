@@ -36,7 +36,7 @@ class MacroAnalysisWidget extends StatelessWidget {
               borderRadius: BorderRadiusDirectional.circular(8.r)
             ),
             child: Padding(
-              padding: EdgeInsets.all(14.0.r),
+              padding: EdgeInsets.symmetric(horizontal:  14.0.w,vertical: 16.h),
               child: Row(
                 children: [
                   Text(

@@ -16,7 +16,7 @@ import 'package:performance_tracker/src/components/journeyIntroduction.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyComponent extends StatefulWidget {
-  const JourneyComponent({Key? key}) : super(key: key);
+  const JourneyComponent({super.key});
 
   @override
   _JourneyComponentState createState() => _JourneyComponentState();
@@ -86,8 +86,41 @@ class _JourneyComponentState extends State<JourneyComponent> {
     refreshState();
   }
 
-  handleRestart() async {
+  handleStopJourney() async {
+    String? reason = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        TextEditingController reasonController = TextEditingController();
+        return AlertDialog(
+          backgroundColor: SURFACE2,
+          title: Text('Reason'),
+          content: TextField(
+            controller: reasonController,
+            decoration: InputDecoration(
+              hintText: 'Why ??',
+            ),
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(reasonController.text.trim());
+              },
+              style: ElevatedButton.styleFrom(elevation: 0),
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+    if (reason == null || reason.isEmpty) return;
     currentJourney!.onProgress = false;
+    currentJourney!.status = JourneyStatus.failed;
+    currentJourney!.reasonToStop = reason;
     await this.journeyService.updateJourney(currentJourney!);
     currentJourney = null;
     setupUi();
@@ -191,6 +224,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
         stepsWalked: 0,
         onProgress: true,
         logs: [],
+        status: JourneyStatus.onProgress
       );
       newJourney.lastUpdated = newJourney.startDate;
       await journeyService.createJourney(newJourney);
@@ -550,7 +584,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      handleRestart();
+                                      handleStopJourney();
                                     },
                                     style: ElevatedButton.styleFrom(
                                       elevation: 0,

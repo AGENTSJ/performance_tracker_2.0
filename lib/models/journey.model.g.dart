@@ -23,16 +23,18 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       stepsWalked: fields[3] as int,
       onProgress: fields[4] as bool,
       logs: (fields[8] as List).cast<JourneyLog>(),
+      status: fields[9] as JourneyStatus,
     )
       ..lastUpdated = fields[5] as DateTime?
       ..lastCaloriesValue = fields[6] as double?
-      ..lastStepValue = fields[7] as int?;
+      ..lastStepValue = fields[7] as int?
+      ..reasonToStop = fields[10] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Journey obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(7)
       ..write(obj.lastStepValue)
       ..writeByte(8)
-      ..write(obj.logs);
+      ..write(obj.logs)
+      ..writeByte(9)
+      ..write(obj.status)
+      ..writeByte(10)
+      ..write(obj.reasonToStop);
   }
 
   @override
@@ -97,6 +103,50 @@ class JourneyLogAdapter extends TypeAdapter<JourneyLog> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is JourneyLogAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class JourneyStatusAdapter extends TypeAdapter<JourneyStatus> {
+  @override
+  final int typeId = 23;
+
+  @override
+  JourneyStatus read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return JourneyStatus.onProgress;
+      case 1:
+        return JourneyStatus.failed;
+      case 2:
+        return JourneyStatus.completed;
+      default:
+        return JourneyStatus.onProgress;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, JourneyStatus obj) {
+    switch (obj) {
+      case JourneyStatus.onProgress:
+        writer.writeByte(0);
+        break;
+      case JourneyStatus.failed:
+        writer.writeByte(1);
+        break;
+      case JourneyStatus.completed:
+        writer.writeByte(2);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JourneyStatusAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

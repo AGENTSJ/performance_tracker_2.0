@@ -23,7 +23,7 @@ class NutritionAnalysisPage extends StatefulWidget {
 
 class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   final DayService dayService = locator<DayService>();
-  final  UserGoalsService userGoalService = locator<UserGoalsService>();
+  final UserGoalsService userGoalService = locator<UserGoalsService>();
   MacroNutrients? todaysMacros;
   String unit = 'g';
   Map<String, MeasuredUnit> totalConsumed = {};
@@ -37,7 +37,6 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   void initState() {
     super.initState();
     setTotalConsumed();
-    
   }
 
   @override
@@ -50,7 +49,10 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
           child: Column(
             children: [
               // Today analysis
-              MacroAnalysisWidget(macros: todaysMacros!,totalCalLimit: totalCalLimit,),
+              MacroAnalysisWidget(
+                macros: todaysMacros!,
+                totalCalLimit: totalCalLimit,
+              ),
               SizedBox(height: 30.h),
               MacroCommentsWidget(day: widget.day),
               SizedBox(height: 30.h),
@@ -65,9 +67,17 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                 child: Column(
                   children: [
                     Container(
-                      decoration: BoxDecoration(border: Border(bottom: BorderSide(color:BORDER_SECONDARY))),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: BORDER_SECONDARY),
+                        ),
+                      ),
                       child: Padding(
-                        padding: EdgeInsets.all(14.0.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14.0.w,
+                          vertical: 16.h,
+                        ),
+
                         child: Row(
                           children: [
                             Icon(FontAwesomeIcons.seedling, size: 20.w),
@@ -85,15 +95,28 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
                     ),
                     // SizedBox(height: 20.h),
                     Expanded(
-                      child: microNutrientList(totalConsumed: totalConsumed,allowScroll: allowMicroScroll,),
+                      child: microNutrientList(
+                        totalConsumed: totalConsumed,
+                        allowScroll: allowMicroScroll,
+                      ),
                     ),
-                    if(!allowMicroScroll)
-                    TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show more',style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
+                    if (!allowMicroScroll)
+                      TextButton(
+                        onPressed: () {
+                          handleMicroScrollEnable();
+                        },
+                        child: Text(
+                          'Show more',
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 104, 104, 104),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
               SizedBox(height: 30.h),
-              MicroCommentsWidget(day: widget.day, microMap: totalConsumed)
+              MicroCommentsWidget(day: widget.day, microMap: totalConsumed),
             ],
           ),
         ),
@@ -101,17 +124,15 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
     );
   }
 
-  handleMicroScrollEnable()
-  {
+  handleMicroScrollEnable() {
     this.allowMicroScroll = true;
-    setState(() {
-    });
+    setState(() {});
   }
 
-  setTotalConsumed()async {
+  setTotalConsumed() async {
     this.todaysMacros = new MacroNutrients(0, 0, 0, 0, 0);
-    var goal  = await userGoalService.getUserGoals();
-    totalCalLimit =  goal.calorieLimit;
+    var goal = await userGoalService.getUserGoals();
+    totalCalLimit = goal.calorieLimit;
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(value: 0, unit: micro.value.unit);
     }
@@ -134,8 +155,6 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
         }
       }
     }
-    setState(() {
-    });
+    setState(() {});
   }
 }
-
