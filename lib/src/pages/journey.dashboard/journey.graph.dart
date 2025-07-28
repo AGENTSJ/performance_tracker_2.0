@@ -53,7 +53,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       var day = dayService.getDayById(log.dayId);
       days.add(day!);
       var userAtDay = log.userAtDay;
-      var calories = dayService.getDaysCalories(day!).calories;
+      var calories = dayService.getDaysCalories(day).calories;
       var maintenance = goalService.fetchMaintenanceCalories(
         userAtDay,
         steps: day.activity!.steps,
