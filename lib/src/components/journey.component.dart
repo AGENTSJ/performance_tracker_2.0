@@ -52,13 +52,21 @@ class _JourneyComponentState extends State<JourneyComponent> {
     this.currentJourney = journeyService.getActiveJourney();
     user = await userService.getUserData();
     if (currentJourney != null) {
+      if (user!.userGoals.targetWeight <= user!.weight) {
+        // user in cut
+        userInCut = true;
+      } else {
+        // user in bulk
+        userInCut = false;
+      }
       caloriesTotal =
-          (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight) *
+          (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight).abs() *
           7700;
       estimatedDays =
           ((caloriesTotal - currentJourney!.caloriesChangeAchieved) /
                   currentJourney!.userAtStart.userGoals.caloricChangeGoal)
-              .round();
+              .round()
+              .abs();
       stepsTotal =
           estimatedDays * currentJourney!.userAtStart.userGoals.stepGoal;
       caloriesAchievePercent = commonService
@@ -76,13 +84,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentBadge = journeyService.getBadge(journeyCompleted);
     }
     isLoaded = true;
-    if (user!.userGoals.targetWeight <= user!.weight) {
-      // user in cut
-      userInCut = true;
-    } else {
-      // user in bulk
-      userInCut = false;
-    }
+
     refreshState();
   }
 
@@ -521,7 +523,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                       barRods: [
                                         BarChartRodData(
                                           toY: stepAchievePercent,
-                                          color: Colors.green,
+                                          color: PRIMARY,
                                           width: 20.h,
                                           borderRadius: BorderRadius.circular(
                                             15.r,
@@ -604,53 +606,53 @@ class _JourneyComponentState extends State<JourneyComponent> {
                               ),
                             ],
                           ),
-                        if (didJourneyFinished())
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    handleCompleteJourney();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    backgroundColor: SURFACE2,
-                                    shape: RoundedRectangleBorder(
-                                      side: BorderSide(
-                                        color: Colors.green,
-                                        width: 0.5,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Complete Journey",
-                                    style: TextStyle(color: Colors.green),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        SizedBox(height: 20.h),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: SURFACE,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0.r),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Congratulations on completing your fitness journey! 💪🔥\nYou've pushed through the limits, stayed consistent, and proved that dedication transforms dreams into results. Every drop of sweat, every rep, every step — it all led to this incredible achievement.",
-                                    style: TextStyle(height: 1.8.sp),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // if (didJourneyFinished())
+                        //   Row(
+                        //     children: [
+                        //       Expanded(
+                        //         child: ElevatedButton(
+                        //           onPressed: () {
+                        //             handleCompleteJourney();
+                        //           },
+                        //           style: ElevatedButton.styleFrom(
+                        //             elevation: 0,
+                        //             backgroundColor: SURFACE2,
+                        //             shape: RoundedRectangleBorder(
+                        //               side: BorderSide(
+                        //                 color: Colors.green,
+                        //                 width: 0.5,
+                        //               ),
+                        //               borderRadius: BorderRadius.circular(8.r),
+                        //             ),
+                        //           ),
+                        //           child: Text(
+                        //             "Complete Journey",
+                        //             style: TextStyle(color: Colors.green),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // SizedBox(height: 20.h),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     color: SURFACE,
+                        //     borderRadius: BorderRadius.circular(8.r),
+                        //   ),
+                        //   child: Padding(
+                        //     padding: EdgeInsets.all(8.0.r),
+                        //     child: Row(
+                        //       children: [
+                        //         Expanded(
+                        //           child: Text(
+                        //             "Congratulations on completing your fitness journey! 💪🔥\nYou've pushed through the limits, stayed consistent, and proved that dedication transforms dreams into results. Every drop of sweat, every rep, every step — it all led to this incredible achievement.",
+                        //             style: TextStyle(height: 1.8.sp),
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
