@@ -8,7 +8,7 @@ class JourneyRepository {
   Journey? getCurrentJourneyData() {
     Journey? selectedJourney;
     for (var journey in _journeyBox.values) {
-      if (journey.onProgress) {
+      if (journey.status == JourneyStatus.onProgress) {
         selectedJourney = journey;
         break;
       }

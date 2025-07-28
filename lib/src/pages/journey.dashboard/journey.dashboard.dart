@@ -122,7 +122,6 @@ class _ActivityPageState extends State<ActivityPage> {
                       SizedBox(height: 10.h),
                       JourneyComponent(onChange: () {
                         setUpUi(DateTime.now());
-                        refreshState();
                       },),
                       SizedBox(height: 20.h),
                       Container(
@@ -278,7 +277,7 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      if (currentJourney != null && currentJourney!.onProgress)
+                      if (currentJourney != null && (currentJourney!.status==JourneyStatus.onProgress ||currentJourney!.status==JourneyStatus.completed) )
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.r),
@@ -312,7 +311,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                 padding: EdgeInsets.all(14.0.r),
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
-                                  child: JourneyGraph(journey: currentJourney!),
+                                  child: JourneyGraph(key: ValueKey(currentJourney?.caloriesChangeAchieved),journey: currentJourney!),
                                 ),
                               ),
                             ],

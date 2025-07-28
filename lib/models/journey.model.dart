@@ -17,24 +17,21 @@ class Journey extends HiveObject {
   int stepsWalked;
 
   @HiveField(4)
-  bool onProgress;
-
-  @HiveField(5)
   DateTime? lastUpdated;
 
-  @HiveField(6)
+  @HiveField(5)
   double? lastCaloriesValue;
 
-  @HiveField(7)
+  @HiveField(6)
   int? lastStepValue;
 
-  @HiveField(8)
+  @HiveField(7)
   List<JourneyLog> logs;
 
-  @HiveField(9)
+  @HiveField(8)
   JourneyStatus status;
   
-  @HiveField(10)
+  @HiveField(9)
   String? reasonToStop;
 
   Journey({
@@ -42,7 +39,6 @@ class Journey extends HiveObject {
     required this.userAtStart,
     required this.caloriesChangeAchieved,
     required this.stepsWalked,
-    required this.onProgress,
     required this.logs,
     required this.status
   });

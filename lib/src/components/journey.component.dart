@@ -17,7 +17,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyComponent extends StatefulWidget {
   final Function()? onChange;
-  const JourneyComponent({super.key,required this.onChange});
+  const JourneyComponent({super.key, required this.onChange});
   @override
   _JourneyComponentState createState() => _JourneyComponentState();
 }
@@ -96,9 +96,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
           title: Text('Reason'),
           content: TextField(
             controller: reasonController,
-            decoration: InputDecoration(
-              hintText: 'Why ??',
-            ),
+            decoration: InputDecoration(hintText: 'Why ??'),
             autofocus: true,
           ),
           actions: [
@@ -118,11 +116,11 @@ class _JourneyComponentState extends State<JourneyComponent> {
       },
     );
     if (reason == null || reason.isEmpty) return;
-    currentJourney!.onProgress = false;
     currentJourney!.status = JourneyStatus.failed;
     currentJourney!.reasonToStop = reason;
     await journeyService.updateJourney(currentJourney!);
     currentJourney = null;
+    widget.onChange!();
     await setupUi();
   }
 
@@ -158,20 +156,30 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
     } else {
       // updating log
-      currentJourney!.caloriesChangeAchieved = currentJourney!.lastCaloriesValue! + calDiffAchievedToday;
-      currentJourney!.stepsWalked = currentJourney!.lastStepValue! + day.activity!.steps;
+      currentJourney!.caloriesChangeAchieved =
+          currentJourney!.lastCaloriesValue! + calDiffAchievedToday;
+      currentJourney!.stepsWalked =
+          currentJourney!.lastStepValue! + day.activity!.steps;
       JourneyLog lastLog;
-      if(currentJourney!.logs.isEmpty)
-      {
+      if (currentJourney!.logs.isEmpty) {
         currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
       }
       lastLog = currentJourney!.logs.last;
-      // if today and last log day is not same 
+      // if today and last log day is not same
       lastLog.dayId = day.key;
       lastLog.userAtDay = user!;
     }
     await journeyService.updateJourney(currentJourney!);
+    widget.onChange!();
     await setupUi();
+  }
+
+  handleCompleteJourney() async {
+    currentJourney!.status = JourneyStatus.completed;
+  }
+
+  bool didJourneyFinished() {
+    return journeyCompleted >= 100;
   }
 
   void handleCreateJourney() async {
@@ -222,12 +230,12 @@ class _JourneyComponentState extends State<JourneyComponent> {
         userAtStart: user!,
         caloriesChangeAchieved: 0,
         stepsWalked: 0,
-        onProgress: true,
         logs: [],
-        status: JourneyStatus.onProgress
+        status: JourneyStatus.onProgress,
       );
       newJourney.lastUpdated = newJourney.startDate;
       await journeyService.createJourney(newJourney);
+      widget.onChange!();
       setupUi();
       refreshState();
     }
@@ -292,325 +300,363 @@ class _JourneyComponentState extends State<JourneyComponent> {
               ),
             )
           : Column(
-            children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: SURFACE2,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(14.0.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            height: 100.h,
-                            width: 100.h,
-                            child: Stack(
-                              children: [
-                                PieChart(
-                                  key: ValueKey(journeyCompleted),
-                                  PieChartData(
-                                    sections: _getSections(),
-                                    sectionsSpace: 0,
-                                    centerSpaceRadius: 45.r,
-                                    startDegreeOffset: -90,
-                                  ),
-                                ),
-                                Center(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: currentBadge!
-                                            .badgeImage
-                                            .image,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      borderRadius: BorderRadius.circular(
-                                        100.r,
-                                      ),
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: SURFACE2,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(14.0.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 100.h,
+                              width: 100.h,
+                              child: Stack(
+                                children: [
+                                  PieChart(
+                                    key: ValueKey(journeyCompleted),
+                                    PieChartData(
+                                      sections: _getSections(),
+                                      sectionsSpace: 0,
+                                      centerSpaceRadius: 45.r,
+                                      startDegreeOffset: -90,
                                     ),
-                                    height: 70.h,
-                                    width: 70.h,
                                   ),
-                                ),
-                              ],
+                                  Center(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: currentBadge!.badgeImage.image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          100.r,
+                                        ),
+                                      ),
+                                      height: 70.h,
+                                      width: 70.h,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(12.0.h),
-                            child: Column(
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(12.0.h),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "$estimatedDays",
+                                    style: TextStyle(
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Days Remaining",
+                                    style: TextStyle(
+                                      color: TEXT_SECONDARY,
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
+                                Icon(FontAwesomeIcons.fire, size: 15.sp),
+                                SizedBox(width: 10.w),
                                 Text(
-                                  "$estimatedDays",
+                                  userInCut
+                                      ? "Calories To Cut"
+                                      : "Calories to gain",
                                   style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15.sp,
                                   ),
                                 ),
+                              ],
+                            ),
+                            Text(
+                              "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                color: TEXT_SECONDARY,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.0.h),
+                          child: SizedBox(
+                            height: 20.h,
+                            width: double.infinity,
+                            child: RotatedBox(
+                              quarterTurns: 1,
+                              child: BarChart(
+                                key: ValueKey(caloriesAchievePercent),
+                                BarChartData(
+                                  gridData: FlGridData(show: false),
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: 100,
+                                  barTouchData: BarTouchData(enabled: false),
+                                  titlesData: FlTitlesData(show: false),
+                                  borderData: FlBorderData(show: false),
+                                  barGroups: [
+                                    BarChartGroupData(
+                                      x: 0,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: caloriesAchievePercent,
+                                          color: rumColor,
+                                          width: 20.h,
+                                          borderRadius: BorderRadius.circular(
+                                            15.r,
+                                          ),
+                                          backDrawRodData:
+                                              BackgroundBarChartRodData(
+                                                show: true,
+                                                toY:
+                                                    100, // Max value for the track
+                                                color: const Color.fromARGB(
+                                                  187,
+                                                  224,
+                                                  224,
+                                                  224,
+                                                ),
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              " ${currentJourney!.caloriesChangeAchieved >= 0 ? currentJourney!.caloriesChangeAchieved.round() : 0} / ${currentJourney!.caloriesChangeAchieved >= 0 ? caloriesTotal.round() : (caloriesTotal + currentJourney!.caloriesChangeAchieved).round()} Cal",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                color: TEXT_TERTIARY,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Steps
+                        SizedBox(height: 20.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Icon(
+                                    FontAwesomeIcons.shoePrints,
+                                    size: 12.sp,
+                                  ),
+                                ),
+                                SizedBox(width: 10.w),
                                 Text(
-                                  "Days Remaining",
+                                  "Steps",
                                   style: TextStyle(
-                                    color: TEXT_SECONDARY,
-                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.w500,
+                                    fontSize: 15.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              "${(stepsTotal - currentJourney!.stepsWalked).clamp(0, double.infinity).round()} Steps remaining",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                color: TEXT_SECONDARY,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          child: SizedBox(
+                            height: 20.h,
+                            child: RotatedBox(
+                              quarterTurns: 1,
+                              child: BarChart(
+                                key: ValueKey(stepAchievePercent),
+                                BarChartData(
+                                  gridData: FlGridData(show: false),
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: 100,
+                                  barTouchData: BarTouchData(enabled: false),
+                                  titlesData: FlTitlesData(show: false),
+                                  borderData: FlBorderData(show: false),
+                                  barGroups: [
+                                    BarChartGroupData(
+                                      x: 0,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: stepAchievePercent,
+                                          color: Colors.green,
+                                          width: 20.h,
+                                          borderRadius: BorderRadius.circular(
+                                            15.r,
+                                          ),
+                                          backDrawRodData: BackgroundBarChartRodData(
+                                            show: true,
+                                            toY: 100, // Max value for the track
+                                            color: Colors
+                                                .grey[300], // Your track color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "${currentJourney!.stepsWalked.round()} / ${stepsTotal.round()} Steps",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                color: TEXT_TERTIARY,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  handleLogJourney();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: SURFACE2,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      color: PRIMARY,
+                                      width: 0.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                ),
+                                child: Text("Log Journey"),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!didJourneyFinished())
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    handleStopJourney();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: SURFACE2,
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                        color: Colors.redAccent,
+                                        width: 0.5,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Stop Journey",
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (didJourneyFinished())
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    handleCompleteJourney();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: SURFACE2,
+                                    shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                        color: Colors.green,
+                                        width: 0.5,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Complete Journey",
+                                    style: TextStyle(color: Colors.green),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        SizedBox(height: 20.h),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: SURFACE,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0.r),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Congratulations on completing your fitness journey! 💪🔥\nYou've pushed through the limits, stayed consistent, and proved that dedication transforms dreams into results. Every drop of sweat, every rep, every step — it all led to this incredible achievement.",
+                                    style: TextStyle(height: 1.8.sp),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(FontAwesomeIcons.fire, size: 15.sp),
-                              SizedBox(width: 10.w),
-                              Text(
-                                userInCut
-                                    ? "Calories To Cut"
-                                    : "Calories to gain",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12.sp,
-                              color: TEXT_SECONDARY,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0.h),
-                        child: SizedBox(
-                          height: 20.h,
-                          width: double.infinity,
-                          child: RotatedBox(
-                            quarterTurns: 1,
-                            child: BarChart(
-                              key: ValueKey(caloriesAchievePercent),
-                              BarChartData(
-                                gridData: FlGridData(show: false),
-                                alignment: BarChartAlignment.spaceAround,
-                                maxY: 100,
-                                barTouchData: BarTouchData(
-                                  enabled: false,
-                                ),
-                                titlesData: FlTitlesData(show: false),
-                                borderData: FlBorderData(show: false),
-                                barGroups: [
-                                  BarChartGroupData(
-                                    x: 0,
-                                    barRods: [
-                                      BarChartRodData(
-                                        toY: caloriesAchievePercent,
-                                        color: rumColor,
-                                        width: 20.h,
-                                        borderRadius:
-                                            BorderRadius.circular(15.r),
-                                        backDrawRodData:
-                                            BackgroundBarChartRodData(
-                                              show: true,
-                                              toY:
-                                                  100, // Max value for the track
-                                              color: const Color.fromARGB(
-                                                187,
-                                                224,
-                                                224,
-                                                224,
-                                              ),
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            " ${currentJourney!.caloriesChangeAchieved >= 0 ? currentJourney!.caloriesChangeAchieved.round() : 0} / ${currentJourney!.caloriesChangeAchieved >= 0 ? caloriesTotal.round() : (caloriesTotal + currentJourney!.caloriesChangeAchieved).round()} Cal",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12.sp,
-                              color: TEXT_TERTIARY,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Steps
-                      SizedBox(height: 20.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              RotatedBox(
-                                quarterTurns: 3,
-                                child: Icon(
-                                  FontAwesomeIcons.shoePrints,
-                                  size: 12.sp,
-                                ),
-                              ),
-                              SizedBox(width: 10.w),
-                              Text(
-                                "Steps",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            "${(stepsTotal - currentJourney!.stepsWalked).clamp(0, double.infinity).round()} Steps remaining",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12.sp,
-                              color: TEXT_SECONDARY,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        child: SizedBox(
-                          height: 20.h,
-                          child: RotatedBox(
-                            quarterTurns: 1,
-                            child: BarChart(
-                              key: ValueKey(stepAchievePercent),
-                              BarChartData(
-                                gridData: FlGridData(show: false),
-                                alignment: BarChartAlignment.spaceAround,
-                                maxY: 100,
-                                barTouchData: BarTouchData(
-                                  enabled: false,
-                                ),
-                                titlesData: FlTitlesData(show: false),
-                                borderData: FlBorderData(show: false),
-                                barGroups: [
-                                  BarChartGroupData(
-                                    x: 0,
-                                    barRods: [
-                                      BarChartRodData(
-                                        toY: stepAchievePercent,
-                                        color: Colors.green,
-                                        width: 20.h,
-                                        borderRadius:
-                                            BorderRadius.circular(15.r),
-                                        backDrawRodData:
-                                            BackgroundBarChartRodData(
-                                              show: true,
-                                              toY:
-                                                  100, // Max value for the track
-                                              color: Colors
-                                                  .grey[300], // Your track color
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "${currentJourney!.stepsWalked.round()} / ${stepsTotal.round()} Steps",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12.sp,
-                              color: TEXT_TERTIARY,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                handleLogJourney();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                backgroundColor: SURFACE2,
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                    color: PRIMARY,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    8.r,
-                                  ),
-                                ),
-                              ),
-                              child: Text("Log Journey"),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                handleStopJourney();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                backgroundColor: SURFACE2,
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                    color: Colors.redAccent,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    8.r,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                "Stop Journey",
-                                style: TextStyle(color: Colors.redAccent),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
     );
   }
 }

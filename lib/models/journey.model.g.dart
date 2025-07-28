@@ -21,20 +21,19 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       userAtStart: fields[1] as User,
       caloriesChangeAchieved: fields[2] as double,
       stepsWalked: fields[3] as int,
-      onProgress: fields[4] as bool,
-      logs: (fields[8] as List).cast<JourneyLog>(),
-      status: fields[9] as JourneyStatus,
+      logs: (fields[7] as List).cast<JourneyLog>(),
+      status: fields[8] as JourneyStatus,
     )
-      ..lastUpdated = fields[5] as DateTime?
-      ..lastCaloriesValue = fields[6] as double?
-      ..lastStepValue = fields[7] as int?
-      ..reasonToStop = fields[10] as String?;
+      ..lastUpdated = fields[4] as DateTime?
+      ..lastCaloriesValue = fields[5] as double?
+      ..lastStepValue = fields[6] as int?
+      ..reasonToStop = fields[9] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Journey obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
@@ -44,18 +43,16 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(3)
       ..write(obj.stepsWalked)
       ..writeByte(4)
-      ..write(obj.onProgress)
-      ..writeByte(5)
       ..write(obj.lastUpdated)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.lastCaloriesValue)
-      ..writeByte(7)
+      ..writeByte(6)
       ..write(obj.lastStepValue)
-      ..writeByte(8)
+      ..writeByte(7)
       ..write(obj.logs)
-      ..writeByte(9)
+      ..writeByte(8)
       ..write(obj.status)
-      ..writeByte(10)
+      ..writeByte(9)
       ..write(obj.reasonToStop);
   }
 
