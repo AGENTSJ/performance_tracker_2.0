@@ -22,6 +22,7 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       caloriesChangeAchieved: fields[2] as double,
       stepsWalked: fields[3] as int,
       onProgress: fields[4] as bool,
+      logs: (fields[8] as List).cast<JourneyLog>(),
     )
       ..lastUpdated = fields[5] as DateTime?
       ..lastCaloriesValue = fields[6] as double?
@@ -31,7 +32,7 @@ class JourneyAdapter extends TypeAdapter<Journey> {
   @override
   void write(BinaryWriter writer, Journey obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(6)
       ..write(obj.lastCaloriesValue)
       ..writeByte(7)
-      ..write(obj.lastStepValue);
+      ..write(obj.lastStepValue)
+      ..writeByte(8)
+      ..write(obj.logs);
   }
 
   @override
@@ -57,6 +60,43 @@ class JourneyAdapter extends TypeAdapter<Journey> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is JourneyAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class JourneyLogAdapter extends TypeAdapter<JourneyLog> {
+  @override
+  final int typeId = 22;
+
+  @override
+  JourneyLog read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return JourneyLog(
+      dayId: fields[0] as int,
+      userAtDay: fields[1] as User,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, JourneyLog obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.dayId)
+      ..writeByte(1)
+      ..write(obj.userAtDay);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JourneyLogAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

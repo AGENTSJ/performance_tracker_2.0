@@ -14,7 +14,7 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/selectWorkout.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
 import 'package:performance_tracker/src/pages/advices.page/advices.page.dart';
-import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
 import 'package:performance_tracker/src/pages/routines.page/routines.page.dart';
 import 'package:performance_tracker/src/components/routineSelection.component.dart';

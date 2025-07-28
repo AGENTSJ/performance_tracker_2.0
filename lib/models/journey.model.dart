@@ -3,7 +3,7 @@ import 'package:performance_tracker/models/user.model.dart';
 part 'journey.model.g.dart';
 
 @HiveType(typeId: 18)
-class Journey extends HiveObject{
+class Journey extends HiveObject {
   @HiveField(0)
   DateTime startDate;
 
@@ -27,12 +27,26 @@ class Journey extends HiveObject{
 
   @HiveField(7)
   int? lastStepValue;
-  
+
+  @HiveField(8)
+  List<JourneyLog> logs;
+
   Journey({
     required this.startDate,
     required this.userAtStart,
     required this.caloriesChangeAchieved,
     required this.stepsWalked,
     required this.onProgress,
+    required this.logs,
   });
+}
+
+@HiveType(typeId: 22)
+class JourneyLog {
+  @HiveField(0)
+  int dayId;
+  @HiveField(1)
+  User userAtDay;
+
+  JourneyLog({required this.dayId,required this.userAtDay});
 }

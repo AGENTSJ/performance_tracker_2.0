@@ -32,16 +32,13 @@ class _JourneyGraphState extends State<JourneyGraph> {
   {
     var count = DateTime.now().difference(widget.journey.startDate).inDays;
     user = await userService.getUserData();
-    // for (var entry in widget.set.history) {
-    //   dataPoints.add(FlSpot(i.toDouble(), entry.value.toDouble()));
-    //   i++;
-    // }
-    
-    for (var i = 0; i < count; i++) {
-      var day  = await dayService.getDayDataByDate(widget.journey.startDate.add(Duration(days: i)));
-      var calories = dayService.getDaysCalories(day!).calories;
+    widget.journey.logs.length = 10;
+    for (var i = 0; i < widget.journey.logs.length; i++) {
+      var day  = await dayService.getDayDataByDate(widget.journey.startDate.subtract(Duration(days: 10)).add(Duration(days: i)));
+      var userAtDay = user!;
+
       // var caloriePercent = commonService.getPercentage(calories,ca);
-      // dataPoints.add(FlSpot(i.toDouble(), y));
+      dataPoints.add(FlSpot(i.toDouble(), day!.activity!.steps.toDouble()));
     }
   }
   @override

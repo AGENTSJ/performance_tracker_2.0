@@ -8,7 +8,7 @@ import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
-import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/mealContainer.dart';
 import 'package:performance_tracker/src/pages/nutritionAnalysis.page/nutritionAnalysis.page.dart';
 import 'package:performance_tracker/src/pages/nutritionHome.page/widgets/greetingWidgets.dart';

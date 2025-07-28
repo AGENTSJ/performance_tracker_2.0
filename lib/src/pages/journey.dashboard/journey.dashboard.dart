@@ -14,7 +14,7 @@ import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/pages/journey.dashboard/calorie.chart.dart';
 import 'package:performance_tracker/src/pages/journey.dashboard/steps.chart.dart';
 import 'package:performance_tracker/src/components/journey.component.dart';
-import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({Key? key}) : super(key: key);
@@ -320,114 +320,114 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        controller: daysScrollController,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            ...previousDays.map(
-                              (day) => Material(
-                                color: SURFACE2,
-                                borderRadius: BorderRadius.circular(8.r),
-                                child: InkWell(
-                                  onTap: () {
-                                    // isLoading = true;
-                                    // refreshState();
-                                    // setUpUi(day.dayTime, true);
-                                  },
-                                  child: Container(
-                                    width: 90.w,
-                                    height: 150.h,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8.r),
-                                      border: Border.all(color: BORDER_PRIMARY),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0.w,
-                                        vertical: 12.h,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 40.h,
-                                            child: Stack(
-                                              children: [
-                                                StepsChart(
-                                                  lineRadius: 9,
-                                                  centerSpace: 17,
-                                                  showCenterPart: false,
-                                                  totalCount: day
-                                                      .goalForToday!
-                                                      .stepGoal
-                                                      .toDouble(),
-                                                  count: day.activity!.steps
-                                                      .toDouble(),
-                                                ),
-                                                Positioned(
-                                                  child: SizedBox(
-                                                    width: double.infinity,
-                                                    height: double.infinity,
-                                                    child: Center(
-                                                      child: RotatedBox(
-                                                        quarterTurns: 3,
-                                                        child: Icon(
-                                                          FontAwesomeIcons
-                                                              .shoePrints,
-                                                          size: 10.sp,
-                                                          color: PRIMARY,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          Expanded(
-                                            child: Center(
-                                              child: Text(
-                                                "${day.activity!.steps}",
-                                                style: TextStyle(
-                                                  color: PRIMARY,
-                                                  fontSize: 17.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          Text(
-                                            "${day.dayTime.day}",
-                                            style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: TEXT_SECONDARY,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          Text(
-                                            Months
-                                                .values[day.dayTime.month]
-                                                .name,
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              color: TEXT_SECONDARY,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // SingleChildScrollView(
+                      //   scrollDirection: Axis.horizontal,
+                      //   controller: daysScrollController,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.start,
+                      //     mainAxisSize: MainAxisSize.max,
+                      //     children: [
+                      //       ...previousDays.map(
+                      //         (day) => Material(
+                      //           color: SURFACE2,
+                      //           borderRadius: BorderRadius.circular(8.r),
+                      //           child: InkWell(
+                      //             onTap: () {
+                      //               // isLoading = true;
+                      //               // refreshState();
+                      //               // setUpUi(day.dayTime, true);
+                      //             },
+                      //             child: Container(
+                      //               width: 90.w,
+                      //               height: 150.h,
+                      //               decoration: BoxDecoration(
+                      //                 borderRadius: BorderRadius.circular(8.r),
+                      //                 border: Border.all(color: BORDER_PRIMARY),
+                      //               ),
+                      //               child: Padding(
+                      //                 padding: EdgeInsets.symmetric(
+                      //                   horizontal: 8.0.w,
+                      //                   vertical: 12.h,
+                      //                 ),
+                      //                 child: Column(
+                      //                   children: [
+                      //                     SizedBox(
+                      //                       height: 40.h,
+                      //                       child: Stack(
+                      //                         children: [
+                      //                           StepsChart(
+                      //                             lineRadius: 9,
+                      //                             centerSpace: 17,
+                      //                             showCenterPart: false,
+                      //                             totalCount: day
+                      //                                 .goalForToday!
+                      //                                 .stepGoal
+                      //                                 .toDouble(),
+                      //                             count: day.activity!.steps
+                      //                                 .toDouble(),
+                      //                           ),
+                      //                           Positioned(
+                      //                             child: SizedBox(
+                      //                               width: double.infinity,
+                      //                               height: double.infinity,
+                      //                               child: Center(
+                      //                                 child: RotatedBox(
+                      //                                   quarterTurns: 3,
+                      //                                   child: Icon(
+                      //                                     FontAwesomeIcons
+                      //                                         .shoePrints,
+                      //                                     size: 10.sp,
+                      //                                     color: PRIMARY,
+                      //                                   ),
+                      //                                 ),
+                      //                               ),
+                      //                             ),
+                      //                           ),
+                      //                         ],
+                      //                       ),
+                      //                     ),
+                      //                     SizedBox(height: 10.h),
+                      //                     Expanded(
+                      //                       child: Center(
+                      //                         child: Text(
+                      //                           "${day.activity!.steps}",
+                      //                           style: TextStyle(
+                      //                             color: PRIMARY,
+                      //                             fontSize: 17.sp,
+                      //                             fontWeight: FontWeight.w500,
+                      //                           ),
+                      //                         ),
+                      //                       ),
+                      //                     ),
+                      //                     SizedBox(height: 10.h),
+                      //                     Text(
+                      //                       "${day.dayTime.day}",
+                      //                       style: TextStyle(
+                      //                         fontSize: 16.sp,
+                      //                         color: TEXT_SECONDARY,
+                      //                         fontWeight: FontWeight.w600,
+                      //                       ),
+                      //                     ),
+                      //                     Text(
+                      //                       Months
+                      //                           .values[day.dayTime.month]
+                      //                           .name,
+                      //                       style: TextStyle(
+                      //                         fontSize: 12.sp,
+                      //                         color: TEXT_SECONDARY,
+                      //                         fontWeight: FontWeight.w600,
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(height: 30.h),
                       // calorie overview
                     ],

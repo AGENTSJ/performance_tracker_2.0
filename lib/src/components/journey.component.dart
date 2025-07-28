@@ -13,7 +13,7 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:performance_tracker/src/components/journeyIntroduction.dart';
-import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyComponent extends StatefulWidget {
   const JourneyComponent({Key? key}) : super(key: key);
@@ -115,17 +115,21 @@ class _JourneyComponentState extends State<JourneyComponent> {
     currentJourney!.lastCaloriesValue ??= 0;
     currentJourney!.lastStepValue ??= 0;
     if (nowDateString != lastLoggedDate) {
+      // logging a new log
       currentJourney!.lastCaloriesValue =
           currentJourney!.caloriesChangeAchieved;
       currentJourney!.lastStepValue = currentJourney!.stepsWalked;
 
       currentJourney!.caloriesChangeAchieved += calDiffAchievedToday;
       currentJourney!.stepsWalked += day.activity!.steps;
+      currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
     } else {
-      currentJourney!.caloriesChangeAchieved =
-          currentJourney!.lastCaloriesValue! + calDiffAchievedToday;
-      currentJourney!.stepsWalked =
-          currentJourney!.lastStepValue! + day.activity!.steps;
+      // updating log
+      currentJourney!.caloriesChangeAchieved = currentJourney!.lastCaloriesValue! + calDiffAchievedToday;
+      currentJourney!.stepsWalked = currentJourney!.lastStepValue! + day.activity!.steps;
+      var lastLog = currentJourney!.logs.last;
+      lastLog.dayId = day.key;
+      lastLog.userAtDay = user!;
     }
     await journeyService.updateJourney(currentJourney!);
     refreshState();
@@ -180,6 +184,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
         caloriesChangeAchieved: 0,
         stepsWalked: 0,
         onProgress: true,
+        logs: [],
       );
       newJourney.lastUpdated = newJourney.startDate;
       await journeyService.createJourney(newJourney);

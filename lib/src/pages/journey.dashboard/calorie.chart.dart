@@ -8,7 +8,7 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/src/pages/loading.page/loading.page.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
 
 class CalorieChart extends StatefulWidget {
   final double centerSpace;
