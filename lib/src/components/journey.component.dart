@@ -127,7 +127,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
       // updating log
       currentJourney!.caloriesChangeAchieved = currentJourney!.lastCaloriesValue! + calDiffAchievedToday;
       currentJourney!.stepsWalked = currentJourney!.lastStepValue! + day.activity!.steps;
-      var lastLog = currentJourney!.logs.last;
+      JourneyLog lastLog;
+      if(currentJourney!.logs.isEmpty)
+      {
+        currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
+      }
+      lastLog = currentJourney!.logs.last;
+      // if today and last log day is not same 
       lastLog.dayId = day.key;
       lastLog.userAtDay = user!;
     }

@@ -13,6 +13,7 @@ class DayService {
   final goalService = locator<UserGoalsService>();
   final _routineService = locator<RoutineService>();
   final _commonService = locator<CommonService>();
+
   Future<Day?> getDayDataByDate(DateTime date) async {
     var day = _dayRepo.getDayData(date);
     if (day != null) {
@@ -71,5 +72,9 @@ class DayService {
     );
 
     return macrosForDay;
+  }
+  Day? getDayById(int id)
+  {
+    return _dayRepo.getDayById(id);
   }
 }
