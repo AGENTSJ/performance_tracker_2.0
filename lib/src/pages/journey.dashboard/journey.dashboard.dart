@@ -246,38 +246,6 @@ class _ActivityPageState extends State<ActivityPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            "${(day!.goalForToday!.calorieLimit).round()}",
-                                            style: smallLabelDecor,
-                                          ),
-                                          SizedBox(height: 5.h),
-                                          Text(
-                                            "Calorie Goal",
-                                            style: smallLabelHeadingDecor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "${(maintenance!).round()}",
-                                            style: smallLabelDecor,
-                                          ),
-                                          SizedBox(height: 5.h),
-                                          Text(
-                                            "Calorie Max",
-                                            style: smallLabelHeadingDecor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
                                             "${userGoals!.stepGoal}",
                                             style: smallLabelDecor,
                                           ),
@@ -305,6 +273,38 @@ class _ActivityPageState extends State<ActivityPage> {
                                         ],
                                       ),
                                     ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "${(day!.goalForToday!.calorieLimit).round()}",
+                                            style: smallLabelDecor,
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            "Calorie Goal",
+                                            style: smallLabelHeadingDecor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "${(maintenance!).round()}",
+                                            style: smallLabelDecor,
+                                          ),
+                                          SizedBox(height: 5.h),
+                                          Text(
+                                            "Maintenance",
+                                            style: smallLabelHeadingDecor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -313,46 +313,46 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      if(currentJourney!=null && currentJourney!.onProgress)
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          color: SURFACE2,
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: BORDER_SECONDARY),
+                      if (currentJourney != null && currentJourney!.onProgress)
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.r),
+                            color: SURFACE2,
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: BORDER_SECONDARY),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(14.0.r),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Track",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16.sp,
+                                child: Padding(
+                                  padding: EdgeInsets.all(14.0.r),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Track",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16.sp,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(14.0.r),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: JourneyGraph(journey: currentJourney!),
+                              Padding(
+                                padding: EdgeInsets.all(14.0.r),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: JourneyGraph(journey: currentJourney!),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
                       SizedBox(height: 30.h),
                     ],
                   ),
