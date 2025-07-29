@@ -13,8 +13,8 @@ class AdviceService {
     return _repository.getAdvice(key);
   }
 
-  Future<void> createAdvice(AdviceSet advice) async {
-    await _repository.addAdvice(advice);
+  Future<int> createAdvice(AdviceSet advice) async {
+    return await _repository.addAdvice(advice);
   }
 
   Future<void> updateAdvice(dynamic key, AdviceSet advice) async {

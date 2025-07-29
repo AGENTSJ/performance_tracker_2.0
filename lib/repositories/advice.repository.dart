@@ -13,8 +13,8 @@ class AdviceRepository {
     return _adviceBox.get(key);
   }
 
-  Future<void> addAdvice(AdviceSet advice) async {
-    await _adviceBox.add(advice);
+  Future<int> addAdvice(AdviceSet advice) async {
+    return await _adviceBox.add(advice);
   }
 
   Future<void> updateAdvice(dynamic key, AdviceSet advice) async {

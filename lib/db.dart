@@ -50,6 +50,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(WorkoutVolumeAdapter());
   Hive.registerAdapter(JourneyLogAdapter());
   Hive.registerAdapter(JourneyStatusAdapter());
+  Hive.registerAdapter(AdviceSetAdapter());
 
   await Hive.openBox<Food>(Collections.foods.value);
   await Hive.openBox<Day>(Collections.days.value);

@@ -139,7 +139,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                           Text(
                                             "Routines",
                                             style: TextStyle(
-                                              color: TEXT_TERTIARY,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -178,7 +177,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                           Text(
                                             "Workouts",
                                             style: TextStyle(
-                                              color: TEXT_TERTIARY,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -212,7 +210,6 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                           Text(
                                             "Advices",
                                             style: TextStyle(
-                                              color: TEXT_TERTIARY,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),

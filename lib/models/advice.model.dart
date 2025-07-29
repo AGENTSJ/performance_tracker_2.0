@@ -19,7 +19,7 @@ enum AdviceStatus {
   @HiveField(2)
   notWorked,
 }
-@HiveType(typeId: 23)
+@HiveType(typeId: 24)
 class AdviceSet
 {
   @HiveField(0)

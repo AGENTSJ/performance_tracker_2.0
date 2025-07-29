@@ -24,39 +24,103 @@ class _AdvicesPageState extends State<AdvicesPage> {
   String resp = "";
   @override
   void initState() {
-    isLoaded = true;
+    setUpUi();
     super.initState();
   }
-  setUpUi()async
-  {
-    var advices = 
+
+  setUpUi() async {
+    var advices = adviceService.fetchAllAdvices();
+    for (var adv in advices) {
+      if (adv.type == AdviceStatus.onGoing) {
+        onGoingAdvice = adv;
+      }
+    }
+    if (onGoingAdvice == null) {
+      int key = await adviceService.createAdvice(
+        AdviceSet(
+          date: DateTime.now(),
+          title: "On Going Advices",
+          advices: [],
+          type: AdviceStatus.onGoing,
+        ),
+      );
+      onGoingAdvice = adviceService.fetchAdviceByKey(key);
+    }
+    isLoaded = true;
+    setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: BACKGROUND,
-        title: const Text('Advices Page'),
       ),
       body: !isLoaded
           ? LoadingPage()
-          :
-            // advices.isEmpty
-            // ? Center(
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         SizedBox(height: 100.h, width: double.infinity, child: empty),
-            //         SizedBox(height: 20.h),
-            //         Text(
-            //           "No advices found !!",
-            //           style: TextStyle(color: TEXT_PRIMARY, fontSize: 15.sp),
-            //         ),
-            //       ],
-            //     ),
-            //   )
-            // :
-            SingleChildScrollView(child: Column(children: [Text(resp)])),
+          : SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 14.0.h,
+                  horizontal: 12.w,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: SURFACE2,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: SURFACE2,
+                              borderRadius: BorderRadius.circular(8.r),
+                              border: Border(
+                                bottom: BorderSide(color: BORDER_SECONDARY),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 14.0.h,
+                                horizontal: 14.w,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    onGoingAdvice!.title,
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      minimumSize: Size(30.h, 30.h),
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: Icon(Icons.add, size: 20.sp),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (onGoingAdvice!.advices.isEmpty)
+                            SizedBox(height: 100.h, child: empty),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY,
         onPressed: () async {

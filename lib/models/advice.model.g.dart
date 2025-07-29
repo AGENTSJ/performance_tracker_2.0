@@ -45,7 +45,7 @@ class AdviceAdapter extends TypeAdapter<Advice> {
 
 class AdviceSetAdapter extends TypeAdapter<AdviceSet> {
   @override
-  final int typeId = 23;
+  final int typeId = 24;
 
   @override
   AdviceSet read(BinaryReader reader) {

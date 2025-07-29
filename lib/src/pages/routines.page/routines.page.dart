@@ -148,7 +148,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                     SizedBox(width: 20.w),
                                     Text(
                                       "${routine.name} (${routine.workoutsIds.length})",
-                                      style: TextStyle(color: TEXT_TERTIARY,fontSize: 15.sp,fontWeight: FontWeight.w600),
+                                      style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w600),
                                     ),
                                   ],
                                 ),
@@ -212,7 +212,7 @@ class RoutinesPageState extends State<RoutinesPage> {
                                   SizedBox(width: 20.w),
                                   Text(
                                     "${routine.name} (${routine.workoutsIds.length})",
-                                    style: TextStyle(color: TEXT_TERTIARY,fontSize: 15.sp,fontWeight: FontWeight.w600),
+                                    style: TextStyle(fontSize: 15.sp,fontWeight: FontWeight.w600),
                                   ),
                                 ],
                               ),
