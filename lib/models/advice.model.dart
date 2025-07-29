@@ -11,7 +11,9 @@ class Advice extends HiveObject
   String conditions;
   @HiveField(3)
   DateTime date;
-  Advice({required this.adviceDesc,required this.status, required this.conditions,required this.date});
+  @HiveField(4)
+  String title;
+  Advice({required this.adviceDesc,required this.status, required this.conditions,required this.date,required this.title});
 }
 @HiveType(typeId: 21)
 enum AdviceStatus {

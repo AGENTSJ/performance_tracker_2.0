@@ -48,6 +48,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
 
   _setUpGraphData() async {
     var count = widget.journey.logs.length;
+
     for (var i = 0; i < count; i++) {
       var log = widget.journey.logs[i];
       var day = dayService.getDayById(log.dayId);
@@ -137,10 +138,10 @@ class _JourneyGraphState extends State<JourneyGraph> {
                     sideTitles: SideTitles(
                       reservedSize: 45.sp,
                       showTitles: true,
+                      interval: 1,
                       getTitlesWidget: (value, meta) {
                         int index = value.toInt();
-                        if (index < 0 || index >= days.length)
-                          return const SizedBox.shrink();
+                        print(index);
                         List<String> date = commonService.getDateString(
                           days[index].dayTime,
                         ).split(' ');

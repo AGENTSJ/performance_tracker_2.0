@@ -21,13 +21,14 @@ class AdviceAdapter extends TypeAdapter<Advice> {
       status: fields[1] as AdviceStatus,
       conditions: fields[2] as String,
       date: fields[3] as DateTime,
+      title: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Advice obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.adviceDesc)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class AdviceAdapter extends TypeAdapter<Advice> {
       ..writeByte(2)
       ..write(obj.conditions)
       ..writeByte(3)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(4)
+      ..write(obj.title);
   }
 
   @override
