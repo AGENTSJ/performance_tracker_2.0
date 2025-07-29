@@ -6,14 +6,9 @@ class Advice extends HiveObject
   @HiveField(0)
   String adviceDesc;
   @HiveField(1)
-  AdviceStatus status;
-  @HiveField(2)
   String conditions;
-  @HiveField(3)
-  DateTime date;
-  @HiveField(4)
-  String title;
-  Advice({required this.adviceDesc,required this.status, required this.conditions,required this.date,required this.title});
+  
+  Advice({required this.adviceDesc, required this.conditions,});
 }
 @HiveType(typeId: 21)
 enum AdviceStatus {
@@ -23,4 +18,24 @@ enum AdviceStatus {
   onGoing,
   @HiveField(2)
   notWorked,
+}
+@HiveType(typeId: 23)
+class AdviceSet
+{
+  @HiveField(0)
+  DateTime date;
+  @HiveField(1)
+  String title;
+  @HiveField(2)
+  List<Advice> advices;
+  @HiveField(3)
+  AdviceStatus type;
+
+  AdviceSet({
+    required this.date,
+    required this.title,
+    required this.advices,
+    required this.type
+  });
+
 }

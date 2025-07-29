@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/advice.model.dart';
+import 'package:performance_tracker/services/advice.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
@@ -15,17 +16,21 @@ class AdvicesPage extends StatefulWidget {
 }
 
 class _AdvicesPageState extends State<AdvicesPage> {
-  List<Advice> advices = [];
+  AdviceSet? onGoingAdvice;
   bool isLoaded = false;
   var trainerService = locator<TrainerAgentService>();
   var workoutService = locator<WorkoutService>();
+  var adviceService = locator<AdviceService>();
   String resp = "";
   @override
   void initState() {
     isLoaded = true;
     super.initState();
   }
-
+  setUpUi()async
+  {
+    var advices = 
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,21 +3,21 @@ import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 
 class AdviceRepository {
-  final _adviceBox = Hive.box<Advice>(Collections.advices.value);
+  final _adviceBox = Hive.box<AdviceSet>(Collections.advices.value);
 
-  List<Advice> getAllAdvices() {
+  List<AdviceSet> getAllAdvices() {
     return _adviceBox.values.toList();
   }
 
-  Advice? getAdvice(dynamic key) {
+  AdviceSet? getAdvice(dynamic key) {
     return _adviceBox.get(key);
   }
 
-  Future<void> addAdvice(Advice advice) async {
+  Future<void> addAdvice(AdviceSet advice) async {
     await _adviceBox.add(advice);
   }
 
-  Future<void> updateAdvice(dynamic key, Advice advice) async {
+  Future<void> updateAdvice(dynamic key, AdviceSet advice) async {
     await _adviceBox.put(key, advice);
   }
 
