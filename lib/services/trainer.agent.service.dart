@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 // import 'package:performance_tracker/services/workout.service.dart';
 
 class TrainerAgentService {
@@ -112,5 +115,19 @@ class TrainerAgentService {
     print("${routine.name} summary finished");
     return resp.message;
     
+  }
+
+  Future<StreamController<AiResponse>?> chatWithCoach(String message)async
+  {
+    AiChatContent content = AiChatContent(
+      system_instruction: null,
+      contents: [
+        AiChatSegment(role: ChatRoles.user, parts: [
+          ChatPart(text: message)
+        ])
+      ],
+    );
+    StreamController<AiResponse>? controller = await _aiService.streamGeminiResponse(content);
+    return controller;
   }
 }

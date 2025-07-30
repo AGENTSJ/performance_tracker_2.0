@@ -1,22 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/services/rest.service.dart';
+import 'package:http/http.dart' as http;
+import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 
-class AiResponse {
-  final String message;
-  final bool success;
-
-  const AiResponse({required this.message, required this.success});
-}
 
 enum Models { Pro, Flash }
 
 class AiService {
   final _restService = locator<RestService>();
   late final Map<Models, _AI_Provider> _models;
+  var API_KEY = 'AIzaSyD6G15zpLNW9OtnDKveFIG9vZM8jw1yO5E';
 
   AiService() {
-    var API_KEY = 'AIzaSyD6G15zpLNW9OtnDKveFIG9vZM8jw1yO5E';
     var modelName = "gemini-2.0-flash";
     _models = {
       Models.Pro: _AI_Provider(
@@ -32,7 +29,6 @@ class AiService {
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$API_KEY",
       ),
     };
-    // _provider = ;
   }
 
   Future<AiResponse> getResponse(
@@ -60,17 +56,58 @@ class AiService {
     };
     var response = await _restService.POST(model!.endpoint, payload);
     if (response.statusCode != 200) {
-      return AiResponse(message: '', success: false);
+      return AiResponse(message: '', success: false,responseEnded: true);
     }
     try {
       var body = jsonDecode(response.body);
       var aiResp = AiResponse(
         message: body['candidates'][0]['content']['parts'][0]['text'],
         success: true,
+        responseEnded: true
       );
       return aiResp;
     } catch (e) {
-      return AiResponse(message: '', success: false);
+      return AiResponse(message: '', success: false,responseEnded: true);
+    }
+  }
+
+  Future<StreamController<AiResponse>?> streamGeminiResponse(AiChatContent chatContent) async {
+    final StreamController<AiResponse> controller = StreamController<AiResponse>();
+    var test = jsonEncode(toMap(chatContent));
+    final uri = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
+    );
+
+    final request = http.Request('POST', uri)
+      ..headers['Content-Type'] = 'application/json'
+      ..headers['x-goog-api-key'] = API_KEY
+      ..body = test;
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Handle streaming SSE
+      response.stream.transform(utf8.decoder).transform(LineSplitter()).listen((
+        line,
+      ) {
+        // SSE lines start with "data: "
+        if (line.startsWith("data: ")) {
+          final data = line.substring(6).trim();
+          if (data == '[DONE]') {
+            controller.close();
+          } else {
+            final jsonData = jsonDecode(data);
+            final text =
+                jsonData['candidates']?[0]?['content']?['parts']?[0]?['text'];
+            if (text != null) {
+              controller.add(AiResponse(message: text, success: true, responseEnded: false));
+            }
+          }
+        }
+      });
+      return controller;
+    } else {
+      return null;
     }
   }
 }

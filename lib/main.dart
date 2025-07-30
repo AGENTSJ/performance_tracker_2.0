@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/src/components/journey.component.dart';
+import 'package:performance_tracker/src/features/Coach/pages/coach.page.dart';
 import 'package:performance_tracker/src/features/Nutrition/pages/nutrition.home.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
@@ -55,14 +55,14 @@ class _MainAppEntryState extends State<MainAppEntry> {
   TrainingModulePage? trainingModulePage;
   ProfilePageModule? profilePageModule;
   ActivityPage? activityPage;
-
+  CoachPage? coachPage;
   @override
   void initState() {
     super.initState();
   }
 
   _handleIndexChange(int index) {
-    if (index > 3) {
+    if (index > 4) {
       return;
     }
     selectedIndex = index;
@@ -81,6 +81,9 @@ class _MainAppEntryState extends State<MainAppEntry> {
         activityPage ??= ActivityPage();
         return activityPage;
       case 3:
+        coachPage ??= CoachPage();
+        return coachPage;
+      case 4:
         profilePageModule ??= ProfilePageModule();
         return profilePageModule;
     }
