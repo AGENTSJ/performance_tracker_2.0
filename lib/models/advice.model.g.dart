@@ -19,17 +19,23 @@ class AdviceAdapter extends TypeAdapter<Advice> {
     return Advice(
       adviceDesc: fields[0] as String,
       conditions: fields[1] as String,
+      title: fields[2] as String,
+      date: fields[3] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, Advice obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.adviceDesc)
       ..writeByte(1)
-      ..write(obj.conditions);
+      ..write(obj.conditions)
+      ..writeByte(2)
+      ..write(obj.title)
+      ..writeByte(3)
+      ..write(obj.date);
   }
 
   @override
@@ -54,7 +60,7 @@ class AdviceSetAdapter extends TypeAdapter<AdviceSet> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AdviceSet(
-      date: fields[0] as DateTime,
+      lastUpdated: fields[0] as DateTime,
       title: fields[1] as String,
       advices: (fields[2] as List).cast<Advice>(),
       type: fields[3] as AdviceStatus,
@@ -66,7 +72,7 @@ class AdviceSetAdapter extends TypeAdapter<AdviceSet> {
     writer
       ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.date)
+      ..write(obj.lastUpdated)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)

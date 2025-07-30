@@ -7,6 +7,7 @@ import 'package:performance_tracker/services/advice.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/src/features/Workout/pages/advice.details.page.dart';
 
 class AdvicesPage extends StatefulWidget {
   const AdvicesPage({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _AdvicesPageState extends State<AdvicesPage> {
     if (onGoingAdvice == null) {
       int key = await adviceService.createAdvice(
         AdviceSet(
-          date: DateTime.now(),
+          lastUpdated: DateTime.now(),
           title: "On Going Advices",
           advices: [],
           type: AdviceStatus.onGoing,
@@ -50,12 +51,47 @@ class _AdvicesPageState extends State<AdvicesPage> {
     setState(() {});
   }
 
+  handleAddAdvice() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AdviceDetailsPage(
+          readonly: false,
+          onGoingAdvice: onGoingAdvice!,
+          advice: null,
+          onUpdate: () {
+            setUpUi();
+          },
+        ),
+      ),
+    );
+  }
+
+  handleViewAdvice(Advice adv) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AdviceDetailsPage(
+          readonly: true,
+          onGoingAdvice: onGoingAdvice!,
+          advice: adv,
+          onUpdate: () {},
+        ),
+      ),
+    );
+  }
+
+  handleRemoveAdvice(Advice adv)async
+  {
+    this.onGoingAdvice!.advices.remove(adv);
+    await adviceService.updateAdvice(onGoingAdvice!.key, onGoingAdvice!);
+    setState(() {
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: BACKGROUND,
-      ),
+      appBar: AppBar(backgroundColor: BACKGROUND),
       body: !isLoaded
           ? LoadingPage()
           : SingleChildScrollView(
@@ -93,12 +129,14 @@ class _AdvicesPageState extends State<AdvicesPage> {
                                   Text(
                                     onGoingAdvice!.title,
                                     style: TextStyle(
-                                      fontSize: 15.sp,
+                                      fontSize: 17.sp,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      handleAddAdvice();
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: SURFACE,
                                       tapTargetSize:
@@ -114,6 +152,46 @@ class _AdvicesPageState extends State<AdvicesPage> {
                           ),
                           if (onGoingAdvice!.advices.isEmpty)
                             SizedBox(height: 100.h, child: empty),
+
+                          ...onGoingAdvice!.advices.map(
+                            (adv) => Material(
+                              color: SURFACE2,
+                              borderRadius: BorderRadius.circular(8.r),
+
+                              child: InkWell(
+                                onTap: () {
+                                  handleViewAdvice(adv);
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 12.0.h,
+                                    horizontal: 12.w,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        adv.title,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          handleRemoveAdvice(adv);
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0.r),
+                                          child: Icon(Icons.close),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

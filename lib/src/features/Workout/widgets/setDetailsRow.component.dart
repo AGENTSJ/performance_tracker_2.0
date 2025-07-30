@@ -116,6 +116,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                 child: SizedBox(
                   height: 27.h,
                   child: TextField(
+                    keyboardType: TextInputType.number,
                     decoration: inputDecor,
                     textAlign: TextAlign.center,
                     style: SetDetailRowComponent.fieldDecor,

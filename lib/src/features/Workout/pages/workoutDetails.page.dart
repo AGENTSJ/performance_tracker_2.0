@@ -222,517 +222,531 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: BACKGROUND,
-        title: const Text('Workout Details'),
-        scrolledUnderElevation: 0,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(14.0.w),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // header
-              Container(
-                decoration: BoxDecoration(
-                  color: SURFACE2,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0.w),
-                        child: isNameEdit
-                            ? TextField(
-                                controller: workNameController,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 5,
-                                    child: Text(
-                                      workout?.name ?? '',
-                                      softWrap: true,
-                                      maxLines: 2,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 20.sp,
-                                      ),
-                                    ),
+    return GestureDetector(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: BACKGROUND,
+          title: const Text('Workout Details'),
+          scrolledUnderElevation: 0,
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(14.0.w),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // header
+                Container(
+                  decoration: BoxDecoration(
+                    color: SURFACE2,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0.w),
+                          child: isNameEdit
+                              ? TextField(
+                                  controller: workNameController,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  Expanded(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        this.isEditModeOn = true;
-                                        this.isNameEdit = true;
-                                        refreshState();
-                                      },
-                                      child: Icon(FontAwesomeIcons.penToSquare),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.h),
-              // sets
-              SetDetailsComponent(
-                workout: widget.workout,
-                onSetUpdated: (updated) {
-                  handleSetUpdated();
-                },
-              ),
-              SizedBox(height: 20.h),
-              // Volume
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: BORDER_SECONDARY),
-                        ),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.r),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Volume",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15.sp,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                handleAddVolume();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: SURFACE,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4.r),
-                                ),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                minimumSize: Size(30.w, 30.h),
-                              ),
-                              child: Icon(Icons.add, size: 20.w),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        if (widget.workout.volumes.isEmpty) ...[
-                          SizedBox(
-                            height: 100.h,
-                            width: double.infinity,
-                            child: empty,
-                          ),
-                        ] else
-                          ...widget.workout.volumes.map(
-                            (vol) => Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: BORDER_SECONDARY),
-                                ),
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(12.0.r),
-                                child: Row(
+                                )
+                              : Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Expanded(child: Text(vol.muscleName)),
                                     Expanded(
-                                      child: Container(
-                                        child: Center(
-                                          child: Text("${vol.volume}"),
+                                      flex: 5,
+                                      child: Text(
+                                        workout?.name ?? '',
+                                        softWrap: true,
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 20.sp,
                                         ),
                                       ),
                                     ),
                                     Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          TextButton(
-                                            onPressed: () {
-                                              handleRemoveVolume(vol);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(4.r),
-                                              ),
-                                              tapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap,
-                                              minimumSize: Size(30.w, 30.h),
-                                            ),
-                                            child: Icon(
-                                              Icons.close,
-                                              size: 20.w,
-                                            ),
-                                          ),
-                                        ],
+                                      child: TextButton(
+                                        onPressed: () {
+                                          this.isEditModeOn = true;
+                                          this.isNameEdit = true;
+                                          refreshState();
+                                        },
+                                        child: Icon(
+                                          FontAwesomeIcons.penToSquare,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                // sets
+                SetDetailsComponent(
+                  workout: widget.workout,
+                  onSetUpdated: (updated) {
+                    handleSetUpdated();
+                  },
+                ),
+                SizedBox(height: 20.h),
+                // Volume
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: BORDER_SECONDARY),
                           ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 20.h),
-              // Notes
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: BORDER_SECONDARY),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.r),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Workout Journal",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.0.r,
-                        vertical: 8.0.r,
-                      ),
-                      child: TextField(
-                        controller: workDescriptionController,
-                        minLines: 3,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: SURFACE,
-                          hintText: "Add some notes about this workout",
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20.h),
-              // Progress
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: BORDER_SECONDARY),
-                        ),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      height: 50.h,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 4.0.r,
-                          horizontal: 12.r,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Progress",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15.sp,
-                              ),
-                            ),
-                            if (selectedSetForProgress != null)
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.r),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
                               Text(
-                                "Max : ${selectedSetForProgress!.pr}",
+                                "Volume",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15.sp,
                                 ),
                               ),
-
-                            Row(
-                              children: [
-                                if (widget.workout.sets.isNotEmpty)
-                                  SizedBox(
-                                    width: 100.w,
-                                    height: 50.h,
-                                    child: DropdownButton2<WorkSet>(
-                                      isExpanded: true,
-                                      isDense: true,
-                                      value: selectedSetForProgress,
-                                      hint: Text('Select an option'),
-                                      items: widget.workout.sets.map((
-                                        WorkSet workSet,
-                                      ) {
-                                        return DropdownMenuItem<WorkSet>(
-                                          value: workSet,
-                                          child: Container(
-                                            padding: EdgeInsets.zero,
-                                            decoration: BoxDecoration(),
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Text(
-                                                workSet.value.toString(),
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (WorkSet? newValue) {
-                                        setState(() {
-                                          selectedSetForProgress = newValue;
-                                          setGraphHeight();
-                                        });
-                                      },
-                                      buttonStyleData: ButtonStyleData(
-                                        height: 50.h,
-                                        width: 100.w,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                      ),
-                                      dropdownStyleData: DropdownStyleData(
-                                        padding: EdgeInsets.zero,
-                                        width: 100.h,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            8.r,
-                                          ),
-                                          color: SURFACE2,
-                                        ),
-                                      ),
-                                      underline: Container(
-                                        height: 1,
-                                        color: Colors.transparent,
-                                      ),
-                                      menuItemStyleData: MenuItemStyleData(
-                                        height: 40.h,
-                                        padding: EdgeInsets.zero,
-                                      ),
-                                    ),
+                              TextButton(
+                                onPressed: () {
+                                  handleAddVolume();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: SURFACE,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.r),
                                   ),
-                              ],
-                            ),
-                          ],
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  minimumSize: Size(30.w, 30.h),
+                                ),
+                                child: Icon(Icons.add, size: 20.w),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    if (selectedSetForProgress != null &&
-                        selectedSetForProgress!.history.isNotEmpty) ...[
-                      Row(
+                      Column(
                         children: [
-                          RotatedBox(
-                            quarterTurns: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "Reps",
-                                    style: TextStyle(
-                                      color: TEXT_SECONDARY,
-                                      fontSize: 12.sp,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Icon(
-                                    FontAwesomeIcons.arrowRight,
-                                    size: 12.sp,
-                                    color: TEXT_SECONDARY,
-                                  ),
-                                ],
-                              ),
+                          if (widget.workout.volumes.isEmpty) ...[
+                            SizedBox(
+                              height: 100.h,
+                              width: double.infinity,
+                              child: empty,
                             ),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              controller: progressChartScrollController,
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  minHeight: 200.h,
-                                  maxHeight: 200.h,
+                          ] else
+                            ...widget.workout.volumes.map(
+                              (vol) => Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: BORDER_SECONDARY),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
-                                width: graphWidth.w,
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ProgressChart(
-                                          set: selectedSetForProgress!,
-                                          key: ValueKey(
-                                            selectedSetForProgress!.value,
+                                child: Padding(
+                                  padding: EdgeInsets.all(12.0.r),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(child: Text(vol.muscleName)),
+                                      Expanded(
+                                        child: Container(
+                                          child: Center(
+                                            child: Text("${vol.volume}"),
                                           ),
                                         ),
                                       ),
+                                      Expanded(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                handleRemoveVolume(vol);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        4.r,
+                                                      ),
+                                                ),
+                                                tapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                                minimumSize: Size(30.w, 30.h),
+                                              ),
+                                              child: Icon(
+                                                Icons.close,
+                                                size: 20.w,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 20.h),
+                // Notes
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: BORDER_SECONDARY),
+                          ),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.r),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Workout Journal",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.0.r,
+                          vertical: 8.0.r,
+                        ),
+                        child: TextField(
+                          controller: workDescriptionController,
+                          minLines: 3,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: SURFACE,
+                            hintText: "Add some notes about this workout",
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.h),
+                // Progress
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(color: BORDER_SECONDARY),
+                          ),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        height: 50.h,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 4.0.r,
+                            horizontal: 12.r,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Progress",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15.sp,
+                                ),
+                              ),
+                              if (selectedSetForProgress != null)
+                                Text(
+                                  "Max : ${selectedSetForProgress!.pr}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15.sp,
+                                  ),
+                                ),
+
+                              Row(
+                                children: [
+                                  if (widget.workout.sets.isNotEmpty)
+                                    SizedBox(
+                                      width: 100.w,
+                                      height: 50.h,
+                                      child: DropdownButton2<WorkSet>(
+                                        isExpanded: true,
+                                        isDense: true,
+                                        value: selectedSetForProgress,
+                                        hint: Text('Select an option'),
+                                        items: widget.workout.sets.map((
+                                          WorkSet workSet,
+                                        ) {
+                                          return DropdownMenuItem<WorkSet>(
+                                            value: workSet,
+                                            child: Container(
+                                              padding: EdgeInsets.zero,
+                                              decoration: BoxDecoration(),
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Text(
+                                                  workSet.value.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (WorkSet? newValue) {
+                                          setState(() {
+                                            selectedSetForProgress = newValue;
+                                            setGraphHeight();
+                                          });
+                                        },
+                                        buttonStyleData: ButtonStyleData(
+                                          height: 50.h,
+                                          width: 100.w,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                        ),
+                                        dropdownStyleData: DropdownStyleData(
+                                          padding: EdgeInsets.zero,
+                                          width: 100.h,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8.r,
+                                            ),
+                                            color: SURFACE2,
+                                          ),
+                                        ),
+                                        underline: Container(
+                                          height: 1,
+                                          color: Colors.transparent,
+                                        ),
+                                        menuItemStyleData: MenuItemStyleData(
+                                          height: 40.h,
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (selectedSetForProgress != null &&
+                          selectedSetForProgress!.history.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            RotatedBox(
+                              quarterTurns: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Reps",
+                                      style: TextStyle(
+                                        color: TEXT_SECONDARY,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.w),
+                                    Icon(
+                                      FontAwesomeIcons.arrowRight,
+                                      size: 12.sp,
+                                      color: TEXT_SECONDARY,
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Attempts",
-                            style: TextStyle(
-                              color: TEXT_SECONDARY,
-                              fontSize: 12.sp,
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                controller: progressChartScrollController,
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    minHeight: 200.h,
+                                    maxHeight: 200.h,
+                                  ),
+                                  width: graphWidth.w,
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ProgressChart(
+                                            set: selectedSetForProgress!,
+                                            key: ValueKey(
+                                              selectedSetForProgress!.value,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Icon(
-                            FontAwesomeIcons.arrowRight,
-                            size: 12.sp,
-                            color: TEXT_SECONDARY,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10.h),
-                    ] else ...[
-                      SizedBox(height: 200.h, width: 200.w, child: empty),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Not enough data!!",
-                            style: TextStyle(color: TEXT_SECONDARY),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Attempts",
+                              style: TextStyle(
+                                color: TEXT_SECONDARY,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            Icon(
+                              FontAwesomeIcons.arrowRight,
+                              size: 12.sp,
+                              color: TEXT_SECONDARY,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.h),
+                      ] else ...[
+                        SizedBox(height: 200.h, width: 200.w, child: empty),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Not enough data!!",
+                              style: TextStyle(color: TEXT_SECONDARY),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20.h),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        handleRemove();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color.fromARGB(148, 255, 91, 91),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.r),
-                          side: BorderSide(
-                            color: const Color.fromARGB(148, 255, 91, 91),
+                SizedBox(height: 20.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          handleRemove();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color.fromARGB(
+                            148,
+                            255,
+                            91,
+                            91,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.r),
+                            side: BorderSide(
+                              color: const Color.fromARGB(148, 255, 91, 91),
+                            ),
                           ),
                         ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.trash,
-                            color: const Color.fromARGB(189, 255, 82, 82),
-                            size: 12.w,
-                          ),
-                          SizedBox(width: 10.w),
-                          Text(
-                            "Remove",
-                            style: TextStyle(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.trash,
                               color: const Color.fromARGB(189, 255, 82, 82),
+                              size: 12.w,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 10.w),
+                            Text(
+                              "Remove",
+                              style: TextStyle(
+                                color: const Color.fromARGB(189, 255, 82, 82),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: isEditModeOn
-          ? Padding(
-              padding: EdgeInsets.all(10.w),
-              child: ElevatedButton(
-                onPressed: () {
-                  handleUpdateWorkout();
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
+        bottomNavigationBar: isEditModeOn
+            ? Padding(
+                padding: EdgeInsets.all(10.w),
+                child: ElevatedButton(
+                  onPressed: () {
+                    handleUpdateWorkout();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    backgroundColor: PRIMARY,
                   ),
-                  backgroundColor: PRIMARY,
+                  child: Text("Update", style: TextStyle(color: Colors.white)),
                 ),
-                child: Text("Update", style: TextStyle(color: Colors.white)),
-              ),
-            )
-          : null,
+              )
+            : null,
+      ),
     );
   }
 
