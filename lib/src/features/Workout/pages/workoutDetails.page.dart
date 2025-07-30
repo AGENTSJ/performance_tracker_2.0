@@ -7,8 +7,8 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/workout.service.dart';
-import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/progressChart.dart';
-import 'package:performance_tracker/src/pages/workoutDetails.page/widgets/setDetails.component.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/progressChart.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/setDetails.component.dart';
 
 class WorkoutDetailsPage extends StatefulWidget {
   final Workout workout;

@@ -17,7 +17,7 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:performance_tracker/src/pages/workouts.page/workouts.page.dart';
+import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 
 class ProfilePageModule extends StatefulWidget {
   const ProfilePageModule({super.key});

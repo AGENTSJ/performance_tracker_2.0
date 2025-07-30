@@ -6,8 +6,8 @@ import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
-import 'package:performance_tracker/src/pages/mealTracker.page/mealTracker.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/foodEntry.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/mealTracker.dart';
 
 class MealContainer extends StatefulWidget {
   final Meal meal;

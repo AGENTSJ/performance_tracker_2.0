@@ -5,7 +5,7 @@ import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/workout.component.dart';
-import 'package:performance_tracker/src/pages/workoutDetails.page/workoutDetails.page.dart';
+import 'package:performance_tracker/src/features/Workout/pages/workoutDetails.page.dart';
 
 class WorkoutsPage extends StatefulWidget {
   const WorkoutsPage({super.key});

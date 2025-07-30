@@ -12,9 +12,9 @@ import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
-import 'package:performance_tracker/src/pages/journey.dashboard/calorie.chart.dart';
-import 'package:performance_tracker/src/pages/journey.dashboard/journey.graph.dart';
-import 'package:performance_tracker/src/pages/journey.dashboard/steps.chart.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/calorie.chart.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/journey.graph.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/steps.chart.dart';
 import 'package:performance_tracker/src/components/journey.component.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 

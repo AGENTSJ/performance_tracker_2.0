@@ -4,11 +4,11 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/src/components/journey.component.dart';
-import 'package:performance_tracker/src/pages/nutritionHome.page/home.page.dart';
-import 'package:performance_tracker/src/pages/training.page/training.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/nutrition.home.page.dart';
+import 'package:performance_tracker/src/features/Workout/pages/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
-import 'package:performance_tracker/src/pages/journey.dashboard/journey.dashboard.dart';
-import 'package:performance_tracker/src/pages/profile.page/profile.page.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/journey.dashboard.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/profile.page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

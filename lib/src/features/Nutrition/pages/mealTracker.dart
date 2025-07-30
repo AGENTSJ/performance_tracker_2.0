@@ -9,8 +9,8 @@ import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
-import 'package:performance_tracker/src/pages/foodEntry.page/foodEntry.page.dart';
-import 'package:performance_tracker/src/pages/mealTracker.page/widgets/foodDescriptionPopUp.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/foodEntry.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/widgets/foodDescriptionPopUp.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class MealTrackerPage extends StatefulWidget {
