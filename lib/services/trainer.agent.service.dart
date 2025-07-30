@@ -19,22 +19,26 @@ class TrainerAgentService {
     var summary = "";
     List<Future<String>> futures = [];
     for (var rout in routines) {
-        futures.add(
-          _generateRoutineSummary(rout, null)
-        );
+      futures.add(_generateRoutineSummary(rout, null));
     }
     var results = await Future.wait(futures);
     for (var res in results) {
-      summary+="$res \n\n";
+      summary += "$res \n\n";
     }
     print("whole summary started");
-    var res = await _aiService.getResponse(summary, "You are a physical trainer user has ${routines.length} routines Identify potential improvements user can make to strength gains precise and concise your response must be concise but it should consider all the improvements user should make line by line");
+    var res = await _aiService.getResponse(
+      summary,
+      "You are a physical trainer user has ${routines.length} routines Identify potential improvements user can make to strength gains precise and concise your response must be concise but it should consider all the improvements user should make line by line",
+    );
     print("whole summary ended");
     return res.message;
   }
 
-  Future<String> _generateWorkoutSummary(Workout workout, DateTime? summaryFromDate) async {
-      print("${workout.name} started");
+  Future<String> _generateWorkoutSummary(
+    Workout workout,
+    DateTime? summaryFromDate,
+  ) async {
+    print("${workout.name} started");
     var EnabledSet = workout.sets.where((set) => set.enabled);
     var totalEnabledSet = EnabledSet.length;
     String workRep =
@@ -90,44 +94,56 @@ class TrainerAgentService {
     return setSummary;
   }
 
-  Future<String> _generateRoutineSummary(Routine routine, DateTime? summaryFromDate) async {
-    var routineSummary = "Routine name : ${routine.name}\nVolumes in the Routine : \n";
+  Future<String> _generateRoutineSummary(
+    Routine routine,
+    DateTime? summaryFromDate,
+  ) async {
+    var routineSummary =
+        "Routine name : ${routine.name}\nVolumes in the Routine : \n";
     var workouts = await _routineService.getRoutinesWorkouts(routine);
     var volumes = await _routineService.getRoutinesVolume(routine);
-    List<Future<String>> futures = [
-
-    ];
+    List<Future<String>> futures = [];
     for (var vol in volumes) {
       routineSummary += "\t${vol.muscleName} ${vol.volume}\n";
     }
     for (var work in workouts) {
-      futures.add(
-          _generateWorkoutSummary(work, summaryFromDate)
-      );
+      futures.add(_generateWorkoutSummary(work, summaryFromDate));
     }
     final results = await Future.wait(futures);
     for (var res in results) {
-      routineSummary+="${res}\n\n";
+      routineSummary += "${res}\n\n";
     }
     print("${routine.name} summary started");
     // return routineSummary;
-    var resp = await _aiService.getResponse(routineSummary, "Summaries this routine and draw out important observation",modelType: Models.Pro);
+    var resp = await _aiService.getResponse(
+      routineSummary,
+      "Summaries this routine and draw out important observation",
+      modelType: Models.Pro,
+    );
     print("${routine.name} summary finished");
     return resp.message;
-    
   }
 
-  Future<StreamController<AiResponse>?> chatWithCoach(String message)async
-  {
+  Future<StreamController<AiResponse>?> chatWithCoach(String message) async {
+    String workSummary = await getPerformanceSummary(null);
     AiChatContent content = AiChatContent(
-      system_instruction: null,
+      system_instruction: AiChatSegment(
+        role: null,
+        parts: [
+          ChatPart(
+            text: "You are a training coach here is users workout summary $workSummary",
+          ),
+        ],
+      ),
       contents: [
-        AiChatSegment(role: ChatRoles.user, parts: [
-          ChatPart(text: message)
-        ])
+        AiChatSegment(
+          role: ChatRoles.user,
+          parts: [ChatPart(text: message)],
+        ),
       ],
     );
-    StreamController<AiResponse>? controller = await _aiService.streamGeminiResponse(content);
+    StreamController<AiResponse>? controller = await _aiService
+        .streamGeminiResponse(content);
     return controller;
   }
 }
