@@ -20,6 +20,7 @@ const int WAITING_PERIOD_PAGE_SWITCH_MS = 250; //
 // const Color CONT_BACKGROUND = Color(0xFF222524); // Container Background Dark
 // const Color TEXT_PRIMARY = Color(0xFFF3F3F3);  // Light Gray
 // const Color TEXT_SECONDARY = Color.fromARGB(255, 184, 206, 206);
+// const Color TEXT_TERTIARY = const Color.fromARGB(255, 108, 108, 108); // Muted Gray
 // Color BORDER_PRIMARY = const Color.fromARGB(255, 88, 88, 88);
 // Color BORDER_SECONDARY = const Color.fromARGB(255, 60, 60, 60);
 

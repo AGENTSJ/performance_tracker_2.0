@@ -26,7 +26,6 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workouts'),
         backgroundColor: BACKGROUND,
         scrolledUnderElevation: 0,
       ),
@@ -49,16 +48,15 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         width: 150,
                         child: empty,
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10.h),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Resting huh 🤨 ?",
+                            "No workouts found",
                             style: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
-                              color: TEXT_SECONDARY
                             ),
                           ),
                         ],

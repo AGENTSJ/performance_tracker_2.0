@@ -375,37 +375,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                   children: [
                                     Expanded(child: Text(vol.muscleName)),
                                     Expanded(
-                                      child: Container(
-                                        child: Center(
-                                          child: Text("${vol.volume}"),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          TextButton(
-                                            onPressed: () {
-                                              // handleRemoveVolume(vol);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(4.r),
-                                              ),
-                                              tapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap,
-                                              minimumSize: Size(30.w, 30.h),
-                                            ),
-                                            child: Icon(
-                                              Icons.close,
-                                              size: 20.w,
-                                            ),
-                                          ),
-                                        ],
+                                      child: Center(
+                                        child: Text("${vol.volume}"),
                                       ),
                                     ),
                                   ],

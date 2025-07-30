@@ -323,7 +323,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                         width: double.infinity,
                         height: 100.h,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: SURFACE2,
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Column(
