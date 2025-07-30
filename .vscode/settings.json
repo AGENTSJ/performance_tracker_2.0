@@ -1,5 +1,6 @@
 {
-    "cSpell.words": [
-        "Searchfoods"
-    ]
+  "cSpell.words": [
+    "Searchfoods"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.32.8"
 }
