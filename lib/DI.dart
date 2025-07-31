@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:performance_tracker/repositories/advice.repository.dart';
+import 'package:performance_tracker/repositories/conversation.respository.dart';
 import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
 import 'package:performance_tracker/repositories/food.repository.dart';
@@ -58,4 +59,5 @@ setUpDependencyInjection()
   locator.registerLazySingleton<UserRepository>(()=>UserRepository());
   locator.registerLazySingleton<RoutineRepository>(()=>RoutineRepository());
   locator.registerLazySingleton<JourneyRepository>(()=>JourneyRepository());
+  locator.registerLazySingleton<ConversationRepository>(()=>ConversationRepository());
 }

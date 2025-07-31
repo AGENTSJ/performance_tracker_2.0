@@ -202,7 +202,6 @@ class _AdvicesPageState extends State<AdvicesPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY,
         onPressed: () async {
-          resp = await trainerService.getPerformanceContext(null);
           setState(() {});
         },
         child: Icon(Icons.add, color: Colors.white, size: 30.sp),

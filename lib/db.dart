@@ -60,6 +60,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(AiChatSegmentAdapter());
   Hive.registerAdapter(AiChatContentAdapter());
   Hive.registerAdapter(ReportAdapter());
+  Hive.registerAdapter(EntityTypeAdapter());
 
 
   await Hive.openBox<Food>(Collections.foods.value);

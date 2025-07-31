@@ -35,4 +35,9 @@ class ReportRepository {
   Future<void> deleteReport(dynamic key) async {
     await _reportBox.delete(key);
   }
+
+  Future<void> removeAllReports()async
+  {
+    await _reportBox.clear();
+  }
 }

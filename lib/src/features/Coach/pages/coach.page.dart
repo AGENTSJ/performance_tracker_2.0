@@ -1,11 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
-import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 
 class CoachPage extends StatefulWidget {
@@ -20,16 +18,15 @@ class _CoachPageState extends State<CoachPage> {
   var msgController = TextEditingController();
   bool isStreaming = false;
   String resp = "";
+  List<String> events = [];
+
   handleSendMessage() async {
     isStreaming = true;
-    StreamController<AiResponse>? controller = await trainerService.chatWithCoach(msgController.text);
-    if (controller == null) {
-      Fluttertoast.showToast(msg: "An Error has occur");
-      isStreaming = false;
-      refreshState();
-      return;
-    }
-    controller.stream.listen(
+    ChatStreamDTO chatStream = await trainerService.chatWithCoach(
+      msgController.text,
+    );
+
+    chatStream.stream.stream.listen(
       (data) {
         resp += data.message;
         refreshState();
@@ -39,6 +36,10 @@ class _CoachPageState extends State<CoachPage> {
         refreshState();
       },
     );
+    chatStream.eventStream.stream.listen((data) {
+      events.add(data);
+      refreshState();
+    });
   }
 
   refreshState() {
@@ -54,9 +55,14 @@ class _CoachPageState extends State<CoachPage> {
         title: const Text('Coach Page'),
         backgroundColor: BACKGROUND,
         actions: [
-          TextButton(onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ReportsPage()));
-          }, child: Icon(Icons.book))
+          TextButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => ReportsPage()));
+            },
+            child: Icon(Icons.book),
+          ),
         ],
       ),
       body: Column(
@@ -64,7 +70,17 @@ class _CoachPageState extends State<CoachPage> {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-                children: [MarkdownWidget(data: resp, shrinkWrap: true)],
+                children: [
+                  Container(child: Column(
+                    children: [
+                      ...events.map(
+                        (event)=>Text(event)
+                      )
+                    ],
+                  ),),
+                  SizedBox(height: 30.h),
+                  MarkdownWidget(data: resp, shrinkWrap: true),
+                ],
               ),
             ),
           ),
