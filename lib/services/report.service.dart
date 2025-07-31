@@ -80,6 +80,8 @@ class ReportService {
         entityLastUpdated: now,
         entityId: entityId,
         reportData: context,
+        entityName: 'Nutrition on ${_commonService.getDateString(now)}',
+        type: EntityType.nutrition
       );
       if (previousReport != null) {
         await removeReport(previousReport);
@@ -137,6 +139,8 @@ class ReportService {
         entityLastUpdated: workRecentlyUpdatedTime!,
         entityId: entityId,
         reportData: resp.message,
+        entityName: workout.name,
+        type: EntityType.workout
       );
       if (previousReport != null) {
         // removing old report
@@ -192,6 +196,8 @@ class ReportService {
         entityLastUpdated: routineEntityLastUpdatedAt!,
         entityId: entityId,
         reportData: resp.message,
+        entityName: routine.name,
+        type: EntityType.routine
       );
       if (previousReport != null) {
         await removeReport(previousReport.key);
