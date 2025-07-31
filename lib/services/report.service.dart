@@ -102,12 +102,10 @@ class ReportService {
   Future<Report> getWorkoutReport(
     Workout workout,
     DateTime? summaryFromDate,
-    StreamController<String>? eventStream
   ) async {
     var entityId = "Workout ${workout.key}";
     var enabledSets = workout.sets.where((set) => set.enabled);
     var totalEnabledSet = enabledSets.length;
-    eventStream?.add("Analyzing ${workout.name}");
     String workRep =
         '''Workout name : ${workout.name}\nFrom Total of $totalEnabledSet sets User gets an total volume of :\n''';
     // getting volume information
@@ -157,17 +155,14 @@ class ReportService {
     } else {
       report = previousReport;
     }
-    eventStream?.add("Completed analyzing ${workout.name}");
     return report;
   }
 
   Future<Report> getRoutineReport(
     Routine routine,
     DateTime? summaryFromDate,
-    StreamController<String>? eventStream
   ) async {
     var entityId = "Routine ${routine.key}";
-    eventStream?.add("Evaluating of routine ${routine.name}");
     var routineSummary =
         "Routine name : ${routine.name}\nVolumes in the Routine : \n";
     var workouts = await _routineService.getRoutinesWorkouts(routine);
@@ -181,10 +176,9 @@ class ReportService {
       routineSummary += "\t${vol.muscleName} ${vol.volume}\n";
     }
     for (var work in workouts) {
-      futures.add(getWorkoutReport(work, summaryFromDate,eventStream));
+      futures.add(getWorkoutReport(work, summaryFromDate));
     }
     final results = await Future.wait(futures);
-    eventStream?.add("Completed evaluating of routine ${routine.name}");
     for (var res in results) {
       routineSummary += "${res.reportData}\n\n";
       routineEntityLastUpdatedAt ??= res.entityLastUpdated;

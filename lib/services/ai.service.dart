@@ -106,7 +106,11 @@ class AiService {
             }
           }
         }
-      });
+      },
+      onDone: () {
+        controller.close();
+      },
+      );
       return controller;
     } else {
       return null;

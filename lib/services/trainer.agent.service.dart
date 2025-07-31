@@ -11,7 +11,7 @@ class ChatStreamDTO
 {
   String streamData;
   StreamController<AiResponse> stream;
-  StreamController<String> eventStream;
+  StreamController<String>? eventStream;
   ChatStreamDTO({required this.stream,required this.streamData,required this.eventStream});
 }
 class TrainerAgentService {
@@ -21,16 +21,15 @@ class TrainerAgentService {
   final _convRepo = locator<ConversationRepository>();
   StreamController<AiResponse>? _chatStreamInternal;
   StreamController<AiResponse>? _chatStreamExternal;
-  StreamController<String>? chatEventStream;
   String _chatRespData = "";
   bool pipeLineActive = false;
   
-  Future<String> getPerformanceContext(DateTime? summaryFromDate,StreamController<String>? eventStream) async {
+  Future<String> getPerformanceContext(DateTime? summaryFromDate) async {
     var routines = _routineService.getAllCustomRoutines();
     var summary = "";
     List<Future<Report>> futures = [];
     for (var rout in routines) {
-      futures.add( reportService.getRoutineReport(rout, null,eventStream));
+      futures.add( reportService.getRoutineReport(rout, null,));
     }
     var results = await Future.wait(futures);
     for (var res in results) {
@@ -50,12 +49,16 @@ class TrainerAgentService {
     return convo!;
   } 
 
+  Future<void> clearAllChats()async
+  {
+    await _convRepo.clearAllChats();
+  }
+
   Future<ChatStreamDTO> chatWithCoach(String message) async {
     if(!pipeLineActive)
     {
       _chatStreamExternal = StreamController<AiResponse>();
-      chatEventStream = StreamController<String>();
-      String workoutContext = await getPerformanceContext(null,chatEventStream);
+      String workoutContext = await getPerformanceContext(null);
       Report nutritionNdBodyContext = await reportService.getNutritionReport();
       AiChatContent content = AiChatContent(
         system_instruction: AiChatSegment(
@@ -80,12 +83,13 @@ class TrainerAgentService {
           _chatRespData+=data.message;
           _chatStreamExternal?.add(data);
         },
-        onDone: ()async{
+        onDone: () async{
           var old = await getOlderChat();
+          old.contents.add(AiChatSegment(role: ChatRoles.user,parts:[ ChatPart(text: message)] ));
           old.contents.add(AiChatSegment(role: ChatRoles.model,parts:[ ChatPart(text: _chatRespData)] ));
+          await _convRepo.updateConversation(old.key, old);
           _chatRespData = "";
           pipeLineActive = false;
-          chatEventStream?.close();
           _chatStreamExternal?.close();
         },
         onError: (errObj){
@@ -94,6 +98,6 @@ class TrainerAgentService {
         }
       );
     }
-    return ChatStreamDTO(stream: _chatStreamExternal!,streamData: _chatRespData,eventStream: chatEventStream!);
+    return ChatStreamDTO(stream: _chatStreamExternal!,streamData: _chatRespData,eventStream: null);
   }
 }

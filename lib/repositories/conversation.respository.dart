@@ -23,5 +23,8 @@ class ConversationRepository {
   AiChatContent? getConversationByKey(dynamic key) {
     return _conversationBox.get(key);
   }
-
+  Future<void> clearAllChats() async
+  {
+    await _conversationBox.clear();
+  }
 }

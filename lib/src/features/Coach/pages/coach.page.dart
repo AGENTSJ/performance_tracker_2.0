@@ -4,6 +4,8 @@ import 'package:markdown_widget/widget/all.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
+import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 
 class CoachPage extends StatefulWidget {
@@ -16,10 +18,23 @@ class CoachPage extends StatefulWidget {
 class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var msgController = TextEditingController();
+  AiChatContent? chats;
   bool isStreaming = false;
   String resp = "";
   List<String> events = [];
-
+  bool isLoading = true;
+  setUpUi() async {
+    chats = await trainerService.getOlderChat();
+    isLoading = false;
+    refreshState();
+    // print(chats);
+  }
+  @override
+  void initState()
+  {
+    super.initState();
+    setUpUi();
+  }
   handleSendMessage() async {
     isStreaming = true;
     ChatStreamDTO chatStream = await trainerService.chatWithCoach(
@@ -36,10 +51,6 @@ class _CoachPageState extends State<CoachPage> {
         refreshState();
       },
     );
-    chatStream.eventStream.stream.listen((data) {
-      events.add(data);
-      refreshState();
-    });
   }
 
   refreshState() {
@@ -63,24 +74,36 @@ class _CoachPageState extends State<CoachPage> {
             },
             child: Icon(Icons.book),
           ),
+          TextButton(
+            onPressed: ()async {
+              await trainerService.clearAllChats();
+              setUpUi();
+            },
+            child: Icon(Icons.warning_rounded),
+          ),
         ],
       ),
-      body: Column(
+      body:isLoading? LoadingPage() : Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(child: Column(
-                    children: [
-                      ...events.map(
-                        (event)=>Text(event)
-                      )
-                    ],
-                  ),),
-                  SizedBox(height: 30.h),
-                  MarkdownWidget(data: resp, shrinkWrap: true),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+                child: Column(
+                  children: [
+                    Container(
+                      child: Column(
+                        children: [...events.map((event) => Text(event))],
+                      ),
+                    ),
+                    SizedBox(height: 30.h),
+                    ...chats!.contents.map(
+                      (chatContent) =>
+                          MarkdownWidget(data: chatContent.parts.first.text,shrinkWrap: true,),
+                    ),
+                    MarkdownWidget(data: resp, shrinkWrap: true),
+                  ],
+                ),
               ),
             ),
           ),
