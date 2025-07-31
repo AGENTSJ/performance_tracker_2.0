@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
+import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 
 class CoachPage extends StatefulWidget {
   const CoachPage({super.key});
@@ -54,6 +53,11 @@ class _CoachPageState extends State<CoachPage> {
       appBar: AppBar(
         title: const Text('Coach Page'),
         backgroundColor: BACKGROUND,
+        actions: [
+          TextButton(onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ReportsPage()));
+          }, child: Icon(Icons.book))
+        ],
       ),
       body: Column(
         children: [

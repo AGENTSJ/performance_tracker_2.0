@@ -9,6 +9,7 @@ import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
+import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 
 enum Collections
 {
@@ -19,7 +20,8 @@ enum Collections
   workouts('workouts'),
   journey('journey'),
   advices('advices'),
-  conversations('conversations');
+  conversations('conversations'),
+  reports('reports');
   final String value;
   const Collections(this.value);
 }
@@ -57,6 +59,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(ChatPartAdapter());
   Hive.registerAdapter(AiChatSegmentAdapter());
   Hive.registerAdapter(AiChatContentAdapter());
+  Hive.registerAdapter(ReportAdapter());
 
 
   await Hive.openBox<Food>(Collections.foods.value);
@@ -67,6 +70,7 @@ Future<void> setupHiveDb() async
   await Hive.openBox<Journey>(Collections.journey.value);
   await Hive.openBox<AdviceSet>(Collections.advices.value);
   await Hive.openBox<AiChatContent>(Collections.conversations.value);
+  await Hive.openBox<Report>(Collections.reports.value);
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);

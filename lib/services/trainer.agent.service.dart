@@ -1,137 +1,41 @@
 import 'dart:async';
-
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
-import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/report.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
-// import 'package:performance_tracker/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
+
 
 class TrainerAgentService {
   final _aiService = locator<AiService>();
-  // final _workoutService = locator<WorkoutService>();
   final _routineService = locator<RoutineService>();
-  final _commonService = locator<CommonService>();
+  final reportService = locator<ReportService>();
 
-  Future<String> getPerformanceSummary(DateTime? summaryFromDate) async {
+  Future<String> getPerformanceContext(DateTime? summaryFromDate) async {
     var routines = _routineService.getAllCustomRoutines();
     var summary = "";
-    List<Future<String>> futures = [];
+    List<Future<Report>> futures = [];
     for (var rout in routines) {
-      futures.add(_generateRoutineSummary(rout, null));
+      futures.add( reportService.getRoutineReport(rout, null));
     }
     var results = await Future.wait(futures);
     for (var res in results) {
-      summary += "$res \n\n";
+      summary += "${res.reportData} \n\n";
     }
-    print("whole summary started");
-    var res = await _aiService.getResponse(
-      summary,
-      "You are a physical trainer user has ${routines.length} routines Identify potential improvements user can make to strength gains precise and concise your response must be concise but it should consider all the improvements user should make line by line",
-    );
-    print("whole summary ended");
-    return res.message;
-  }
-
-  Future<String> _generateWorkoutSummary(
-    Workout workout,
-    DateTime? summaryFromDate,
-  ) async {
-    print("${workout.name} started");
-    var EnabledSet = workout.sets.where((set) => set.enabled);
-    var totalEnabledSet = EnabledSet.length;
-    String workRep =
-        '''Workout name : ${workout.name}\nFrom Total of $totalEnabledSet sets User gets an total volume of :\n''';
-    for (var vol in workout.volumes) {
-      workRep += "\t${vol.muscleName} ${vol.volume * totalEnabledSet}\n";
-    }
-    workRep += "Sets descriptions :\n";
-    var i = 1;
-    for (var set in EnabledSet) {
-      workRep += _summarizeSetPerformance(set, summaryFromDate, i);
-      i++;
-    }
-    var resp = await _aiService.getResponse(
-      workRep,
-      "You are an workout observer your role is to analyze the prompt that consing of description about workout and provide valuable insights on each sets your response should be same structure as prompt but b need tot summarize the set the summary must include average interval in days that user did the sets the user performance is stagnant or strengthen or got weak the data is critical to guide user",
-    );
-    print("${workout.name} finished");
-    return resp.message;
-  }
-
-  String _summarizeSetPerformance(
-    WorkSet set,
-    DateTime? summaryFromDate,
-    int index,
-  ) {
-    String setSummary = "Set $index ${set.value}kg:\n";
-    bool beforeAdded = false;
-    bool afterAdded = false;
-
-    List<TrackEntry> contextEntries = [];
-    if (set.history.length > 5) {
-      contextEntries = set.history.sublist(set.history.length - 5);
-    } else {
-      contextEntries = set.history;
-    }
-    for (var entry in contextEntries) {
-      if ((summaryFromDate == null ||
-              entry.entryDate.isBefore(summaryFromDate)) &&
-          !beforeAdded) {
-        setSummary += "\t Before the current advice\n";
-        beforeAdded = true;
-      }
-      if ((summaryFromDate != null &&
-              entry.entryDate.isAfter(summaryFromDate)) &&
-          !afterAdded) {
-        setSummary += "\tAfter the advice\n";
-        afterAdded = true;
-      }
-      setSummary +=
-          "\t\t\t${_commonService.getDateString(entry.entryDate)} Reps : ${entry.value}\n";
-    }
-    return setSummary;
-  }
-
-  Future<String> _generateRoutineSummary(
-    Routine routine,
-    DateTime? summaryFromDate,
-  ) async {
-    var routineSummary =
-        "Routine name : ${routine.name}\nVolumes in the Routine : \n";
-    var workouts = await _routineService.getRoutinesWorkouts(routine);
-    var volumes = await _routineService.getRoutinesVolume(routine);
-    List<Future<String>> futures = [];
-    for (var vol in volumes) {
-      routineSummary += "\t${vol.muscleName} ${vol.volume}\n";
-    }
-    for (var work in workouts) {
-      futures.add(_generateWorkoutSummary(work, summaryFromDate));
-    }
-    final results = await Future.wait(futures);
-    for (var res in results) {
-      routineSummary += "${res}\n\n";
-    }
-    print("${routine.name} summary started");
-    // return routineSummary;
-    var resp = await _aiService.getResponse(
-      routineSummary,
-      "Summaries this routine and draw out important observation",
-      modelType: Models.Pro,
-    );
-    print("${routine.name} summary finished");
-    return resp.message;
+    return summary;
   }
 
   Future<StreamController<AiResponse>?> chatWithCoach(String message) async {
-    String workSummary = await getPerformanceSummary(null);
+    String workoutContext = await getPerformanceContext(null);
+    Report nutritionNdBodyContext = await reportService.getNutritionReport();
     AiChatContent content = AiChatContent(
       system_instruction: AiChatSegment(
         role: null,
         parts: [
           ChatPart(
-            text: "You are a training coach here is users workout summary $workSummary",
+            text:
+                "You are a training coach here is users data\nworkout context : $workoutContext\nNutrition and body context: ${nutritionNdBodyContext.reportData}",
           ),
         ],
       ),

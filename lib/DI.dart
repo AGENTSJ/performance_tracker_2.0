@@ -4,6 +4,7 @@ import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/repositories/day.repository.dart';
 import 'package:performance_tracker/repositories/food.repository.dart';
 import 'package:performance_tracker/repositories/journey.repository.dart';
+import 'package:performance_tracker/repositories/report.repository.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/repositories/user.repository.dart';
 import 'package:performance_tracker/services/advice.service.dart';
@@ -16,6 +17,7 @@ import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
+import 'package:performance_tracker/services/report.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
 import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
@@ -45,10 +47,12 @@ setUpDependencyInjection()
   locator.registerLazySingleton<HealthService>(()=>HealthService());
   locator.registerLazySingleton<TrainerAgentService>(()=>TrainerAgentService());
   locator.registerLazySingleton<JourneyService>(()=>JourneyService());
-  locator.registerLazySingleton<AdviceRepository>(()=>AdviceRepository());
   locator.registerLazySingleton<AdviceService>(()=>AdviceService());
+  locator.registerLazySingleton<ReportService>(()=>ReportService());
 
   // Repo
+  locator.registerLazySingleton<AdviceRepository>(()=>AdviceRepository());
+  locator.registerLazySingleton<ReportRepository>(()=>ReportRepository());
   locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());
   locator.registerLazySingleton<DayRepository>(()=>DayRepository());
   locator.registerLazySingleton<UserRepository>(()=>UserRepository());

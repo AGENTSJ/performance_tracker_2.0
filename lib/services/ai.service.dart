@@ -36,6 +36,7 @@ class AiService {
     String? instructions, {
     Models modelType = Models.Flash,
   }) async {
+    print("ai response fetch");
     var model = _models[modelType];
     dynamic payload = {
       "system_instruction": {
@@ -72,6 +73,7 @@ class AiService {
   }
 
   Future<StreamController<AiResponse>?> streamGeminiResponse(AiChatContent chatContent) async {
+    print("ai response fetch");
     final StreamController<AiResponse> controller = StreamController<AiResponse>();
     var test = jsonEncode(toMap(chatContent));
     final uri = Uri.parse(

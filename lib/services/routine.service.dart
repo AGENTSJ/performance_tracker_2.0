@@ -2,6 +2,11 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/services/workout.service.dart';
+class SummaryDTO<T> {
+  DateTime? recentUpdate;
+  T data;
+  SummaryDTO({required this.recentUpdate, required this.data});
+}
 
 class RoutineService {
   final _routineRepo = locator<RoutineRepository>();
