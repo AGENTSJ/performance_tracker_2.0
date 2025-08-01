@@ -31,19 +31,19 @@ class UserGoalsService {
       {
         return ActivityLevel.sedentary;
       }
-      if (steps<= 7000)
+      if (steps<= 10000)
       {
         return ActivityLevel.lightlyActive;
       }
-      if(steps<= 12000)
+      if(steps<= 14000)
       {
         return ActivityLevel.moderatelyActive;
       }
-      if(steps<=15000)
+      if(steps<=20000)
       {
         return ActivityLevel.veryActive;
       }
-      if(steps > 15000)
+      if(steps > 20000)
       {
         return ActivityLevel.extraActive;
       }

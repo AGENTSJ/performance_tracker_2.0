@@ -4,9 +4,12 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
+import 'package:performance_tracker/services/health.service.dart';
+import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Nutrition/widgets/mealContainer.dart';
@@ -26,7 +29,11 @@ class NutritionModuleState extends State<NutritionModule> {
   final commentService = locator<CommentsService>();
   final avatarService = locator<AvatarService>();
   final goalService = locator<UserGoalsService>();
+  final userService = locator<UserService>();
+  final healthService = locator<HealthService>();
+  var maintenanceCalories = 1800.0;
   Day? currentDay;
+  User? user;
   late MacroNutrients daysMacro;
   String dayMarker = '';
   bool showDateSelector = false;
@@ -35,18 +42,22 @@ class NutritionModuleState extends State<NutritionModule> {
   @override
   void initState() {
     super.initState();
-    _setHomePage();
+    _setHomePage(DateTime.now());
   }
 
-  _setHomePage() async {
+  _setHomePage(DateTime date) async {
     isHomePageLoading = true;
     refreshState();
-    var day = await dayService.getDayDataByDate(DateTime.now());
+    var day = await dayService.getDayDataByDate(date);
+    user = await userService.getUserData();
+    var steps = await healthService.getStepsByDate(date);
+    maintenanceCalories = goalService.fetchMaintenanceCalories(user!,steps: steps);
     currentDay = day;
     _setCurrentDayMarker();
     setCaloriesInDay();
     isHomePageLoading = false;
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    showDateSelector = false;
     refreshState();
   }
 
@@ -93,7 +104,7 @@ class NutritionModuleState extends State<NutritionModule> {
       body: !isHomePageLoading
           ? RefreshIndicator(
               onRefresh: () async {
-                await _setHomePage();
+                await _setHomePage(DateTime.now());
               },
               child: Stack(
                 children: [
@@ -230,11 +241,10 @@ class NutritionModuleState extends State<NutritionModule> {
   }
 
   handleDateChange(DateTime value) async {
-    currentDay = await dayService.getDayDataByDate(value);
-    _setCurrentDayMarker();
-    setCaloriesInDay();
-    showDateSelector = false;
-    refreshState();
+    // currentDay = await dayService.getDayDataByDate(value);
+    // _setCurrentDayMarker();
+    // setCaloriesInDay();
+    _setHomePage(value);
   }
 
   setCaloriesInDay() {
