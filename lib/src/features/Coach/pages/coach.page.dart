@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
@@ -22,14 +25,18 @@ class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var avatarService = locator<AvatarService>();
   var msgController = TextEditingController();
+  var scrollController = ScrollController();
   Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
   bool isStreaming = false;
+  bool isGettingContext = false;
   String resp = "";
   List<String> events = [];
   bool isLoading = true;
   AiChatSegment? activeChatResp;
+  Timer? refreshTimer;
+
   setUpUi() async {
     coachIconImg = avatarService.getMaleAvatar();
     olderChats = await trainerService.getOlderChat();
@@ -41,22 +48,66 @@ class _CoachPageState extends State<CoachPage> {
 
   @override
   void initState() {
+    listenToAnyActiveStreams();
     super.initState();
     setUpUi();
   }
 
+  scrollToEnd() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 250),
+        curve: Curves.bounceIn,
+      );
+    }
+  }
+
+  listenToAnyActiveStreams() {
+    if (trainerService.pipeLineActive) {
+      isStreaming = true;
+      isGettingContext = false;
+      if (trainerService.chatStreamExternal != null) {
+        resp = trainerService.chatRespData;
+        activeChatResp = AiChatSegment(
+          role: ChatRoles.model,
+          parts: [ChatPart(text: resp)],
+        );
+        trainerService.chatStreamExternal?.stream.listen(
+          (data) {
+            activeChatResp!.parts.first.text += data.message;
+            chats.add(activeChatResp!);
+            controlledRefresh();
+          },
+          onDone: () {
+            isStreaming = false;
+            refreshState();
+            scrollToEnd();
+          },
+        );
+      }
+    }
+  }
+
   handleSendMessage() async {
+    if (isStreaming || msgController.text.isEmpty) return;
+    var message = msgController.text;
+    msgController.text = "";
     isStreaming = true;
+    isGettingContext = true;
+    refreshState();
+    scrollToEnd();
+    await Future.delayed(Duration(seconds: 4));
     chats.add(
       AiChatSegment(
         role: ChatRoles.user,
-        parts: [ChatPart(text: msgController.text)],
+        parts: [ChatPart(text: message)],
       ),
     );
+    ChatStreamDTO chatStream = await trainerService.chatWithCoach(message);
+    resp = chatStream.streamData;
+    isGettingContext = false;
     refreshState();
-    ChatStreamDTO chatStream = await trainerService.chatWithCoach(
-      msgController.text,
-    );
     activeChatResp = AiChatSegment(
       role: ChatRoles.model,
       parts: [ChatPart(text: resp)],
@@ -65,11 +116,12 @@ class _CoachPageState extends State<CoachPage> {
     chatStream.stream.stream.listen(
       (data) {
         activeChatResp!.parts.first.text += data.message;
-        refreshState();
+        controlledRefresh();
       },
       onDone: () {
         isStreaming = false;
         refreshState();
+        scrollToEnd();
       },
       onError: (err) {
         isStreaming = false;
@@ -83,6 +135,21 @@ class _CoachPageState extends State<CoachPage> {
     setState(() {});
   }
 
+  controlledRefresh() {
+    if (refreshTimer == null || !refreshTimer!.isActive) {
+      refreshTimer = Timer(Duration(milliseconds: 250), () {
+        refreshState();
+        scrollToEnd();
+      });
+    } else {
+      refreshTimer?.cancel();
+      refreshTimer = Timer(Duration(milliseconds: 250), () {
+        refreshState();
+        scrollToEnd();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,12 +157,19 @@ class _CoachPageState extends State<CoachPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            SizedBox(height: 40.h,width: 40.h,child: Stack(
-              children: [
-                Positioned(bottom: -10.h,child: Icon(Icons.circle,color: PRIMARY,size: 50,)),
-                coachIconImg!,
-              ],
-            ),),
+            SizedBox(
+              height: 40.h,
+              width: 40.h,
+              child: Stack(
+                children: [
+                  Positioned(
+                    bottom: -10.h,
+                    child: Icon(Icons.circle, color: PRIMARY, size: 50),
+                  ),
+                  coachIconImg!,
+                ],
+              ),
+            ),
             Text('Coach'),
           ],
         ),
@@ -140,6 +214,7 @@ class _CoachPageState extends State<CoachPage> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                      controller: scrollController,
                       child: Column(
                         children: [
                           SizedBox(height: 30.h),
@@ -158,6 +233,33 @@ class _CoachPageState extends State<CoachPage> {
                               ),
                             ),
                           ),
+                          if (isGettingContext)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.0.w,
+                                vertical: 12.h,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: SURFACE2,
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SpinKitSpinningLines(
+                                        size: 30,
+                                        color: PRIMARY,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text("Thinking...."),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           // MarkdownWidget(data: resp, shrinkWrap: true),
                         ],
                       ),
@@ -185,7 +287,7 @@ class _CoachPageState extends State<CoachPage> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 10.w,),
+                          SizedBox(width: 10.w),
                           TextButton(
                             onPressed: () {
                               handleSendMessage();
@@ -195,7 +297,11 @@ class _CoachPageState extends State<CoachPage> {
                               shape: CircleBorder(),
                               minimumSize: Size(40.h, 40.h),
                             ),
-                            child: Icon(FontAwesomeIcons.paperPlane, color: SURFACE2,size: 20,),
+                            child: Icon(
+                              FontAwesomeIcons.paperPlane,
+                              color: SURFACE2,
+                              size: 20,
+                            ),
                           ),
                         ],
                       ),
