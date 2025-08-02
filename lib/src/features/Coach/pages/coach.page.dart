@@ -35,17 +35,34 @@ class _CoachPageState extends State<CoachPage> {
   bool isLoading = true;
   AiChatSegment? activeChatResp;
   Timer? refreshTimer;
+  bool isLoaded = false;
+  int loadedConvoCount = 0;
+  final loadLimit = 10;
 
   setUpUi() async {
     coachIconImg = avatarService.getMaleAvatar();
     olderChats = await trainerService.getOlderChat();
-    chats = [];
-    chats.addAll(olderChats!.contents);
+    setUpConvoWindow();
     isLoading = false;
     Future.delayed(Duration(milliseconds: 200), () {
       scrollToEnd();
     });
+    isLoaded = true;
     refreshState();
+  }
+
+  setUpConvoWindow() {
+    chats = [];
+    // if (olderChats!.contents.length > loadedConvoCount + loadLimit) {
+    //   loadedConvoCount = loadedConvoCount + loadLimit;
+    //   chats.addAll(
+    //     olderChats!.contents.sublist(
+    //       olderChats!.contents.length - loadedConvoCount,
+    //     ),
+    //   );
+    //   return;
+    // }
+    chats.addAll(olderChats!.contents);
   }
 
   @override
@@ -53,6 +70,17 @@ class _CoachPageState extends State<CoachPage> {
     listenToAnyActiveStreams();
     super.initState();
     setUpUi();
+    // scrollController.addListener(() {
+    //   if ((scrollController.offset <=
+    //           (scrollController.position.minScrollExtent + 10)) &&
+    //       isLoaded) {
+    //     print(
+    //       "scrolled at top${scrollController.offset} ${scrollController.position.minScrollExtent + 10}",
+    //     );
+    //     setUpConvoWindow();
+    //     refreshState();
+    //   }
+    // });
   }
 
   scrollToEnd() {
@@ -342,6 +370,7 @@ class _CoachPageState extends State<CoachPage> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
                       controller: scrollController,
                       child: Column(
                         children: [
@@ -378,7 +407,12 @@ class _CoachPageState extends State<CoachPage> {
                                   Expanded(
                                     flex: 1,
                                     child: Container(
-                                      decoration: BoxDecoration(color: BORDER_PRIMARY,borderRadius: BorderRadius.circular(8.r)),
+                                      decoration: BoxDecoration(
+                                        color: BORDER_PRIMARY,
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
+                                        ),
+                                      ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Row(
@@ -387,7 +421,7 @@ class _CoachPageState extends State<CoachPage> {
                                               "Typing",
                                               style: TextStyle(
                                                 color: TEXT_SECONDARY,
-                                                fontSize: 12.sp
+                                                fontSize: 12.sp,
                                               ),
                                             ),
                                             SpinKitThreeBounce(
