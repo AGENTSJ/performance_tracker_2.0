@@ -10,16 +10,17 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
+      index: 2,
       color: PRIMARY,
       height: 60.h.clamp(0, 75),
       backgroundColor: BACKGROUND,
       animationDuration: Duration(milliseconds: 200),
       items: [
-        Icon(Icons.food_bank ,color: CONT_BACKGROUND,),
-        Icon(Icons.directions_bike ,color: CONT_BACKGROUND,),
-        Icon(Icons.directions_run,color: CONT_BACKGROUND,),
-        Icon(Icons.chat,color: CONT_BACKGROUND,),
-        Icon(FontAwesomeIcons.user,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.appleWhole ,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.dumbbell ,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.chartSimple ,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.solidComment ,color: CONT_BACKGROUND,),
+        Icon(FontAwesomeIcons.solidUser ,color: CONT_BACKGROUND,),
       ],
       onTap: (index) {
         onIndexChange(index);

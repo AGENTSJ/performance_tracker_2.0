@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -43,6 +42,9 @@ class _CoachPageState extends State<CoachPage> {
     chats = [];
     chats.addAll(olderChats!.contents);
     isLoading = false;
+    Future.delayed(Duration(milliseconds: 200,),(){
+      scrollToEnd();
+    });
     refreshState();
   }
 

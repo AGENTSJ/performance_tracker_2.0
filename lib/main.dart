@@ -49,7 +49,7 @@ class MainAppEntry extends StatefulWidget {
 }
 
 class _MainAppEntryState extends State<MainAppEntry> {
-  int selectedIndex = 0;
+  int selectedIndex = 2;
 
   NutritionModule? nutritionModule;
   TrainingModulePage? trainingModulePage;
