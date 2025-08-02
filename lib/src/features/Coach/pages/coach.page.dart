@@ -42,7 +42,7 @@ class _CoachPageState extends State<CoachPage> {
     chats = [];
     chats.addAll(olderChats!.contents);
     isLoading = false;
-    Future.delayed(Duration(milliseconds: 200,),(){
+    Future.delayed(Duration(milliseconds: 200), () {
       scrollToEnd();
     });
     refreshState();
@@ -137,6 +137,35 @@ class _CoachPageState extends State<CoachPage> {
     setState(() {});
   }
 
+  void handleClearAllChats(BuildContext context) async {
+    final shouldClear = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: SURFACE2,
+        title: Text("Confirm Clear"),
+        content: Text(
+          "Are you sure you want to clear all chats? This action cannot be undone.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text("Clear", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldClear == true) {
+      await trainerService.clearAllChats();
+      setUpUi();
+      Fluttertoast.showToast(msg: "All chats have been cleared");
+    }
+  }
+
   controlledRefresh() {
     if (refreshTimer == null || !refreshTimer!.isActive) {
       refreshTimer = Timer(Duration(milliseconds: 250), () {
@@ -177,22 +206,119 @@ class _CoachPageState extends State<CoachPage> {
         ),
         backgroundColor: BACKGROUND,
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => ReportsPage()));
-            },
-            child: Icon(Icons.book),
-          ),
-          TextButton(
-            onPressed: () async {
-              await trainerService.clearAllChats();
-              setUpUi();
-            },
-            child: Icon(Icons.warning_rounded),
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
           ),
         ],
+      ),
+      endDrawer: Drawer(
+        backgroundColor: SURFACE2,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  SizedBox(
+                    height: 50.h,
+                    child: DrawerHeader(
+                      child: Text(
+                        'Coach settings',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Container with TextButton (Reports)
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ReportsPage(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.book, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Text("Reports", style: TextStyle(fontSize: 12.sp)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: () async {},
+                      child: Row(
+                        children: [
+                          Icon(FontAwesomeIcons.brain, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Text("Memory", style: TextStyle(fontSize: 12.sp)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: BORDER_PRIMARY),
+                  top: BorderSide(color: BORDER_PRIMARY),
+                ),
+              ),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  foregroundColor: TEXT_PRIMARY,
+                  iconColor: Colors.redAccent.shade100,
+                ),
+                onPressed: () async {
+                  handleClearAllChats(context);
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_rounded, size: 18.sp),
+                    SizedBox(width: 20.w),
+                    Text("Clear All Chats", style: TextStyle(fontSize: 12.sp)),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 5.h),
+          ],
+        ),
       ),
       body: isLoading
           ? LoadingPage()
@@ -227,42 +353,56 @@ class _CoachPageState extends State<CoachPage> {
                               type: ChatRoles.model,
                             ),
                           ...chats.map(
-                            (chatContent) => Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0.h),
-                              child: ChatBubble(
-                                data: chatContent.parts.first.text,
-                                type: chatContent.role!,
-                              ),
-                            ),
+                            (chatContent) =>
+                                chatContent.parts.first.text.isEmpty
+                                ? SizedBox.shrink()
+                                : Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8.0.h,
+                                    ),
+                                    child: ChatBubble(
+                                      data: chatContent.parts.first.text,
+                                      type: chatContent.role!,
+                                    ),
+                                  ),
                           ),
                           if (isGettingContext)
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 12.0.w,
-                                vertical: 12.h,
+                                vertical: 5.h,
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: SURFACE2,
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SpinKitSpinningLines(
-                                        size: 30,
-                                        color: PRIMARY,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(color: BORDER_PRIMARY,borderRadius: BorderRadius.circular(8.r)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Typing",
+                                              style: TextStyle(
+                                                color: TEXT_SECONDARY,
+                                                fontSize: 12.sp
+                                              ),
+                                            ),
+                                            SpinKitThreeBounce(
+                                              color: TEXT_SECONDARY,
+                                              size: 22.sp,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      SizedBox(width: 10),
-                                      Text("Thinking...."),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                  Expanded(flex: 2, child: SizedBox()),
+                                ],
                               ),
                             ),
-                          // MarkdownWidget(data: resp, shrinkWrap: true),
                         ],
                       ),
                     ),

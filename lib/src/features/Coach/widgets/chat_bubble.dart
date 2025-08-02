@@ -21,15 +21,15 @@ class _ChatBubbleState extends State<ChatBubble> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: widget.type == ChatRoles.model
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.end,
       children: [
         Stack(
           children: [
             Padding(
               padding: (widget.type == ChatRoles.model)
-                  ? EdgeInsets.only(right: 12.w)
-                  : EdgeInsets.only(left: 12.w),
+                  ? EdgeInsets.only(left: 12.w)
+                  : EdgeInsets.only(right: 12.w),
               child: Container(
                 decoration: BoxDecoration(
                   color: CHAT_CONT_COLOR,
@@ -52,7 +52,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                 ),
               ),
             ),
-            if (widget.type == ChatRoles.model)
+            if (widget.type == ChatRoles.user)
               Positioned(
                 right: -7.w,
                 top: -14.h,
@@ -62,7 +62,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                   color: CHAT_CONT_COLOR,
                 ),
               ),
-            if (widget.type == ChatRoles.user)
+            if (widget.type == ChatRoles.model)
               Positioned(
                 left: -7.w,
                 top: -14.h,

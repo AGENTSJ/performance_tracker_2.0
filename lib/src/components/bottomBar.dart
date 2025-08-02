@@ -13,11 +13,11 @@ class BottomBar extends StatelessWidget {
       index: 2,
       color: PRIMARY,
       height: 60.h.clamp(0, 75),
-      backgroundColor: BACKGROUND,
+      backgroundColor: Colors.transparent,
       animationDuration: Duration(milliseconds: 200),
       items: [
         Icon(FontAwesomeIcons.appleWhole ,color: CONT_BACKGROUND,),
-        Icon(FontAwesomeIcons.dumbbell ,color: CONT_BACKGROUND,),
+        Icon(Icons.fitness_center ,color: CONT_BACKGROUND,size: 26.sp,),
         Icon(FontAwesomeIcons.chartSimple ,color: CONT_BACKGROUND,),
         Icon(FontAwesomeIcons.solidComment ,color: CONT_BACKGROUND,),
         Icon(FontAwesomeIcons.solidUser ,color: CONT_BACKGROUND,),
