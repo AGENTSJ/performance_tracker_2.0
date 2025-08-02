@@ -34,4 +34,4 @@ const Color FIBER_COLOR = Color(0xFFAB47BC);
 Color CALORIE_COLOR = Color(0xFFD2691E);
 
 final Image empty = Image.asset("assets/empty.png",);
-final AssetImage backgroundDoodles = AssetImage("assets/shipdoodles.png");
+final AssetImage backgroundDoodles = AssetImage("assets/doodls.png");

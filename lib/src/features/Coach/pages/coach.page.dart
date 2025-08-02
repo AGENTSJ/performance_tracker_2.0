@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:markdown_widget/widget/all.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
+import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
 
 class CoachPage extends StatefulWidget {
   const CoachPage({super.key});
@@ -18,37 +19,56 @@ class CoachPage extends StatefulWidget {
 class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var msgController = TextEditingController();
-  AiChatContent? chats;
+  AiChatContent? olderChats;
+  List<AiChatSegment> chats = [];
   bool isStreaming = false;
   String resp = "";
   List<String> events = [];
   bool isLoading = true;
+  AiChatSegment? activeChatResp;
   setUpUi() async {
-    chats = await trainerService.getOlderChat();
+    olderChats = await trainerService.getOlderChat();
+    chats = [];
+    chats.addAll(olderChats!.contents);
     isLoading = false;
     refreshState();
-    // print(chats);
   }
+
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
     setUpUi();
   }
+
   handleSendMessage() async {
     isStreaming = true;
+    chats.add(
+      AiChatSegment(
+        role: ChatRoles.user,
+        parts: [ChatPart(text: msgController.text)],
+      ),
+    );
+    refreshState();
     ChatStreamDTO chatStream = await trainerService.chatWithCoach(
       msgController.text,
     );
-
+    activeChatResp = AiChatSegment(
+      role: ChatRoles.model,
+      parts: [ChatPart(text: resp)],
+    );
+    chats.add(activeChatResp!);
     chatStream.stream.stream.listen(
       (data) {
-        resp += data.message;
+        activeChatResp!.parts.first.text += data.message;
         refreshState();
       },
       onDone: () {
         isStreaming = false;
         refreshState();
+      },
+      onError: (err) {
+        isStreaming = false;
+        Fluttertoast.showToast(msg: "An error has occur");
       },
     );
   }
@@ -75,7 +95,7 @@ class _CoachPageState extends State<CoachPage> {
             child: Icon(Icons.book),
           ),
           TextButton(
-            onPressed: ()async {
+            onPressed: () async {
               await trainerService.clearAllChats();
               setUpUi();
             },
@@ -83,53 +103,77 @@ class _CoachPageState extends State<CoachPage> {
           ),
         ],
       ),
-      body:isLoading? LoadingPage() : Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
-                child: Column(
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [...events.map((event) => Text(event))],
-                      ),
-                    ),
-                    SizedBox(height: 30.h),
-                    ...chats!.contents.map(
-                      (chatContent) =>
-                          MarkdownWidget(data: chatContent.parts.first.text,shrinkWrap: true,),
-                    ),
-                    MarkdownWidget(data: resp, shrinkWrap: true),
-                  ],
+      body: isLoading
+          ? LoadingPage()
+          : Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: backgroundDoodles,
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    const Color.fromARGB(255, 255, 255, 255).withOpacity(
+                      0.3,
+                    ), // adjust opacity to control strength
+                    BlendMode.modulate, // or try BlendMode.modulate / overlay
+                  ),
                 ),
               ),
-            ),
-          ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
+              child: Column(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: msgController,
-                      decoration: InputDecoration(border: OutlineInputBorder()),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 30.h),
+                          if (chats.isEmpty)
+                            ChatBubble(
+                              data:
+                                  "Hello there let me guide you !! and make you see progress by optimising your workout and other things",
+                              type: ChatRoles.model,
+                            ),
+                          ...chats.map(
+                            (chatContent) => Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.0.h),
+                              child: ChatBubble(
+                                data: chatContent.parts.first.text,
+                                type: chatContent.role!,
+                              ),
+                            ),
+                          ),
+                          // MarkdownWidget(data: resp, shrinkWrap: true),
+                        ],
+                      ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      handleSendMessage();
-                    },
-                    child: Icon(Icons.send),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: msgController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Color(0xFFE0E0E0),
+                                border: OutlineInputBorder(),
+                                hintText: "Your message .."
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              handleSendMessage();
+                            },
+                            child: Icon(Icons.send),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
     );
   }
 }

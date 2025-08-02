@@ -139,9 +139,10 @@ class ReportService {
         '''You are a agent who is assigned with the crucial task of analyzing an workout and its performance and draw out an observation you must closely observe the data and provide insights that describes user performance in the workout this could guide agents in the chain further up to analyze and provide valuable advices to user ,  Respond with maximally dense, information-rich sentences. Eliminate all decorative language. Every sentence must convey essential detail, without omissions or filler.
         ''',
       );
+      workRecentlyUpdatedTime ??= DateTime.now();
       report = Report(
         generatedAt: DateTime.now(),
-        entityLastUpdated: workRecentlyUpdatedTime!,
+        entityLastUpdated: workRecentlyUpdatedTime,
         entityId: entityId,
         reportData: resp.message,
         entityName: workout.name,
@@ -177,6 +178,7 @@ class ReportService {
     }
     for (var work in workouts) {
       futures.add(getWorkoutReport(work, summaryFromDate));
+      break;
     }
     final results = await Future.wait(futures);
     for (var res in results) {
@@ -195,9 +197,10 @@ class ReportService {
         "Summaries this routine and draw out important observation",
         modelType: Models.Pro,
       );
+      routineEntityLastUpdatedAt ??= DateTime.now();
       report = Report(
         generatedAt: DateTime.now(),
-        entityLastUpdated: routineEntityLastUpdatedAt!,
+        entityLastUpdated: routineEntityLastUpdatedAt,
         entityId: entityId,
         reportData: resp.message,
         entityName: routine.name,

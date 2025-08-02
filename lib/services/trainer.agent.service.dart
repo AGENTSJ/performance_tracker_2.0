@@ -30,6 +30,7 @@ class TrainerAgentService {
     List<Future<Report>> futures = [];
     for (var rout in routines) {
       futures.add( reportService.getRoutineReport(rout, null,));
+      break;
     }
     var results = await Future.wait(futures);
     for (var res in results) {
