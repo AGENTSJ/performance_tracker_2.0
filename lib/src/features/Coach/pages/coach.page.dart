@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
@@ -111,9 +112,12 @@ class _CoachPageState extends State<CoachPage> {
                   image: backgroundDoodles,
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                    const Color.fromARGB(255, 255, 255, 255).withOpacity(
-                      0.3,
-                    ), // adjust opacity to control strength
+                    const Color.fromARGB(
+                      255,
+                      255,
+                      255,
+                      255,
+                    ).withOpacity(0.3), // adjust opacity to control strength
                     BlendMode.modulate, // or try BlendMode.modulate / overlay
                   ),
                 ),
@@ -146,6 +150,10 @@ class _CoachPageState extends State<CoachPage> {
                     ),
                   ),
                   Container(
+                    decoration: BoxDecoration(
+                      color: BACKGROUND,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -155,17 +163,25 @@ class _CoachPageState extends State<CoachPage> {
                               controller: msgController,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Color(0xFFE0E0E0),
-                                border: OutlineInputBorder(),
-                                hintText: "Your message .."
+                                fillColor: SURFACE2,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                                hintText: "Your message ..",
                               ),
                             ),
                           ),
+                          SizedBox(width: 10.w,),
                           TextButton(
                             onPressed: () {
                               handleSendMessage();
                             },
-                            child: Icon(Icons.send),
+                            style: TextButton.styleFrom(
+                              backgroundColor: PRIMARY,
+                              shape: CircleBorder(),
+                              minimumSize: Size(40.h, 40.h),
+                            ),
+                            child: Icon(FontAwesomeIcons.paperPlane, color: SURFACE2,size: 20,),
                           ),
                         ],
                       ),
