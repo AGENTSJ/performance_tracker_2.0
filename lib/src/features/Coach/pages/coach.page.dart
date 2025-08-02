@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
@@ -19,7 +20,9 @@ class CoachPage extends StatefulWidget {
 
 class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
+  var avatarService = locator<AvatarService>();
   var msgController = TextEditingController();
+  Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
   bool isStreaming = false;
@@ -28,6 +31,7 @@ class _CoachPageState extends State<CoachPage> {
   bool isLoading = true;
   AiChatSegment? activeChatResp;
   setUpUi() async {
+    coachIconImg = avatarService.getMaleAvatar();
     olderChats = await trainerService.getOlderChat();
     chats = [];
     chats.addAll(olderChats!.contents);
@@ -84,7 +88,17 @@ class _CoachPageState extends State<CoachPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
-        title: const Text('Coach Page'),
+        title: Row(
+          children: [
+            SizedBox(height: 40.h,width: 40.h,child: Stack(
+              children: [
+                Positioned(bottom: -10.h,child: Icon(Icons.circle,color: PRIMARY,size: 50,)),
+                coachIconImg!,
+              ],
+            ),),
+            Text('Coach'),
+          ],
+        ),
         backgroundColor: BACKGROUND,
         actions: [
           TextButton(

@@ -119,7 +119,6 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
-                        print("changed");
                         setState(() {
                           selectedMuscle = newValue;
                         });

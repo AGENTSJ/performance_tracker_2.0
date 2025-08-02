@@ -28,14 +28,16 @@ class TrainerAgentService {
     var routines = _routineService.getAllCustomRoutines();
     var summary = "";
     List<Future<Report>> futures = [];
+    print("getting performance context");
     for (var rout in routines) {
       futures.add( reportService.getRoutineReport(rout, null,));
-      break;
+      // break;
     }
     var results = await Future.wait(futures);
     for (var res in results) {
       summary += "${res.reportData} \n\n";
     }
+    print("finished performance context");
     return summary;
   }
 
@@ -55,10 +57,12 @@ class TrainerAgentService {
     await _convRepo.clearAllChats();
   }
 
-  Future<ChatStreamDTO> chatWithCoach(String message) async {
+  Future<ChatStreamDTO> chatWithCoach(String message ) async {
     if(!pipeLineActive)
     {
       _chatStreamExternal = StreamController<AiResponse>();
+      var old = await getOlderChat();
+      old.contents.add(AiChatSegment(role: ChatRoles.user,parts:[ ChatPart(text: message)] ));
       String workoutContext = await getPerformanceContext(null);
       Report nutritionNdBodyContext = await reportService.getNutritionReport();
       AiChatContent content = AiChatContent(
@@ -67,16 +71,12 @@ class TrainerAgentService {
           parts: [
             ChatPart(
               text:
-                  "You are a training coach here is users data\nworkout context : $workoutContext\nNutrition and body context: ${nutritionNdBodyContext.reportData}",
+                  "You are a training coach here is users data\nworkout context : $workoutContext\nNutrition and body context: ${nutritionNdBodyContext.reportData} above isnt part of the converstation you are going to have with user its someting u should keep in ind before answering any advice prompts from user",
             ),
           ],
         ),
-        contents: [
-          AiChatSegment(
-            role: ChatRoles.user,
-            parts: [ChatPart(text: message)],
-          ),
-        ],
+        
+        contents: old.contents,
       );
       _chatStreamInternal = await _aiService.streamGeminiResponse(content);
       _chatStreamInternal!.stream.listen(
@@ -85,8 +85,6 @@ class TrainerAgentService {
           _chatStreamExternal?.add(data);
         },
         onDone: () async{
-          var old = await getOlderChat();
-          old.contents.add(AiChatSegment(role: ChatRoles.user,parts:[ ChatPart(text: message)] ));
           old.contents.add(AiChatSegment(role: ChatRoles.model,parts:[ ChatPart(text: _chatRespData)] ));
           await _convRepo.updateConversation(old.key, old);
           _chatRespData = "";

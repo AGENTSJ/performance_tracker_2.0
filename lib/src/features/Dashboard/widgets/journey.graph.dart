@@ -141,7 +141,6 @@ class _JourneyGraphState extends State<JourneyGraph> {
                       interval: 1,
                       getTitlesWidget: (value, meta) {
                         int index = value.toInt();
-                        print(index);
                         List<String> date = commonService.getDateString(
                           days[index].dayTime,
                         ).split(' ');

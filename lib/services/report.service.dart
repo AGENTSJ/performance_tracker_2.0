@@ -26,10 +26,11 @@ class ReportService {
   Future<void> createReport(Report report) async {
     await _repository.addReport(report);
   }
-  Future<void> clearAllReports()async
-  {
+
+  Future<void> clearAllReports() async {
     await _repository.removeAllReports();
   }
+
   List<Report> fetchAllReports() {
     return _repository.getAllReports();
   }
@@ -86,7 +87,7 @@ class ReportService {
         entityId: entityId,
         reportData: context,
         entityName: 'Nutrition on ${_commonService.getDateString(now)}',
-        type: EntityType.nutrition
+        type: EntityType.nutrition,
       );
       if (previousReport != null) {
         await removeReport(previousReport);
@@ -131,14 +132,17 @@ class ReportService {
     var previousReport = fetchReportsByEntityId(entityId);
     Report? report;
     if (previousReport == null ||
-        workRecentlyUpdatedTime == null ||
-        previousReport.entityLastUpdated.isBefore(workRecentlyUpdatedTime)) {
+       ( workRecentlyUpdatedTime != null &&
+        previousReport.entityLastUpdated.isBefore(workRecentlyUpdatedTime))) {
       // outdated preivous report or no previous report
+      print("getting ${workout.name} context");
       var resp = await _aiService.getResponse(
         workRep,
         '''You are a agent who is assigned with the crucial task of analyzing an workout and its performance and draw out an observation you must closely observe the data and provide insights that describes user performance in the workout this could guide agents in the chain further up to analyze and provide valuable advices to user ,  Respond with maximally dense, information-rich sentences. Eliminate all decorative language. Every sentence must convey essential detail, without omissions or filler.
         ''',
       );
+      print("finished ${workout.name} context");
+
       workRecentlyUpdatedTime ??= DateTime.now();
       report = Report(
         generatedAt: DateTime.now(),
@@ -146,7 +150,7 @@ class ReportService {
         entityId: entityId,
         reportData: resp.message,
         entityName: workout.name,
-        type: EntityType.workout
+        type: EntityType.workout,
       );
       if (previousReport != null) {
         // removing old report
@@ -178,9 +182,11 @@ class ReportService {
     }
     for (var work in workouts) {
       futures.add(getWorkoutReport(work, summaryFromDate));
-      break;
+      // break;
     }
+
     final results = await Future.wait(futures);
+
     for (var res in results) {
       routineSummary += "${res.reportData}\n\n";
       routineEntityLastUpdatedAt ??= res.entityLastUpdated;
@@ -190,13 +196,17 @@ class ReportService {
       }
     }
     if (previousReport == null ||
-        routineEntityLastUpdatedAt == null ||
-        previousReport.entityLastUpdated.isBefore(routineEntityLastUpdatedAt)) {
+        (routineEntityLastUpdatedAt != null &&
+        previousReport.entityLastUpdated.isBefore(routineEntityLastUpdatedAt))) {
+      print("started ${routine.name} context");
+
       var resp = await _aiService.getResponse(
         routineSummary,
         "Summaries this routine and draw out important observation",
         modelType: Models.Pro,
       );
+      print("finished ${routine.name} context");
+
       routineEntityLastUpdatedAt ??= DateTime.now();
       report = Report(
         generatedAt: DateTime.now(),
@@ -204,7 +214,7 @@ class ReportService {
         entityId: entityId,
         reportData: resp.message,
         entityName: routine.name,
-        type: EntityType.routine
+        type: EntityType.routine,
       );
       if (previousReport != null) {
         await removeReport(previousReport.key);
