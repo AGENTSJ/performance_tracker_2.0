@@ -10,7 +10,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/advice.details.page.dart';
 
 class AdvicesPage extends StatefulWidget {
-  const AdvicesPage({Key? key}) : super(key: key);
+  const AdvicesPage({super.key});
 
   @override
   State<AdvicesPage> createState() => _AdvicesPageState();
@@ -152,7 +152,6 @@ class _AdvicesPageState extends State<AdvicesPage> {
                           ),
                           if (onGoingAdvice!.advices.isEmpty)
                             SizedBox(height: 100.h, child: empty),
-
                           ...onGoingAdvice!.advices.map(
                             (adv) => Material(
                               color: SURFACE2,
@@ -199,13 +198,6 @@ class _AdvicesPageState extends State<AdvicesPage> {
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: PRIMARY,
-        onPressed: () async {
-          setState(() {});
-        },
-        child: Icon(Icons.add, color: Colors.white, size: 30.sp),
-      ),
     );
   }
 }

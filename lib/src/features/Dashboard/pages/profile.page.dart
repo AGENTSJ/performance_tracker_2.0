@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -40,6 +39,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   bool ignoreChanges = false;
   User? user;
   bool isLoaded = false;
+  bool isExporting = false;
   _ProfilePageModuleState() {
     setUpProfilePageUi();
   }
@@ -115,7 +115,11 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BACKGROUND,
-      appBar: AppBar(title: const Text('Profile'), backgroundColor: BACKGROUND,scrolledUnderElevation: 0,),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: BACKGROUND,
+        scrolledUnderElevation: 0,
+      ),
       body: !isLoaded
           ? LoadingPage()
           : Padding(
@@ -351,7 +355,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                 SizedBox(width: 10.w),
                                 TextButton(
                                   onPressed: () {
-
+                                    handleExport();
                                   },
                                   child: Row(
                                     children: [
@@ -373,17 +377,22 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
             ),
     );
   }
-  handleExport()async
-  {
-    try
-    {
+
+  handleExport() async {
+    if (isExporting) return;
+
+    try {
+      isExporting = true;
       await dataservice.exportData();
-    }
-    catch(e)
-    {
+    } catch (e) {
       Fluttertoast.showToast(msg: "An error has occur");
     }
+    finally
+    {
+      isExporting = false;
+    }
   }
+
   handleUpload() async {
     try {
       final result = await FilePicker.platform.pickFiles();

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/repositories/report.repository.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
@@ -129,12 +128,13 @@ class ReportService {
       workRep += setSummary;
       i++;
     }
+    workRep+="\nUser Journal while doing tha workout if any: ${workout.desc}";
     var previousReport = fetchReportsByEntityId(entityId);
     Report? report;
     if (previousReport == null ||
        ( workRecentlyUpdatedTime != null &&
         previousReport.entityLastUpdated.isBefore(workRecentlyUpdatedTime))) {
-      // outdated preivous report or no previous report
+      // outdated previous report or no previous report
       print("getting ${workout.name} context");
       var resp = await _aiService.getResponse(
         workRep,
@@ -142,7 +142,6 @@ class ReportService {
         ''',
       );
       print("finished ${workout.name} context");
-
       workRecentlyUpdatedTime ??= DateTime.now();
       report = Report(
         generatedAt: DateTime.now(),
@@ -195,6 +194,7 @@ class ReportService {
         routineEntityLastUpdatedAt = res.entityLastUpdated;
       }
     }
+    routineSummary+="\nUser Journal of routine if any ${routine.desc}";
     if (previousReport == null ||
         (routineEntityLastUpdatedAt != null &&
         previousReport.entityLastUpdated.isBefore(routineEntityLastUpdatedAt))) {
@@ -231,9 +231,7 @@ class ReportService {
     DateTime? summaryFromDate,
     int index,
   ) {
-    String setSummary = "Set $index ${set.value}kg:\n";
-    bool beforeAdded = false;
-    bool afterAdded = false;
+    String setSummary = "Set $index ${set.value}kg:\n User performed reps if any :\n";
 
     List<TrackEntry> contextEntries = [];
     if (set.history.length > 5) {
@@ -242,20 +240,7 @@ class ReportService {
       contextEntries = set.history;
     }
     for (var entry in contextEntries) {
-      if ((summaryFromDate == null ||
-              entry.entryDate.isBefore(summaryFromDate)) &&
-          !beforeAdded) {
-        setSummary += "\t Before the current advice\n";
-        beforeAdded = true;
-      }
-      if ((summaryFromDate != null &&
-              entry.entryDate.isAfter(summaryFromDate)) &&
-          !afterAdded) {
-        setSummary += "\tAfter the advice\n";
-        afterAdded = true;
-      }
-      setSummary +=
-          "\t\t\t${_commonService.getDateString(entry.entryDate)} Reps : ${entry.value}\n";
+      setSummary +="\t\t\t${_commonService.getDateString(entry.entryDate)} Reps : ${entry.value}\n";
     }
 
     return SummaryDTO(

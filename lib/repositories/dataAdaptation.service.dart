@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -82,6 +82,7 @@ class DataService {
   }
 
   exportData() async {
+  Fluttertoast.showToast(msg: "Preparing to download file");
     AppData appData = AppData(
       foods: foodService.getAllFoods(),
       days: dayService.getAllDays(),
@@ -172,26 +173,23 @@ Future<void> saveJsonToFile(Map<String, dynamic> data, String fileName) async {
   // Request storage permission
   var status = await Permission.storage.request();
   if (!status.isGranted) {
-    print('Permission denied');
     return;
   }
 
   // Convert Map to JSON string
   String jsonString = jsonEncode(data);
+  String? directoryPath = await FilePicker.platform.getDirectoryPath();
 
-  // Get download directory (external for Android)
-  Directory? directory = await getExternalStorageDirectory();
-  if (directory == null) {
-    print('Could not get directory');
+  if (directoryPath == null) {
     return;
   }
 
   // Create full path
-  String filePath = '${directory.path}/$fileName.json';
+  String filePath = '${directoryPath}/$fileName.json';
   File file = File(filePath);
 
   // Write to file
   await file.writeAsString(jsonString);
 
-  print('✅ JSON saved to: $filePath');
+  Fluttertoast.showToast(msg: "File has been downloaded in $filePath");
 }
