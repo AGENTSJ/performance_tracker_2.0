@@ -27,47 +27,67 @@ class _RoutineSelectionState extends State<RoutineSelection> {
   Widget build(BuildContext context) {
     return Container(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(14.0.r),
-          child: Column(
-            children: [
-              SizedBox(height: 15.h),
-              Row(children: [Text("Select a routine",style: TextStyle(color: TEXT_SECONDARY,fontSize: 16.sp,fontWeight: FontWeight.w500),)]),
-              SizedBox(height: 20.h),
-              Material(
-                color: SURFACE,
-                borderRadius: BorderRadius.circular(8.r),
-                child: Column(
+        child: Column(
+          children: [
+            SizedBox(height: 15.h),
+            Container(
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: BORDER_PRIMARY))),
+              child: Padding(
+                padding: EdgeInsets.symmetric( vertical:  17.h,horizontal: 14.w),
+                child: Row(
                   children: [
-                    ...routines.map(
-                      (routine) => Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            handleSaveRoutine(routine);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: BORDER_PRIMARY,
-                                ),
-                              ),
-                              borderRadius: BorderRadius.circular(8.r)
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(14.0.r),
-                              child: Row(children: [Icon(FontAwesomeIcons.layerGroup,size: 18.sp,color: TEXT_SECONDARY,),SizedBox(width: 20.w,),Text(routine.name)]),
-                            ),
-                          ),
-                        ),
+                    Text(
+                      "Select a routine",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Material(
+              color: Colors.white,
+              shape: Border.all(color: BORDER_SECONDARY),
+              child: Column(
+                children: [
+                  ...routines.map(
+                    (routine) => Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          handleSaveRoutine(routine);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(color: BORDER_SECONDARY),
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal:  14.0.w,vertical: 14.h),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.layerGroup,
+                                  size: 18.sp,
+                                  color: TEXT_SECONDARY,
+                                ),
+                                SizedBox(width: 20.w),
+                                Text(routine.name,style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w500),),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

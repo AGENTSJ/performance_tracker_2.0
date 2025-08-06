@@ -32,4 +32,9 @@ class UserService {
   {
     return _userRepo.getAllUser();
   }
+
+  Future<User> addUser(User user)
+  {
+    return _userRepo.addUser(user);
+  }
 }

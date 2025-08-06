@@ -83,4 +83,9 @@ class DayService {
   {
     return _dayRepo.getAllDays();
   }
+
+  Future<Day?> addDay(Day day)
+  {
+    return _dayRepo.addDayData(day);
+  }
 }

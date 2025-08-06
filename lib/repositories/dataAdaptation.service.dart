@@ -9,6 +9,7 @@ import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/journey.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/repositories/conversation.respository.dart';
 import 'package:performance_tracker/services/advice.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
@@ -23,17 +24,26 @@ import 'package:performance_tracker/src/features/Coach/models/report.model.dart'
 import 'package:permission_handler/permission_handler.dart';
 
 class DataService {
-  var workService = locator<WorkoutService>();
-  var foodService = locator<FoodService>();
-  var dayService = locator<DayService>();
-  var userService = locator<UserService>();
-  var routService = locator<RoutineService>();
-  var jourService = locator<JourneyService>();
-  var reportService = locator<ReportService>();
-  var trainerAgentService = locator<TrainerAgentService>();
-  var advService = locator<AdviceService>();
+  final workService = locator<WorkoutService>();
+  final foodService = locator<FoodService>();
+  final dayService = locator<DayService>();
+  final userService = locator<UserService>();
+  final routService = locator<RoutineService>();
+  final jourService = locator<JourneyService>();
+  final reportService = locator<ReportService>();
+  final trainerAgentService = locator<TrainerAgentService>();
+  final advService = locator<AdviceService>();
+  final _convoRepo = locator<ConversationRepository>();
 
-  restoreDataFromBackup(oldData) async {
+  restoreBackUp(oldData)
+  {
+    if(oldData['version']!=null)
+    {
+      _restoreDataFromBackupMobile(oldData);
+    }
+    _restoreDataFromBackupWeb(oldData);
+  }
+  _restoreDataFromBackupWeb(oldData) async {
     List<dynamic> oldWorkouts =
         oldData["objectStore"]?["data"] as List<dynamic>;
     for (var work in oldWorkouts) {
@@ -72,6 +82,73 @@ class DataService {
     }
   }
 
+  _restoreDataFromBackupMobile(oldData) async {
+    Fluttertoast.showToast(msg: "Started importing");
+    try {
+      AppData data = AppData.fromJson(oldData);
+      List<Future<void>> futures = [
+        // Restore Foods
+        () async {
+          for (var food in data.foods) {
+            await foodService.addFood(food);
+          }
+        }(),
+        // Restore Days
+        () async {
+          for (var day in data.days) {
+            await dayService.addDay(day);
+          }
+        }(),
+        // Restore Users
+        () async {
+          for (var user in data.users) {
+            await userService.addUser(user);
+          }
+        }(),
+        // Restore Routines
+        () async {
+          for (var routine in data.routines) {
+            await routService.addRoutine(routine);
+          }
+        }(),
+        // Restore Workouts
+        () async {
+          for (var workout in data.workouts) {
+            await workService.addWorkout(workout);
+          }
+        }(),
+        // Restore Journeys
+        () async {
+          for (var journey in data.journeys) {
+            await jourService.createJourney(journey);
+          }
+        }(),
+        // Restore Advices
+        () async {
+          for (var advice in data.advices) {
+            await advService.createAdvice(advice);
+          }
+        }(),
+        // Restore Conversations
+        () async {
+          for (var convo in data.conversations) {
+            await _convoRepo.addConversation(convo);
+          }
+        }(),
+        // Restore Reports
+        () async {
+          for (var report in data.reports) {
+            await reportService.createReport(report);
+          }
+        }(),
+      ];
+      await Future.wait(futures);
+      Fluttertoast.showToast(msg: "Importing finished");
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error has occur");
+    }
+  }
+
   DateTime getDateFromString(String date) {
     List<String> splited = date.split('-');
     var day = int.parse(splited[0]);
@@ -82,7 +159,7 @@ class DataService {
   }
 
   exportData() async {
-  Fluttertoast.showToast(msg: "Preparing to download file");
+    Fluttertoast.showToast(msg: "Preparing to download file");
     AppData appData = AppData(
       foods: foodService.getAllFoods(),
       days: dayService.getAllDays(),
@@ -93,6 +170,7 @@ class DataService {
       advices: advService.fetchAllAdvices(),
       conversations: [await trainerAgentService.getOlderChat()],
       reports: reportService.fetchAllReports(),
+      version: ''
     );
     var jsonData = appData.toJson();
     await saveJsonToFile(jsonData, "PerformanceTracker");
@@ -109,7 +187,7 @@ class AppData {
   List<AdviceSet> advices;
   List<AiChatContent> conversations;
   List<Report> reports;
-
+  String version;
   AppData({
     required this.foods,
     required this.days,
@@ -120,6 +198,7 @@ class AppData {
     required this.advices,
     required this.conversations,
     required this.reports,
+    required this.version,
   });
 
   Map<String, dynamic> toJson() {
@@ -165,6 +244,7 @@ class AppData {
       reports: (map['reports'] as List<dynamic>)
           .map((e) => Report.fromJson(e as Map<String, dynamic>))
           .toList(),
+      version: map['version']??="",
     );
   }
 }

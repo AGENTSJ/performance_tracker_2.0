@@ -416,7 +416,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
           ),
         );
         final jsonData = jsonDecode(contents);
-        await dataservice.restoreDataFromBackup(jsonData);
+        await dataservice.restoreBackUp(jsonData);
         Navigator.of(context).pop();
         Navigator.of(
           context,
