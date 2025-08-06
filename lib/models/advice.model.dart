@@ -18,6 +18,20 @@ class Advice extends HiveObject {
     required this.title,
     required this.date,
   });
+
+  Map<String, dynamic> toJson() => {
+    'adviceDesc': adviceDesc,
+    'conditions': conditions,
+    'title': title,
+    'date': date.toIso8601String(),
+  };
+
+  factory Advice.fromJson(Map<String, dynamic> json) => Advice(
+    adviceDesc: json['adviceDesc'] as String,
+    conditions: json['conditions'] as String,
+    title: json['title'] as String,
+    date: DateTime.parse(json['date'] as String),
+  );
 }
 
 @HiveType(typeId: 21)
@@ -47,4 +61,20 @@ class AdviceSet extends HiveObject {
     required this.advices,
     required this.type,
   });
+
+  Map<String, dynamic> toJson() => {
+    'lastUpdated': lastUpdated.toIso8601String(),
+    'title': title,
+    'advices': advices.map((advice) => advice.toJson()).toList(),
+    'type': type.name,
+  };
+
+  factory AdviceSet.fromJson(Map<String, dynamic> json) => AdviceSet(
+    lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+    title: json['title'] as String,
+    advices: (json['advices'] as List<dynamic>)
+        .map((adviceJson) => Advice.fromJson(adviceJson as Map<String, dynamic>))
+        .toList(),
+    type: AdviceStatus.values.firstWhere((e) => e.name == json['type']),
+  );
 }

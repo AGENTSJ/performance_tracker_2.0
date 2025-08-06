@@ -25,4 +25,9 @@ class UserRepository {
   {
     await _userBox.add(user);
   }
+
+  List<User> getAllUser()
+  {
+    return _userBox.values.toList();
+  }
 }

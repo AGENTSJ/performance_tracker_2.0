@@ -24,7 +24,7 @@ class RoutinesPageState extends State<RoutinesPage> {
   }
 
   setRoutineUi() async {
-    routines = routineService.getAllRoutines();
+    routines = routineService.getAllAutoRoutines();
     customRoutines = routineService.getAllCustomRoutines();
   }
 

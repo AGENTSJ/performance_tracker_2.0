@@ -57,25 +57,63 @@ class AiChatContent extends HiveObject {
   @HiveField(1)
   List<AiChatSegment> contents;
   AiChatContent({required this.system_instruction, required this.contents});
-}
 
-Map<String, dynamic> toMap(AiChatContent object) {
-  return {
-    'system_instruction': object.system_instruction == null
-        ? null
-        : {
-            'role': object.system_instruction!.role?.value,
-            'parts': object.system_instruction!.parts
-                .map((part) => {'text': part.text})
-                .toList(),
-          },
-    'contents': object.contents
+  Map<String, dynamic> toJson() {
+    return {
+      'system_instruction': system_instruction == null
+          ? null
+          : {
+              'role': system_instruction!.role?.value,
+              'parts': system_instruction!.parts
+                  .map((part) => {'text': part.text})
+                  .toList(),
+            },
+      'contents': contents
+          .map(
+            (segment) => {
+              'role': segment.role?.value,
+              'parts': segment.parts
+                  .map((part) => {'text': part.text})
+                  .toList(),
+            },
+          )
+          .toList(),
+    };
+  }
+
+  factory AiChatContent.fromJson(Map<String, dynamic> map) {
+    ChatRoles? parseRole(String? value) {
+      return ChatRoles.values.firstWhere(
+        (e) => e.value == value,
+        orElse: () => ChatRoles.model,
+      );
+    }
+
+    AiChatSegment? systemInstruction;
+    if (map['system_instruction'] != null) {
+      final systemMap = map['system_instruction'];
+      systemInstruction = AiChatSegment(
+        role: parseRole(systemMap['role']),
+        parts: (systemMap['parts'] as List)
+            .map((e) => ChatPart(text: e['text']))
+            .toList(),
+      );
+    }
+
+    final contents = (map['contents'] as List)
         .map(
-          (segment) => {
-            'role': segment.role?.value,
-            'parts': segment.parts.map((part) => {'text': part.text}).toList(),
-          },
+          (segment) => AiChatSegment(
+            role: parseRole(segment['role']),
+            parts: (segment['parts'] as List)
+                .map((e) => ChatPart(text: e['text']))
+                .toList(),
+          ),
         )
-        .toList(),
-  };
+        .toList();
+
+    return AiChatContent(
+      system_instruction: systemInstruction,
+      contents: contents,
+    );
+  }
 }

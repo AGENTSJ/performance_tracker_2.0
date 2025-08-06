@@ -27,4 +27,9 @@ class JourneyRepository {
   Future<void> deleteJourney(int key) async {
     await _journeyBox.delete(key);
   }
+
+  List<Journey> getALLJourney()
+  {
+    return _journeyBox.values.toList();
+  }
 }

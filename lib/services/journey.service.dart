@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/journey.model.dart';
 import 'package:performance_tracker/repositories/journey.repository.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/day.service.dart';
-
 class JourneyBadge
 {
   String title;
@@ -12,28 +9,27 @@ class JourneyBadge
   JourneyBadge({required this.title, required this.badgeImage});
 }
 class JourneyService {
-  var journeyRepo = locator<JourneyRepository>();
-  var dayService = locator<DayService>();
-  var commonService=  locator<CommonService>();
+  final  _journeyRepo = locator<JourneyRepository>();
   final beginnerBadge = JourneyBadge(title: "Beginner", badgeImage: Image.asset("assets/1Badge.png",));
   final proBadge = JourneyBadge(title: "Pro", badgeImage: Image.asset("assets/2Badge.png",));
   final advancedBadge = JourneyBadge(title: "Advanced", badgeImage: Image.asset("assets/3Badge.png",));
   final conquerBadge = JourneyBadge(title: "Conquer", badgeImage: Image.asset("assets/4Badge.png",));
+  
   Journey? getActiveJourney() {
-    return journeyRepo.getCurrentJourneyData();
+    return _journeyRepo.getCurrentJourneyData();
   }
   
   Future<int> createJourney(Journey journey) async {
-    return journeyRepo.addJourney(journey);
+    return _journeyRepo.addJourney(journey);
   }
 
   updateJourney(Journey journey) async {
     journey.lastUpdated = DateTime.now();
-    return journeyRepo.updateJourney(journey.key,journey);
+    return _journeyRepo.updateJourney(journey.key,journey);
   }
 
   deleteJourney(int journeyId) async {
-    return journeyRepo.deleteJourney(journeyId);
+    return _journeyRepo.deleteJourney(journeyId);
   }
 
   getBadge(double percentageCompleted)
@@ -54,5 +50,10 @@ class JourneyService {
     {
       return conquerBadge;
     }
+  }
+
+  List<Journey> getAllJourney()
+  {
+    return _journeyRepo.getALLJourney();
   }
 }

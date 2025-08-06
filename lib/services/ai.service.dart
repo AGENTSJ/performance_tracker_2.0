@@ -75,7 +75,7 @@ class AiService {
   Future<StreamController<AiResponse>?> streamGeminiResponse(AiChatContent chatContent) async {
     print("ai response fetch");
     final StreamController<AiResponse> controller = StreamController<AiResponse>();
-    var test = jsonEncode(toMap(chatContent));
+    var test = jsonEncode(chatContent.toJson());
     final uri = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
     );

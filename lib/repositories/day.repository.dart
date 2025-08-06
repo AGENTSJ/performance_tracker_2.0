@@ -48,4 +48,9 @@ class DayRepository
   {
     return _dayBox.getAt(id);
   }
+
+  List<Day> getAllDays()
+  {
+    return _dayBox.values.toList();
+  }
 }

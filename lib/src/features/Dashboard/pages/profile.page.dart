@@ -350,7 +350,9 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                 ),
                                 SizedBox(width: 10.w),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+
+                                  },
                                   child: Row(
                                     children: [
                                       Icon(FontAwesomeIcons.upload),
@@ -371,7 +373,17 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
             ),
     );
   }
-
+  handleExport()async
+  {
+    try
+    {
+      await dataservice.exportData();
+    }
+    catch(e)
+    {
+      Fluttertoast.showToast(msg: "An error has occur");
+    }
+  }
   handleUpload() async {
     try {
       final result = await FilePicker.platform.pickFiles();
