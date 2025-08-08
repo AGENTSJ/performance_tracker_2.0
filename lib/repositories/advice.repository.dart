@@ -24,4 +24,8 @@ class AdviceRepository {
   Future<void> deleteAdvice(dynamic key) async {
     await _adviceBox.delete(key);
   }
+  Future<void> clearAllAdviceSet() async
+  {
+    await _adviceBox.clear();
+  }
 }

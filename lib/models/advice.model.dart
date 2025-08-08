@@ -10,7 +10,7 @@ class Advice extends HiveObject {
   @HiveField(2)
   String title;
   @HiveField(3)
-  DateTime date;
+  DateTime? date;
 
   Advice({
     required this.adviceDesc,
@@ -23,14 +23,14 @@ class Advice extends HiveObject {
     'adviceDesc': adviceDesc,
     'conditions': conditions,
     'title': title,
-    'date': date.toIso8601String(),
+    'date': date?.toIso8601String(),
   };
 
   factory Advice.fromJson(Map<String, dynamic> json) => Advice(
     adviceDesc: json['adviceDesc'] as String,
     conditions: json['conditions'] as String,
     title: json['title'] as String,
-    date: DateTime.parse(json['date'] as String),
+    date:json['date']==null?null: DateTime.parse(json['date'] as String),
   );
 }
 
@@ -47,7 +47,7 @@ enum AdviceStatus {
 @HiveType(typeId: 24)
 class AdviceSet extends HiveObject {
   @HiveField(0)
-  DateTime lastUpdated;
+  DateTime? lastUpdated;
   @HiveField(1)
   String title;
   @HiveField(2)
@@ -63,14 +63,14 @@ class AdviceSet extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-    'lastUpdated': lastUpdated.toIso8601String(),
+    'lastUpdated': lastUpdated?.toIso8601String(),
     'title': title,
     'advices': advices.map((advice) => advice.toJson()).toList(),
     'type': type.name,
   };
 
   factory AdviceSet.fromJson(Map<String, dynamic> json) => AdviceSet(
-    lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+    lastUpdated:json['lastUpdated']==null?null: DateTime.parse(json['lastUpdated'] as String),
     title: json['title'] as String,
     advices: (json['advices'] as List<dynamic>)
         .map((adviceJson) => Advice.fromJson(adviceJson as Map<String, dynamic>))

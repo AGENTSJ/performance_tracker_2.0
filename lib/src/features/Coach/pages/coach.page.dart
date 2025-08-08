@@ -10,8 +10,10 @@ import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
+import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
+import 'package:performance_tracker/src/features/Coach/widgets/select_advices.dart';
 
 class CoachPage extends StatefulWidget {
   const CoachPage({super.key});
@@ -28,21 +30,17 @@ class _CoachPageState extends State<CoachPage> {
   Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
-  bool isStreaming = false;
-  bool isGettingContext = false;
-  String resp = "";
-  List<String> events = [];
-  AiChatSegment? activeChatResp;
+  bool isTyping = false;
+  ChatDTO? latestChatDto;
   Timer? refreshTimer;
   bool isLoaded = false;
-  StreamSubscription? chatSubscription;
 
   setUpUi() async {
+    latestChatDto = null;
     coachIconImg = avatarService.getMaleAvatar();
     olderChats = await trainerService.getOlderChat();
-    setUpConvoWindow();
+    setUpConversationWindow();
     refreshState();
-    listenToAnyActiveStreams();
     Future.delayed(Duration(milliseconds: 200), () {
       scrollToEnd();
     });
@@ -51,7 +49,7 @@ class _CoachPageState extends State<CoachPage> {
     refreshState();
   }
 
-  setUpConvoWindow() {
+  setUpConversationWindow() {
     chats = [];
     chats.addAll(olderChats!.contents);
   }
@@ -64,55 +62,43 @@ class _CoachPageState extends State<CoachPage> {
 
   scrollToEnd() {
     if (scrollController.hasClients) {
-      scrollController.jumpTo(
+      scrollController.animateTo(
         scrollController.position.maxScrollExtent,
-        // duration: Duration(milliseconds: 250),
-        // curve: Curves.bounceIn,
+        duration: Duration(milliseconds: 250),
+        curve: Curves.bounceIn,
       );
     }
   }
 
-  listenToAnyActiveStreams() {
-    if (trainerService.pipeLineActive) {
-      isStreaming = true;
-      isGettingContext = false;
-      if (trainerService.chatStreamExternal != null) {
-        resp = trainerService.chatRespData;
-        activeChatResp = AiChatSegment(
-          role: ChatRoles.model,
-          parts: [ChatPart(text: resp)],
-        );
-        chats.add(activeChatResp!);
-        chatSubscription = trainerService.chatStreamExternal?.stream.listen(
-          (data) {
-            activeChatResp!.parts.first.text += data.message;
-          },
-          onDone: () {
-            isStreaming = false;
-            refreshState();
-          },
-        );
-      }
-    }
-  }
-
   handleSendMessage() async {
-    if (isStreaming || msgController.text.isEmpty) return;
+    if (isTyping || msgController.text.isEmpty) return;
     var message = msgController.text;
     msgController.text = "";
-    isStreaming = true;
-    isGettingContext = true;
-    refreshState();
-    scrollToEnd();
+    isTyping = true;
     chats.add(
       AiChatSegment(
         role: ChatRoles.user,
         parts: [ChatPart(text: message)],
       ),
     );
-    await trainerService.chatWithCoach(message);
-    listenToAnyActiveStreams();
-    isGettingContext = false;
+    refreshState();
+    scrollToEnd();
+    var response = await trainerService.chatWithCoach(message);
+    latestChatDto = response;
+    if (response == null) {
+      Fluttertoast.showToast(msg: "An error has occur");
+      isTyping = false;
+      refreshState();
+      return;
+    }
+    chats.add(
+      AiChatSegment(
+        role: ChatRoles.model,
+        parts: [ChatPart(text: response.data)],
+      ),
+    );
+
+    isTyping = false;
     refreshState();
   }
 
@@ -163,10 +149,18 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
-  @override
-  void dispose() {
-    chatSubscription?.cancel();
-    super.dispose();
+  handleViewAdvices() {
+    showBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+      ),
+      backgroundColor: SURFACE2,
+      builder: (context) => SelectAdviceList(),
+    );
   }
 
   @override
@@ -354,7 +348,7 @@ class _CoachPageState extends State<CoachPage> {
                                   ),
                                 ),
                         ),
-                        if (isGettingContext)
+                        if (isTyping)
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 12.0.w,
@@ -398,6 +392,19 @@ class _CoachPageState extends State<CoachPage> {
                     ),
                   ),
                 ),
+                // if(latestChatDto!=null && latestChatDto!.advices.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        handleViewAdvices();
+                      },
+                      style: TextButton.styleFrom(backgroundColor: SURFACE2),
+                      child: Text('View Advices'),
+                    ),
+                  ],
+                ),
                 Container(
                   decoration: BoxDecoration(
                     color: BACKGROUND,
@@ -410,6 +417,7 @@ class _CoachPageState extends State<CoachPage> {
                         Expanded(
                           child: TextField(
                             controller: msgController,
+                            maxLines: null,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: SURFACE2,
@@ -443,8 +451,7 @@ class _CoachPageState extends State<CoachPage> {
               ],
             ),
           ),
-          if(!isLoaded)
-          Container(color: BACKGROUND, child: LoadingPage()),
+          if (!isLoaded) Container(color: BACKGROUND, child: LoadingPage()),
         ],
       ),
     );

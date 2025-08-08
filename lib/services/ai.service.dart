@@ -71,7 +71,29 @@ class AiService {
       return AiResponse(message: '', success: false,responseEnded: true);
     }
   }
-
+  
+  Future<AiResponse> getResponse2( AiChatContent content, {Models modelType = Models.Flash,})async
+  {
+    print("ai response fetch 2");
+    var model = _models[modelType];
+    var payload = content.toJson();
+    var response = await _restService.POST(model!.endpoint, payload);
+    if (response.statusCode != 200) {
+      return AiResponse(message: '', success: false,responseEnded: true);
+    }
+    try {
+      var body = jsonDecode(response.body);
+      var aiResp = AiResponse(
+        message: body['candidates'][0]['content']['parts'][0]['text'],
+        success: true,
+        responseEnded: true
+      );
+      return aiResp;
+    } catch (e) {
+      return AiResponse(message: '', success: false,responseEnded: true);
+    }
+  }
+  
   Future<StreamController<AiResponse>?> streamGeminiResponse(AiChatContent chatContent) async {
     print("ai response fetch");
     final StreamController<AiResponse> controller = StreamController<AiResponse>();
@@ -115,6 +137,15 @@ class AiService {
     } else {
       return null;
     }
+  }
+
+  removeJsonAnnotation(String data)
+  {
+    if(data.startsWith('```'))
+    {
+      data = data.substring(7,data.length-3);
+    }
+    return data;
   }
 }
 

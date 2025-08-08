@@ -24,4 +24,22 @@ class AdviceService {
   Future<void> removeAdvice(dynamic key) async {
     await _repository.deleteAdvice(key);
   }
+
+  Future<AdviceSet> getAdviceByStatus(AdviceStatus status)async
+  {
+    var advices = _repository.getAllAdvices();
+    for (var adv in advices) {
+      if(adv.type==status)
+      {
+        return adv;
+      }
+    }
+    return advices.first;
+  }
+
+  Future<void> clearAllAdviceSet()async
+  {
+    await _repository.clearAllAdviceSet();
+  }
+
 }

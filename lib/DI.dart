@@ -26,6 +26,8 @@ import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
+import 'package:performance_tracker/src/features/Coach/usecases/coach_client_mcp.dart';
+import 'package:performance_tracker/src/features/Coach/usecases/coach_server.mcp.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -50,6 +52,8 @@ setUpDependencyInjection()
   locator.registerLazySingleton<JourneyService>(()=>JourneyService());
   locator.registerLazySingleton<AdviceService>(()=>AdviceService());
   locator.registerLazySingleton<ReportService>(()=>ReportService());
+  locator.registerLazySingleton<CoachClientMcp>(()=>CoachClientMcp());
+  locator.registerLazySingleton<CoachServerMcp>(()=>CoachServerMcp());
 
   // Repo
   locator.registerLazySingleton<AdviceRepository>(()=>AdviceRepository());
