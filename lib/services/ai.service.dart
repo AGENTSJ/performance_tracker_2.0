@@ -74,10 +74,11 @@ class AiService {
   
   Future<AiResponse> getResponse2( AiChatContent content, {Models modelType = Models.Flash,})async
   {
-    print("ai response fetch 2");
+    print("ai response fetch 2 ${modelType.name}");
     var model = _models[modelType];
     var payload = content.toJson();
     var response = await _restService.POST(model!.endpoint, payload);
+    print("ai fetch complete");
     if (response.statusCode != 200) {
       return AiResponse(message: '', success: false,responseEnded: true);
     }

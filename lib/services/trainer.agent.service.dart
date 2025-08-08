@@ -178,8 +178,6 @@ class TrainerAgentService {
   }
 
   Future<ChatDTO?> chatWithCoach(String message) async {
-    String jsonMessage;
-    Map<String,dynamic> jsonResponse;
     try {
       var old = await getOlderChat();
       old.contents.add(
@@ -192,40 +190,34 @@ class TrainerAgentService {
       String advContext = await getAdviceContext();
       String journeyContext = await getJourneyContext();
       Report nutritionNdBodyContext = await _reportService.getNutritionReport();
+      bool isAdviceMode = message.toLowerCase().contains('advice');
       AiChatContent content = AiChatContent(
         system_instruction: AiChatSegment(
           role: null,
           parts: [
             ChatPart(
               text:
-                  "You are a training coach here is users data\nworkout context : $workoutContext\nNutrition and body context: ${nutritionNdBodyContext.reportData} Advices Context : $advContext Journey context : $journeyContext above isn't part of the conversation you are going to have with user its something u should keep in ind before answering any advice prompts from user NOTE : Your response should be of JSON structure of the following format {'message':'your response to user','advices':'['advices that you would like to give user']'} Now give advice only when user specifically asks for since they are rendered differently BUT STRICTLY ADHERE TO THE FORMAT AS THE RESPONSE IS USED FOR PARSING ",
+                  "You are a training coach here is users data\nworkout context : $workoutContext\nNutrition and body context: ${nutritionNdBodyContext.reportData} Advices Context : $advContext Journey context : $journeyContext above isn't part of the conversation you are going to have with user its something u should keep in mind before answering any advice prompts from user, You have two modes one is acquire context , information support and motivate use the other one is a IMPORTANT ONE that is ADVICE mode this is where your response should analyze user and user context and give important and well defined and well directed quantified advices that the user should incorporated in their training you are a training coach and you should experiment with user based on previous worked and not worked advices and give out advices such as increase the set or reduce set if u see the need increase volume of muscle group if u find any advices that has not worked u want to advice user to remove the advice and ask them to shift this mode is no joke as this is the core of your role as again this should be descriptive",
             ),
           ],
         ),
         contents: old.contents,
       );
-      var response = await _aiService.getResponse2(content);
-      jsonMessage = response.message;
-      if (jsonMessage.startsWith("```json")) {
-        jsonMessage = jsonMessage.substring(7, jsonMessage.length - 3);
-      }
-      jsonResponse = jsonDecode(jsonMessage);
+      var response = await _aiService.getResponse2(
+        content,
+        modelType: isAdviceMode ? Models.Pro : Models.Flash,
+      );
+      var respMessage = response.message;
+
       if (response.success) {
         old.contents.add(
           AiChatSegment(
             role: ChatRoles.model,
-            parts: [ChatPart(text: jsonResponse["message"])],
+            parts: [ChatPart(text: respMessage)],
           ),
         );
         await _conversationRepo.updateConversation(old.key, old);
-        return ChatDTO(
-          data: jsonResponse["message"] ??= jsonResponse.toString(),
-          advices: jsonResponse["advice"] == null
-              ? []
-              : (jsonResponse["advice"] as List<dynamic>).map(
-                  (adv) => Advice.fromJson(adv),
-                ).toList(),
-        );
+        return ChatDTO(data: respMessage, advices: []);
       }
       return null;
     } catch (e) {

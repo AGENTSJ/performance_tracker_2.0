@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -53,6 +54,7 @@ class AdviceRow extends StatefulWidget {
 }
 
 class _AdviceRowState extends State<AdviceRow> {
+  bool isTaking = false;
   bool isTaken = false;
   bool showContent = false;
 
@@ -61,14 +63,27 @@ class _AdviceRowState extends State<AdviceRow> {
   handleTakeAdvice() async {
     try
     {
+      isTaking = true;
+      refreshState();
       await coachClient.coachAct(widget.adviceDesc);
+      isTaken = true;
     }
     catch(e)
     {
       Fluttertoast.showToast(msg: "An error has occur");
     }
+    finally
+    {
+      isTaking = false;
+      refreshState();
+    }
   }
-
+  refreshState()
+  {
+    if(!mounted)return;
+    setState(() {
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -89,24 +104,31 @@ class _AdviceRowState extends State<AdviceRow> {
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0.r),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.adviceTitle.isEmpty
-                          ? "Advice"
-                          : widget.adviceTitle,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        handleTakeAdvice();
-                      },
-                      child: Text(isTaken ? "Taken" : "Take"),
-                    ),
-                  ],
+                SizedBox(
+                  height: 30.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.adviceTitle.isEmpty
+                            ? "Advice"
+                            : widget.adviceTitle,
+                      ),
+                      if(isTaking)
+                      SizedBox(child: SpinKitSpinningLines(color: PRIMARY,size: 30.sp,),),
+                      if(!isTaking)
+                      TextButton(
+                        onPressed: () {
+                          handleTakeAdvice();
+                        },
+                        style: TextButton.styleFrom(backgroundColor: SURFACE),
+                        child: Text(isTaken ? "Taken" : "Take"),
+                      ),
+                    ],
+                  ),
                 ),
                 AnimatedSize(
                   duration: const Duration(milliseconds: 200),
