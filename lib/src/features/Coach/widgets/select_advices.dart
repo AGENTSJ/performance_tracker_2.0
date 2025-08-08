@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Coach/usecases/coach_client_mcp.dart';
@@ -26,10 +27,10 @@ class _SelectAdviceListState extends State<SelectAdviceList> {
         height: 300.h,
         child: Column(
           children: [
-            _AdviceRow(
-              adviceTitle: "Always be in a 500 cal defict",
+            AdviceRow(
+              adviceTitle: "asdad",
               adviceDesc:
-                  "Since you are in a clorie defict and your aim is msucle gain you should be no more than 500 cal deficit",
+                  "User seems to have not benfited from the chest volume increase lets now try bicep volume increase",
             ),
           ],
         ),
@@ -38,27 +39,34 @@ class _SelectAdviceListState extends State<SelectAdviceList> {
   }
 }
 
-class _AdviceRow extends StatefulWidget {
+class AdviceRow extends StatefulWidget {
   final String adviceTitle;
   final String adviceDesc;
-  const _AdviceRow({
+  const AdviceRow({
     super.key,
     required this.adviceTitle,
     required this.adviceDesc,
   });
 
   @override
-  State<_AdviceRow> createState() => __AdviceRowState();
+  State<AdviceRow> createState() => _AdviceRowState();
 }
 
-class __AdviceRowState extends State<_AdviceRow> {
+class _AdviceRowState extends State<AdviceRow> {
   bool isTaken = false;
   bool showContent = false;
 
   final coachClient = locator<CoachClientMcp>();
 
   handleTakeAdvice() async {
-    await coachClient.coachAct(widget.adviceTitle, widget.adviceDesc);
+    try
+    {
+      await coachClient.coachAct(widget.adviceDesc);
+    }
+    catch(e)
+    {
+      Fluttertoast.showToast(msg: "An error has occur");
+    }
   }
 
   @override

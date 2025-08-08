@@ -45,7 +45,7 @@ class CoachClientMcp {
   NOTE : Your response should be in json and nothing else is required adhere to payload structure at all time
   ''';
 
-  Future<void> coachAct(String? title, String desc) async {
+  Future<void> coachAct(String desc) async {
     String knowledge = coachServer.getKnowledgeBase();
     AiChatContent payload = AiChatContent(
       system_instruction: AiChatSegment(
@@ -58,7 +58,7 @@ class CoachClientMcp {
           parts: [
             ChatPart(
               text:
-                  "Task : Use tools to make this advice possible, advice title if any $title , advice details if any $desc knowledge base : $knowledge",
+                  "Task : Use tools to make the given description possible $desc knowledge base : $knowledge",
             ),
           ],
         ),
