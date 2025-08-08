@@ -143,7 +143,7 @@ class _AdviceSetWidgetState extends State<AdviceSetWidget> {
       MaterialPageRoute(
         builder: (context) => AdviceDetailsPage(
           readonly: false,
-          onGoingAdvice: widget.adviceSet,
+          adviceSetF: widget.adviceSet,
           advice: null,
           onUpdate: () {
             widget.onUpdate();
@@ -158,7 +158,7 @@ class _AdviceSetWidgetState extends State<AdviceSetWidget> {
       MaterialPageRoute(
         builder: (context) => AdviceDetailsPage(
           readonly: true,
-          onGoingAdvice: widget.adviceSet,
+          adviceSetF: widget.adviceSet,
           advice: adv,
           onUpdate: () {
             widget.onUpdate();
