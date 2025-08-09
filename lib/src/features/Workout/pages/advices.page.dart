@@ -195,11 +195,13 @@ class _AdviceSetWidgetState extends State<AdviceSetWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.adviceSet.title,
-                    style: TextStyle(
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      widget.adviceSet.title,
+                      style: TextStyle(
+                        fontSize: 17.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   TextButton(
@@ -235,9 +237,12 @@ class _AdviceSetWidgetState extends State<AdviceSetWidget> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          adv.title,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        Expanded(
+                          child: Text(
+                            adv.title,
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.fade,
+                          ),
                         ),
                         TextButton(
                           onPressed: () => handleRemoveAdvice(adv),

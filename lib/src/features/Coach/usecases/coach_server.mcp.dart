@@ -1,9 +1,11 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/services/advice.service.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 
 class CoachServerMcp {
   final adviceService  = locator<AdviceService>();
+  final workoutService  = locator<WorkoutService>();
 
   Future<void> updateAdviceSets({List<AdviceSet>? advices})async
   {
@@ -23,7 +25,13 @@ class CoachServerMcp {
 
   String getKnowledgeBase() 
   {
-    String adviceKnowledge = "advices : ";
+    String adviceKnowledge = '''
+    Existing Workouts 
+    There are mainly 3 types of advice this platform provides 
+    1 on going advices 
+    2 not worked
+    3 worked 
+    advices : ''';
     var adviceSets = adviceService.fetchAllAdvices();
     for(var advSet in adviceSets)
     {

@@ -13,7 +13,6 @@ import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.d
 import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
-import 'package:performance_tracker/src/features/Coach/widgets/select_advices.dart';
 
 class CoachPage extends StatefulWidget {
   const CoachPage({super.key});
@@ -149,19 +148,7 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
-  handleViewAdvices() {
-    showBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(20.r),
-        ),
-      ),
-      backgroundColor: SURFACE2,
-      builder: (context) => SelectAdviceList(),
-    );
-  }
+  handleViewAdvices() {}
 
   @override
   Widget build(BuildContext context) {
@@ -391,19 +378,6 @@ class _CoachPageState extends State<CoachPage> {
                       ],
                     ),
                   ),
-                ),
-                // if(latestChatDto!=null && latestChatDto!.advices.isNotEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        handleViewAdvices();
-                      },
-                      style: TextButton.styleFrom(backgroundColor: SURFACE2),
-                      child: Text('View Advices'),
-                    ),
-                  ],
                 ),
                 Container(
                   decoration: BoxDecoration(

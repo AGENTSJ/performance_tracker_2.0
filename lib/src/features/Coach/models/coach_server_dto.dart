@@ -1,6 +1,5 @@
 enum CoachServerTools {
   updateAdvices,
-  removeAdvice,
   addWorkout,
   updateWorkout,
 }
