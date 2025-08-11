@@ -73,8 +73,19 @@ class DayService {
 
     return macrosForDay;
   }
+ 
   Day? getDayById(int id)
   {
     return _dayRepo.getDayById(id);
+  }
+
+  List<Day> getAllDays()
+  {
+    return _dayRepo.getAllDays();
+  }
+
+  Future<Day?> addDay(Day day)
+  {
+    return _dayRepo.addDayData(day);
   }
 }

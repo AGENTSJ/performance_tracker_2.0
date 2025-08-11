@@ -377,6 +377,8 @@ class TrainingModulePageState extends State<TrainingModulePage> {
             children: [
               Expanded(
                 child: PageView(
+                  physics: BouncingScrollPhysics(),
+                  pageSnapping: true,
                   children: [
                     SelectWorkout(selectedWorkouts: workouts),
                     RoutineSelection(selectedWorkouts: workouts),

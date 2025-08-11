@@ -42,6 +42,36 @@ class Journey extends HiveObject {
     required this.logs,
     required this.status
   });
+
+  Map<String, dynamic> toJson() => {
+    'startDate': startDate.toIso8601String(),
+    'userAtStart': userAtStart.toJson(),
+    'caloriesChangeAchieved': caloriesChangeAchieved,
+    'stepsWalked': stepsWalked,
+    'lastUpdated': lastUpdated?.toIso8601String(),
+    'lastCaloriesValue': lastCaloriesValue,
+    'lastStepValue': lastStepValue,
+    'logs': logs.map((log) => log.toJson()).toList(),
+    'status': status.name,
+    'reasonToStop': reasonToStop,
+  };
+
+  factory Journey.fromJson(Map<String, dynamic> json) => Journey(
+    startDate: DateTime.parse(json['startDate'] as String),
+    userAtStart: User.fromJson(json['userAtStart'] as Map<String, dynamic>),
+    caloriesChangeAchieved: json['caloriesChangeAchieved'] as double,
+    stepsWalked: json['stepsWalked'] as int,
+    logs: (json['logs'] as List<dynamic>)
+        .map((logJson) => JourneyLog.fromJson(logJson as Map<String, dynamic>))
+        .toList(),
+    status: JourneyStatus.values.firstWhere((e) => e.name == json['status']),
+  )
+    ..lastUpdated = json['lastUpdated'] != null 
+        ? DateTime.parse(json['lastUpdated'] as String)
+        : null
+    ..lastCaloriesValue = json['lastCaloriesValue'] as double?
+    ..lastStepValue = json['lastStepValue'] as int?
+    ..reasonToStop = json['reasonToStop'] as String?;
 }
 
 @HiveType(typeId: 22)
@@ -52,6 +82,16 @@ class JourneyLog {
   User userAtDay;
 
   JourneyLog({required this.dayId,required this.userAtDay});
+
+  Map<String, dynamic> toJson() => {
+    'dayId': dayId,
+    'userAtDay': userAtDay.toJson(),
+  };
+
+  factory JourneyLog.fromJson(Map<String, dynamic> json) => JourneyLog(
+    dayId: json['dayId'] as int,
+    userAtDay: User.fromJson(json['userAtDay'] as Map<String, dynamic>),
+  );
 }
 
 @HiveType(typeId:23)

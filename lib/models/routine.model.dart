@@ -21,6 +21,22 @@ class Routine extends HiveObject {
     required this.isCustom,
     required this.desc,
   });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'workoutsIds': workoutsIds,
+    'createdAt': createdAt.toIso8601String(),
+    'isCustom': isCustom,
+    'desc': desc,
+  };
+
+  factory Routine.fromJson(Map<String, dynamic> json) => Routine(
+    name: json['name'] as String,
+    workoutsIds: (json['workoutsIds'] as List<dynamic>).cast<int>(),
+    createdAt: DateTime.parse(json['createdAt'] as String),
+    isCustom: json['isCustom'] as bool,
+    desc: json['desc'] as String,
+  );
 }
 
 @HiveType(typeId: 14)
@@ -41,8 +57,31 @@ class Workout extends HiveObject {
     required this.sets,
     required this.enabled,
     required this.desc,
-    required this.volumes
+    required this.volumes,
   });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'sets': sets.map((set) => set.toJson()).toList(),
+    'enabled': enabled,
+    'desc': desc,
+    'volumes': volumes.map((volume) => volume.toJson()).toList(),
+  };
+
+  factory Workout.fromJson(Map<String, dynamic> json) => Workout(
+    name: json['name'] as String,
+    sets: (json['sets'] as List<dynamic>)
+        .map((setJson) => WorkSet.fromJson(setJson as Map<String, dynamic>))
+        .toList(),
+    enabled: json['enabled'] as bool,
+    desc: json['desc'] as String,
+    volumes: (json['volumes'] as List<dynamic>)
+        .map(
+          (volumeJson) =>
+              WorkoutVolume.fromJson(volumeJson as Map<String, dynamic>),
+        )
+        .toList(),
+  );
 }
 
 @HiveType(typeId: 15)
@@ -65,6 +104,27 @@ class WorkSet extends HiveObject {
     required this.pr,
     required this.enabled,
   });
+
+  Map<String, dynamic> toJson() => {
+    'value': value,
+    'history': history.map((entry) => entry.toJson()).toList(),
+    'pr': pr,
+    'enabled': enabled,
+  };
+
+  factory WorkSet.fromJson(Map<String, dynamic> json) => WorkSet(
+    value: json['value'] as double,
+    history: json['history'] == null
+        ? []
+        : (json['history'] as List<dynamic>)
+              .map(
+                (entryJson) =>
+                    TrackEntry.fromJson(entryJson as Map<String, dynamic>),
+              )
+              .toList(),
+    pr: json['pr'] == null ? 0 : json['pr'] as int,
+    enabled: json['enabled'] == null ? false : json['enabled'] as bool,
+  );
 }
 
 @HiveType(typeId: 16)
@@ -74,14 +134,30 @@ class TrackEntry {
   @HiveField(1)
   int value;
   TrackEntry({required this.entryDate, required this.value});
+
+  Map<String, dynamic> toJson() => {
+    'entryDate': entryDate.toIso8601String(),
+    'value': value,
+  };
+
+  factory TrackEntry.fromJson(Map<String, dynamic> json) => TrackEntry(
+    entryDate: DateTime.parse(json['entryDate'] as String),
+    value: json['value'] as int,
+  );
 }
 
-@HiveType(typeId:19)
-class WorkoutVolume
-{
+@HiveType(typeId: 19)
+class WorkoutVolume {
   @HiveField(0)
   String muscleName;
   @HiveField(1)
   double volume;
-  WorkoutVolume({required this.muscleName,required this.volume});
+  WorkoutVolume({required this.muscleName, required this.volume});
+
+  Map<String, dynamic> toJson() => {'muscleName': muscleName, 'volume': volume};
+
+  factory WorkoutVolume.fromJson(Map<String, dynamic> json) => WorkoutVolume(
+    muscleName: json['muscleName'] as String,
+    volume: json['volume'] as double,
+  );
 }

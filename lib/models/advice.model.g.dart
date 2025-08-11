@@ -20,7 +20,7 @@ class AdviceAdapter extends TypeAdapter<Advice> {
       adviceDesc: fields[0] as String,
       conditions: fields[1] as String,
       title: fields[2] as String,
-      date: fields[3] as DateTime,
+      date: fields[3] as DateTime?,
     );
   }
 
@@ -60,7 +60,7 @@ class AdviceSetAdapter extends TypeAdapter<AdviceSet> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AdviceSet(
-      lastUpdated: fields[0] as DateTime,
+      lastUpdated: fields[0] as DateTime?,
       title: fields[1] as String,
       advices: (fields[2] as List).cast<Advice>(),
       type: fields[3] as AdviceStatus,

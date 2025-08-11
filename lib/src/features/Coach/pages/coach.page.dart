@@ -10,6 +10,7 @@ import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
+import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
 
@@ -28,59 +29,34 @@ class _CoachPageState extends State<CoachPage> {
   Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
-  bool isStreaming = false;
-  bool isGettingContext = false;
-  String resp = "";
-  List<String> events = [];
-  bool isLoading = true;
-  AiChatSegment? activeChatResp;
+  bool isTyping = false;
+  ChatDTO? latestChatDto;
   Timer? refreshTimer;
   bool isLoaded = false;
-  int loadedConvoCount = 0;
-  final loadLimit = 10;
 
   setUpUi() async {
+    latestChatDto = null;
     coachIconImg = avatarService.getMaleAvatar();
     olderChats = await trainerService.getOlderChat();
-    setUpConvoWindow();
-    isLoading = false;
+    setUpConversationWindow();
+    refreshState();
     Future.delayed(Duration(milliseconds: 200), () {
       scrollToEnd();
     });
+    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     isLoaded = true;
     refreshState();
   }
 
-  setUpConvoWindow() {
+  setUpConversationWindow() {
     chats = [];
-    // if (olderChats!.contents.length > loadedConvoCount + loadLimit) {
-    //   loadedConvoCount = loadedConvoCount + loadLimit;
-    //   chats.addAll(
-    //     olderChats!.contents.sublist(
-    //       olderChats!.contents.length - loadedConvoCount,
-    //     ),
-    //   );
-    //   return;
-    // }
     chats.addAll(olderChats!.contents);
   }
 
   @override
   void initState() {
-    listenToAnyActiveStreams();
     super.initState();
     setUpUi();
-    // scrollController.addListener(() {
-    //   if ((scrollController.offset <=
-    //           (scrollController.position.minScrollExtent + 10)) &&
-    //       isLoaded) {
-    //     print(
-    //       "scrolled at top${scrollController.offset} ${scrollController.position.minScrollExtent + 10}",
-    //     );
-    //     setUpConvoWindow();
-    //     refreshState();
-    //   }
-    // });
   }
 
   scrollToEnd() {
@@ -93,71 +69,36 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
-  listenToAnyActiveStreams() {
-    if (trainerService.pipeLineActive) {
-      isStreaming = true;
-      isGettingContext = false;
-      if (trainerService.chatStreamExternal != null) {
-        resp = trainerService.chatRespData;
-        activeChatResp = AiChatSegment(
-          role: ChatRoles.model,
-          parts: [ChatPart(text: resp)],
-        );
-        trainerService.chatStreamExternal?.stream.listen(
-          (data) {
-            activeChatResp!.parts.first.text += data.message;
-            chats.add(activeChatResp!);
-            controlledRefresh();
-          },
-          onDone: () {
-            isStreaming = false;
-            refreshState();
-            scrollToEnd();
-          },
-        );
-      }
-    }
-  }
-
   handleSendMessage() async {
-    if (isStreaming || msgController.text.isEmpty) return;
+    if (isTyping || msgController.text.isEmpty) return;
     var message = msgController.text;
     msgController.text = "";
-    isStreaming = true;
-    isGettingContext = true;
-    refreshState();
-    scrollToEnd();
-    await Future.delayed(Duration(seconds: 4));
+    isTyping = true;
     chats.add(
       AiChatSegment(
         role: ChatRoles.user,
         parts: [ChatPart(text: message)],
       ),
     );
-    ChatStreamDTO chatStream = await trainerService.chatWithCoach(message);
-    resp = chatStream.streamData;
-    isGettingContext = false;
     refreshState();
-    activeChatResp = AiChatSegment(
-      role: ChatRoles.model,
-      parts: [ChatPart(text: resp)],
+    scrollToEnd();
+    var response = await trainerService.chatWithCoach(message);
+    latestChatDto = response;
+    if (response == null) {
+      Fluttertoast.showToast(msg: "An error has occur");
+      isTyping = false;
+      refreshState();
+      return;
+    }
+    chats.add(
+      AiChatSegment(
+        role: ChatRoles.model,
+        parts: [ChatPart(text: response.data)],
+      ),
     );
-    chats.add(activeChatResp!);
-    chatStream.stream.stream.listen(
-      (data) {
-        activeChatResp!.parts.first.text += data.message;
-        controlledRefresh();
-      },
-      onDone: () {
-        isStreaming = false;
-        refreshState();
-        scrollToEnd();
-      },
-      onError: (err) {
-        isStreaming = false;
-        Fluttertoast.showToast(msg: "An error has occur");
-      },
-    );
+
+    isTyping = false;
+    refreshState();
   }
 
   refreshState() {
@@ -198,16 +139,16 @@ class _CoachPageState extends State<CoachPage> {
     if (refreshTimer == null || !refreshTimer!.isActive) {
       refreshTimer = Timer(Duration(milliseconds: 250), () {
         refreshState();
-        scrollToEnd();
       });
     } else {
       refreshTimer?.cancel();
       refreshTimer = Timer(Duration(milliseconds: 250), () {
         refreshState();
-        scrollToEnd();
       });
     }
   }
+
+  handleViewAdvices() {}
 
   @override
   Widget build(BuildContext context) {
@@ -348,144 +289,145 @@ class _CoachPageState extends State<CoachPage> {
           ],
         ),
       ),
-      body: isLoading
-          ? LoadingPage()
-          : Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: backgroundDoodles,
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    const Color.fromARGB(
-                      255,
-                      255,
-                      255,
-                      255,
-                    ).withOpacity(0.3), // adjust opacity to control strength
-                    BlendMode.modulate, // or try BlendMode.modulate / overlay
-                  ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: backgroundDoodles,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  const Color.fromARGB(
+                    255,
+                    255,
+                    255,
+                    255,
+                  ).withOpacity(0.3), // adjust opacity to control strength
+                  BlendMode.modulate, // or try BlendMode.modulate / overlay
                 ),
               ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      controller: scrollController,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 30.h),
-                          if (chats.isEmpty)
-                            ChatBubble(
-                              data:
-                                  "Hello there let me guide you !! and make you see progress by optimising your workout and other things",
-                              type: ChatRoles.model,
-                            ),
-                          ...chats.map(
-                            (chatContent) =>
-                                chatContent.parts.first.text.isEmpty
-                                ? SizedBox.shrink()
-                                : Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 8.0.h,
-                                    ),
-                                    child: ChatBubble(
-                                      data: chatContent.parts.first.text,
-                                      type: chatContent.role!,
-                                    ),
-                                  ),
-                          ),
-                          if (isGettingContext)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.0.w,
-                                vertical: 5.h,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: BORDER_PRIMARY,
-                                        borderRadius: BorderRadius.circular(
-                                          8.r,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "Typing",
-                                              style: TextStyle(
-                                                color: TEXT_SECONDARY,
-                                                fontSize: 12.sp,
-                                              ),
-                                            ),
-                                            SpinKitThreeBounce(
-                                              color: TEXT_SECONDARY,
-                                              size: 22.sp,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(flex: 2, child: SizedBox()),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: BACKGROUND,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: msgController,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: SURFACE2,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                ),
-                                hintText: "Your message ..",
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          TextButton(
-                            onPressed: () {
-                              handleSendMessage();
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: PRIMARY,
-                              shape: CircleBorder(),
-                              minimumSize: Size(40.h, 40.h),
-                            ),
-                            child: Icon(
-                              FontAwesomeIcons.paperPlane,
-                              color: SURFACE2,
-                              size: 20,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    controller: scrollController,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 30.h),
+                        if (chats.isEmpty)
+                          ChatBubble(
+                            data:
+                                "Hello there let me guide you !! and make you see progress by optimising your workout and other things",
+                            type: ChatRoles.model,
+                          ),
+                        ...chats.map(
+                          (chatContent) => chatContent.parts.first.text.isEmpty
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 8.0.h,
+                                  ),
+                                  child: ChatBubble(
+                                    data: chatContent.parts.first.text,
+                                    type: chatContent.role!,
+                                  ),
+                                ),
+                        ),
+                        if (isTyping)
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.0.w,
+                              vertical: 5.h,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: BORDER_PRIMARY,
+                                      borderRadius: BorderRadius.circular(8.r),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            "Typing",
+                                            style: TextStyle(
+                                              color: TEXT_SECONDARY,
+                                              fontSize: 12.sp,
+                                            ),
+                                          ),
+                                          SpinKitThreeBounce(
+                                            color: TEXT_SECONDARY,
+                                            size: 22.sp,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(flex: 2, child: SizedBox()),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: BACKGROUND,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: msgController,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: SURFACE2,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText: "Your message ..",
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        TextButton(
+                          onPressed: () {
+                            handleSendMessage();
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: PRIMARY,
+                            shape: CircleBorder(),
+                            minimumSize: Size(40.h, 40.h),
+                          ),
+                          child: Icon(
+                            FontAwesomeIcons.paperPlane,
+                            color: SURFACE2,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isLoaded) Container(color: BACKGROUND, child: LoadingPage()),
+        ],
+      ),
     );
   }
 }

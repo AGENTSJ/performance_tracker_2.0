@@ -66,12 +66,12 @@ class SelectWorkoutState extends State<SelectWorkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 20.0.h, left: 15.w, right: 15.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 14.0.h,horizontal: 12.w),
+          child: TextField(
             controller: searchController,
             decoration: InputDecoration(
               hintText: 'Search workout',
@@ -80,80 +80,79 @@ class SelectWorkoutState extends State<SelectWorkout> {
               ),
             ),
           ),
-          SizedBox(height: 20.h),
-          SizedBox(
-            height: 250.h,
-            child: Material(
-              color: SURFACE2,
-              borderRadius: BorderRadius.circular(8.r),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (workouts.isEmpty) ...[
-                      Container(
-                        color: SURFACE2,
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              child: empty,
-                              width: 100.w,
-                              height: 100.h,
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  "No workout found...",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.sp,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    ...workouts.map(
-                      (work) => Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            handleSelectWorkout(work);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: BORDER_SECONDARY,
-                                ),
-                              ),
-                              borderRadius: BorderRadius.circular(8.r)
-                            ),
+        ),
+        SizedBox(
+          height: 260.h,
+          child: Material(
+            color: SURFACE2,
+            shape: Border.all(color: BORDER_SECONDARY),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (workouts.isEmpty) ...[
+                    Container(
+                      color: SURFACE2,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            child: empty,
+                            width: 100.w,
+                            height: 100.h,
+                          ),
+                          Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.dumbbell, size: 18.sp ,color: TEXT_SECONDARY,),
-                                  SizedBox(width: 20.w),
-                                  Text(work.name),
-                                ],
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "No workout found...",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.sp,
+                                ),
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  ...workouts.map(
+                    (work) => Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          handleSelectWorkout(work);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: BORDER_SECONDARY,
+                              ),
+                            ),
+                            borderRadius: BorderRadius.circular(8.r)
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal:  14.0.w,vertical: 14.h),
+                            child: Row(
+                              children: [
+                                Icon(FontAwesomeIcons.dumbbell, size: 18.sp ,color: TEXT_SECONDARY,),
+                                SizedBox(width: 20.w),
+                                Text(work.name,style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w500),),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        
-        ],
-      ),
+        ),
+      
+      ],
     );
   }
 }

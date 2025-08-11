@@ -19,8 +19,8 @@ class WorkoutService {
     return routineRepo.getWorkoutsByName(name);
   }
 
-  Future<void> updateWorkout(Workout workout) async {
-    return routineRepo.updateWorkout(workout.key, workout);
+  Future<void> updateWorkout(Workout workout,{int id = -1}) async {
+    return routineRepo.updateWorkout(id==-1? workout.key:id, workout);
   }
 
   bool isWorkoutNameUnique(String name) {

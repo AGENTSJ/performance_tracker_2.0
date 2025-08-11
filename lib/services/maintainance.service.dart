@@ -13,7 +13,7 @@ class MaintainanceService {
     const limit = 30;
     var today = DateTime.now();
     var filterDay = today.subtract(Duration(days: limit));
-    var allRouts = _routineService.getAllRoutines();
+    var allRouts = _routineService.getAllAutoRoutines();
     for (var rout in allRouts) {
       if(rout.createdAt.isBefore(filterDay))
       {

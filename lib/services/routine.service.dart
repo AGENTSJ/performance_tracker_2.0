@@ -24,7 +24,7 @@ class RoutineService {
     return _routineRepo.getRoutineById(id);
   }
 
-  List<Routine> getAllRoutines() {
+  List<Routine> getAllAutoRoutines() {
     return _routineRepo
         .getAllRoutines()
         .where((rout) => rout.isCustom == false)
@@ -66,7 +66,7 @@ class RoutineService {
     return all.where((rout) => rout.isCustom == true).toList();
   }
 
-  getRoutinesVolume(Routine routine)async {
+  Future<List<WorkoutVolume>> getRoutinesVolume(Routine routine)async {
     List<WorkoutVolume> volumes = [];
     var workouts = await getRoutinesWorkouts(routine);
     for (var work in workouts) {
@@ -92,5 +92,10 @@ class RoutineService {
       }
     }
     return null;
+  }
+
+  List<Routine> getAllRoutines()
+  {
+    return _routineRepo.getAllRoutines();
   }
 }

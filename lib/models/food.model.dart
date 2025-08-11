@@ -46,6 +46,26 @@ class Food {
       servings: this.servings
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'macros': macros.toJson(),
+    'micros': micros.toJson(),
+    'quantity': quantity.toJson(),
+    'imageUrl': imageUrl,
+    'servings': servings.map((serving) => serving.toJson()).toList(),
+  };
+
+  factory Food.fromJson(Map<String, dynamic> json) => Food(
+    name: json['name'] as String,
+    macros: MacroNutrients.fromJson(json['macros'] as Map<String, dynamic>),
+    micros: MicroNutrients.fromJson(json['micros'] as Map<String, dynamic>),
+    quantity: MeasuredUnit.fromJson(json['quantity'] as Map<String, dynamic>),
+    imageUrl: json['imageUrl'] as String?,
+    servings: (json['servings'] as List<dynamic>)
+        .map((servingJson) => MeasuredUnit.fromJson(servingJson as Map<String, dynamic>))
+        .toList(),
+  );
 }
 
 @HiveType(typeId: 1)
@@ -92,6 +112,14 @@ class MacroNutrients {
     'fiber': fiber,
     'calories': calories,
   };
+
+  factory MacroNutrients.fromJson(Map<String, dynamic> json) => MacroNutrients(
+    json['protein'] as double,
+    json['carbohydrate'] as double,
+    json['fat'] as double,
+    json['fiber'] as double,
+    json['calories'] as double,
+  );
 }
 
 @HiveType(typeId: 2)
@@ -275,6 +303,124 @@ class MicroNutrients {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+    'vitaminA': vitaminA?.toJson(),
+    'vitaminC': vitaminC?.toJson(),
+    'vitaminD': vitaminD?.toJson(),
+    'vitaminE': vitaminE?.toJson(),
+    'vitaminK': vitaminK?.toJson(),
+    'thiamin': thiamin?.toJson(),
+    'riboflavin': riboflavin?.toJson(),
+    'niacin': niacin?.toJson(),
+    'vitaminB6': vitaminB6?.toJson(),
+    'folate': folate?.toJson(),
+    'vitaminB12': vitaminB12?.toJson(),
+    'pantothenicAcid': pantothenicAcid?.toJson(),
+    'biotin': biotin?.toJson(),
+    'calcium': calcium?.toJson(),
+    'iron': iron?.toJson(),
+    'magnesium': magnesium?.toJson(),
+    'phosphorus': phosphorus?.toJson(),
+    'potassium': potassium?.toJson(),
+    'sodium': sodium?.toJson(),
+    'zinc': zinc?.toJson(),
+    'copper': copper?.toJson(),
+    'manganese': manganese?.toJson(),
+    'selenium': selenium?.toJson(),
+    'iodine': iodine?.toJson(),
+    'chromium': chromium?.toJson(),
+    'molybdenum': molybdenum?.toJson(),
+    'fluoride': fluoride?.toJson(),
+    'chloride': chloride?.toJson(),
+  };
+
+  factory MicroNutrients.fromJson(Map<String, dynamic> json) => MicroNutrients(
+    vitaminA: json['vitaminA'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminA'] as Map<String, dynamic>)
+        : null,
+    vitaminC: json['vitaminC'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminC'] as Map<String, dynamic>)
+        : null,
+    vitaminD: json['vitaminD'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminD'] as Map<String, dynamic>)
+        : null,
+    vitaminE: json['vitaminE'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminE'] as Map<String, dynamic>)
+        : null,
+    vitaminK: json['vitaminK'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminK'] as Map<String, dynamic>)
+        : null,
+    thiamin: json['thiamin'] != null 
+        ? MeasuredUnit.fromJson(json['thiamin'] as Map<String, dynamic>)
+        : null,
+    riboflavin: json['riboflavin'] != null 
+        ? MeasuredUnit.fromJson(json['riboflavin'] as Map<String, dynamic>)
+        : null,
+    niacin: json['niacin'] != null 
+        ? MeasuredUnit.fromJson(json['niacin'] as Map<String, dynamic>)
+        : null,
+    vitaminB6: json['vitaminB6'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminB6'] as Map<String, dynamic>)
+        : null,
+    folate: json['folate'] != null 
+        ? MeasuredUnit.fromJson(json['folate'] as Map<String, dynamic>)
+        : null,
+    vitaminB12: json['vitaminB12'] != null 
+        ? MeasuredUnit.fromJson(json['vitaminB12'] as Map<String, dynamic>)
+        : null,
+    pantothenicAcid: json['pantothenicAcid'] != null 
+        ? MeasuredUnit.fromJson(json['pantothenicAcid'] as Map<String, dynamic>)
+        : null,
+    biotin: json['biotin'] != null 
+        ? MeasuredUnit.fromJson(json['biotin'] as Map<String, dynamic>)
+        : null,
+    calcium: json['calcium'] != null 
+        ? MeasuredUnit.fromJson(json['calcium'] as Map<String, dynamic>)
+        : null,
+    iron: json['iron'] != null 
+        ? MeasuredUnit.fromJson(json['iron'] as Map<String, dynamic>)
+        : null,
+    magnesium: json['magnesium'] != null 
+        ? MeasuredUnit.fromJson(json['magnesium'] as Map<String, dynamic>)
+        : null,
+    phosphorus: json['phosphorus'] != null 
+        ? MeasuredUnit.fromJson(json['phosphorus'] as Map<String, dynamic>)
+        : null,
+    potassium: json['potassium'] != null 
+        ? MeasuredUnit.fromJson(json['potassium'] as Map<String, dynamic>)
+        : null,
+    sodium: json['sodium'] != null 
+        ? MeasuredUnit.fromJson(json['sodium'] as Map<String, dynamic>)
+        : null,
+    zinc: json['zinc'] != null 
+        ? MeasuredUnit.fromJson(json['zinc'] as Map<String, dynamic>)
+        : null,
+    copper: json['copper'] != null 
+        ? MeasuredUnit.fromJson(json['copper'] as Map<String, dynamic>)
+        : null,
+    manganese: json['manganese'] != null 
+        ? MeasuredUnit.fromJson(json['manganese'] as Map<String, dynamic>)
+        : null,
+    selenium: json['selenium'] != null 
+        ? MeasuredUnit.fromJson(json['selenium'] as Map<String, dynamic>)
+        : null,
+    iodine: json['iodine'] != null 
+        ? MeasuredUnit.fromJson(json['iodine'] as Map<String, dynamic>)
+        : null,
+    chromium: json['chromium'] != null 
+        ? MeasuredUnit.fromJson(json['chromium'] as Map<String, dynamic>)
+        : null,
+    molybdenum: json['molybdenum'] != null 
+        ? MeasuredUnit.fromJson(json['molybdenum'] as Map<String, dynamic>)
+        : null,
+    fluoride: json['fluoride'] != null 
+        ? MeasuredUnit.fromJson(json['fluoride'] as Map<String, dynamic>)
+        : null,
+    chloride: json['chloride'] != null 
+        ? MeasuredUnit.fromJson(json['chloride'] as Map<String, dynamic>)
+        : null,
+  );
+
   static final Map<String, MeasuredUnit> microRDA = {
     // Vitamins
     'Vitamin A': MeasuredUnit(value: 900.0, unit: 'mcg'),
@@ -324,5 +470,15 @@ class MeasuredUnit {
   MeasuredUnit clone() {
     return MeasuredUnit(value: this.value, unit: this.unit);
   }
+
+  Map<String, dynamic> toJson() => {
+    'value': value,
+    'unit': unit,
+  };
+
+  factory MeasuredUnit.fromJson(Map<String, dynamic> json) => MeasuredUnit(
+    value: json['value'] as double,
+    unit: json['unit'] as String,
+  );
 }
 

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
@@ -7,13 +8,13 @@ import 'package:performance_tracker/services/advice.service.dart';
 
 class AdviceDetailsPage extends StatefulWidget {
   final Advice? advice;
-  final AdviceSet onGoingAdvice;
+  final AdviceSet adviceSetF;
   final bool readonly;
   final Function() onUpdate;
   const AdviceDetailsPage({
     super.key,
     required this.advice,
-    required this.onGoingAdvice,
+    required this.adviceSetF,
     required this.readonly,
     required this.onUpdate,
   });
@@ -27,10 +28,11 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
   late final TextEditingController titleController;
   late final TextEditingController statementController;
   late final TextEditingController conditionController;
-  bool adviceStateChanged = false;
+  late AdviceSet adviceSet;
   @override
   void initState() {
     super.initState();
+    adviceSet = widget.adviceSetF;
     titleController = TextEditingController(text: widget.advice?.title);
     statementController = TextEditingController(
       text: widget.advice?.adviceDesc,
@@ -54,7 +56,7 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
     final condition = conditionController.text.trim();
 
     if (title.isNotEmpty && statement.isNotEmpty && condition.isNotEmpty) {
-      widget.onGoingAdvice.advices.add(
+      adviceSet.advices.add(
         Advice(
           title: title,
           adviceDesc: statement,
@@ -63,14 +65,33 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
         ),
       );
       await adviceService.updateAdvice(
-        widget.onGoingAdvice.key,
-        widget.onGoingAdvice,
+        adviceSet.key,
+        adviceSet,
       );
       widget.onUpdate();
       Navigator.of(context).pop();
     }
   }
+  handleStatusChange(AdviceStatus value)async
+  {
+    if(widget.advice==null)return;
 
+    var valAdviceSet = await adviceService.getAdviceByStatus(value);
+    
+    adviceSet.advices.remove(widget.advice);
+    valAdviceSet.advices.add(widget.advice!);
+    await adviceService.updateAdvice(adviceSet.key, adviceSet);      
+    await adviceService.updateAdvice(valAdviceSet.key, valAdviceSet);      
+    adviceSet = valAdviceSet;
+    refreshState();
+  }
+  refreshState()
+  {
+    if(mounted) return;
+    setState(() {
+      
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final readonly = widget.readonly;
@@ -236,7 +257,47 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
                   ],
                 ),
               ),
+              SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(color: SURFACE2,borderRadius: BorderRadius.circular(8.r)),
+                child: Padding(
+                  padding: EdgeInsets.all(14.0.r),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Select Status:",
+                          style: TextStyle(fontWeight: FontWeight.w500,fontSize: 14.sp),
 
+                        ),
+                      ),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton2<AdviceStatus>(
+                            isExpanded: true,
+                            hint: const Text("Choose"),
+                            value: adviceSet.type,
+                            items: AdviceStatus.values.map((status) {
+                              return DropdownMenuItem<AdviceStatus>(
+                                value: status,
+                                child: Text(status.name),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              handleStatusChange(value!);
+                            },
+                            buttonStyleData: const ButtonStyleData(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              height: 40,
+                            ),
+                            menuItemStyleData: const MenuItemStyleData(height: 40),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               if (!readonly) SizedBox(height: 20),
               if (!readonly)
                 Row(
@@ -247,9 +308,13 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
                         onPressed: _handleSubmit,
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          backgroundColor: SURFACE2,
+                          backgroundColor: PRIMARY,
                           side: BorderSide(color: BORDER_PRIMARY, width: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.r))
+                          padding: EdgeInsets.all(12.r),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(4.r),
+                          ),
                         ),
                         child: Text('Add'),
                       ),

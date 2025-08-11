@@ -120,10 +120,11 @@ class DayCommentsAdapter extends TypeAdapter<DayComments> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DayComments()
-      ..macroNutrientsComments = fields[0] as GeneratedComment?
-      ..microNutrientsComments = fields[1] as GeneratedComment?
-      ..overallDietComments = fields[2] as GeneratedComment?;
+    return DayComments(
+      macroNutrientsComments: fields[0] as GeneratedComment?,
+      microNutrientsComments: fields[1] as GeneratedComment?,
+      overallDietComments: fields[2] as GeneratedComment?,
+    );
   }
 
   @override

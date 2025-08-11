@@ -17,6 +17,7 @@ class RoutinesPageState extends State<RoutinesPage> {
   var routineService = locator<RoutineService>();
   List<Routine> routines = [];
   List<Routine> customRoutines = [];
+  List<Routine> sortedRoutines = [];
   @override
   void initState() {
     setRoutineUi();
@@ -24,7 +25,8 @@ class RoutinesPageState extends State<RoutinesPage> {
   }
 
   setRoutineUi() async {
-    routines = routineService.getAllRoutines();
+    routines = routineService.getAllAutoRoutines();
+    routines.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     customRoutines = routineService.getAllCustomRoutines();
   }
 
