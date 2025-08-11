@@ -66,7 +66,7 @@ class RoutineService {
     return all.where((rout) => rout.isCustom == true).toList();
   }
 
-  getRoutinesVolume(Routine routine)async {
+  Future<List<WorkoutVolume>> getRoutinesVolume(Routine routine)async {
     List<WorkoutVolume> volumes = [];
     var workouts = await getRoutinesWorkouts(routine);
     for (var work in workouts) {

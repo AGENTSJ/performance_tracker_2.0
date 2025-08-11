@@ -29,6 +29,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
   Routine? routine;
   List<Workout> workouts = [];
   List<WorkoutVolume> volumes = [];
+  var index = 0;
   @override
   void initState() {
     routineDescriptionController.text = widget.routine.desc;
@@ -67,7 +68,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
               vol.volume * work.sets.where((set) => set.enabled).length;
           volumes.add(vol);
         } else {
-          presentVol.volume += vol.volume * work.sets.where((set) => set.enabled).length;
+          presentVol.volume +=
+              vol.volume * work.sets.where((set) => set.enabled).length;
         }
       }
     }
@@ -232,9 +234,10 @@ class RoutineDetailsState extends State<RoutineDetails> {
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           children: [
-                            ...workouts.map(
-                              (work) => Material(
-                                key: ValueKey(work),
+                            ...workouts.map((work) {
+                              index++;
+                              return Material(
+                                key: ValueKey("${work.name}$index"),
                                 color: SURFACE2,
                                 child: InkWell(
                                   onTap: () {
@@ -296,8 +299,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                           onReorder: (oldIndex, newIndex) {
                             if (newIndex > oldIndex) {
@@ -359,8 +362,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
                             child: empty,
                           ),
                         ] else
-                          ...volumes.map(
-                            (vol) => Container(
+                          ...volumes.map((vol) {
+                            return Container(
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(color: BORDER_SECONDARY),
@@ -382,8 +385,8 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                   ],
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          }),
                       ],
                     ),
                   ],
@@ -591,7 +594,10 @@ class RoutineDetailsState extends State<RoutineDetails> {
       context: context,
       builder: (context) => Padding(
         padding: MediaQuery.of(context).viewInsets,
-        child: SizedBox(height: 400.h,child: SelectWorkout(selectedWorkouts: workouts)),
+        child: SizedBox(
+          height: 400.h,
+          child: SelectWorkout(selectedWorkouts: workouts),
+        ),
       ),
     );
     routine?.workoutsIds = [];

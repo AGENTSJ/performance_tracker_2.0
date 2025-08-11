@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
+import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/coach_server_dto.dart';
@@ -24,11 +25,14 @@ class CoachClientMcp {
   actions should be tools that u will require to achieve a certain task
   Server has tools 
     updateAdvices,
+    addRoutine, 
+    updateRoutine,
     addWorkout,
-    updateWorkout, 
+    updateWorkout,
 
   Tool description 
-    updateAdvices takes :{advices: [
+
+    1 updateAdvices : takes {advices: [
     {
       "title": "string - onGoing",
       "advices": [
@@ -63,19 +67,57 @@ class CoachClientMcp {
       "type": "string - notWorked"
     }
   ]} NOTE: YOUR RESPONSE PARAMETER FOR THIS TOOL SHOULD CONTAIN THE UPDATED SET ALONG WITH THE NEWLY ADDED AND PREVIOUS IF ANY CHANGES OR SHIFTS THE UPDATED SET
-
-  Other tools are not yet implemented
   
+  2 addRoutine : takes parameters {'routineName': string -name for the routine ,'routineDesc' :'short description of routine' ,'newWorkouts':[workout object],'workoutIds':[id of  workouts if they exist (int)]}
+  
+  3 updateRoutine : takes parameters {'routineKey' : 'existing id of routine','newWorkouts':[workout object],'workoutIds':[id of  workouts if they exist (int)]}
+  Note : the workout ids list is the updated list that is if any added the workoutIds have the new one along with old ones
+  newWorkouts is where if the workout doesn't exist in the app u can create one
+    Note an workout should not have sets of same kg multiple times since they are for progress tracking if u need to ask user to do multiple sets with same kg update in description that is workout journal
+    all keys must have default value if not significant for parsing plus sets value kg is unique for workout meaning the two sets of sma e value must not exist within a workout
+    Workout object structure {
+      "key" : int (not required for creating of new workout)
+      "name": "String - name of the workout",
+      "sets": [
+        {
+          "value": "Double - Kg unit of set",
+          "history": [
+            {
+              "entryDate": "String (ISO 8601 DateTime) - date of the logged entry",
+              "value": "Integer - recorded value (e.g., reps)"
+            }
+          ],
+          "pr": "Integer - personal record for the set",
+          "enabled": "Boolean - whether this set is active"
+        }
+      ],
+      "enabled": "Boolean - whether the workout is active",
+      "desc": "String - description of the workout",
+      "volumes": [
+        {
+          "muscleName": "String - name of the muscle group",
+          "volume": "Double - total training volume for that muscle"
+        }
+      ]
+    }
+  
+  4 addWorkout takes : {'workout':workout object} without key attribute 
+  
+  5 updateWorkout takes : {'workoutId': int key of workout, 'workout': updated workout object with key attribute } make sure not to remove a set if u dont want user to do 
+  an set make enabled false 
+  above tools if 
   NOTE : Your response should be in json and nothing else is required adhere to payload structure at all time
   ''';
 
   Future<void> coachAct(String desc) async {
     if (adviceClientPipeIsActive == true) {
-      Fluttertoast.showToast(msg: "An another advice is getting applied wait few moments");
+      Fluttertoast.showToast(
+        msg: "An another advice is getting applied wait few moments",
+      );
       return;
     }
     try {
-      String knowledge = coachServer.getKnowledgeBase();
+      String knowledge = await coachServer.getKnowledgeBase();
       AiChatContent payload = AiChatContent(
         system_instruction: AiChatSegment(
           role: null,
@@ -103,10 +145,9 @@ class CoachClientMcp {
         await act(actionObj);
       }
     } catch (e) {
+      print(e.toString());
       rethrow;
-    }
-    finally
-    {
+    } finally {
       adviceClientPipeIsActive = false;
     }
   }
@@ -120,9 +161,35 @@ class CoachClientMcp {
         await coachServer.updateAdviceSets(advices: sets);
         return;
       case CoachServerTools.addWorkout:
-        break;
+        await coachServer.addWorkout(
+          Workout.fromJson(received.parameters["workout"]) 
+        );
+        return;
       case CoachServerTools.updateWorkout:
+        await coachServer.updateWorkout(
+            received.parameters['workoutId'],
+            Workout.fromJson(received.parameters["workout"])
+          );
+        return;
+      case CoachServerTools.addRoutine:
+        await coachServer.addRoutine(
+          routineName: received.parameters["routineName"],
+          routineDesc: received.parameters["routineDesc"],
+          newWorkouts: (received.parameters["newWorkouts"] as List<dynamic>)
+              .map((w) => Workout.fromJson(w))
+              .toList(),
+          workoutIds: (received.parameters["workoutIds"] as List<dynamic>).map((i)=>int.parse(i.toString())).toList(),
+        );
         break;
+      case CoachServerTools.updateRoutine:
+        await coachServer.updateRoutine(
+          routineKey: received.parameters["routineKey"],
+          newWorkouts: (received.parameters["newWorkouts"] as List<dynamic>)
+              .map((w) => Workout.fromJson(w))
+              .toList(),
+          workoutIds: (received.parameters["workoutIds"] as List<dynamic>).map((i)=>int.parse(i.toString())).toList(),
+        );
+        return;
     }
   }
 }

@@ -57,7 +57,7 @@ class Workout extends HiveObject {
     required this.sets,
     required this.enabled,
     required this.desc,
-    required this.volumes
+    required this.volumes,
   });
 
   Map<String, dynamic> toJson() => {
@@ -76,7 +76,10 @@ class Workout extends HiveObject {
     enabled: json['enabled'] as bool,
     desc: json['desc'] as String,
     volumes: (json['volumes'] as List<dynamic>)
-        .map((volumeJson) => WorkoutVolume.fromJson(volumeJson as Map<String, dynamic>))
+        .map(
+          (volumeJson) =>
+              WorkoutVolume.fromJson(volumeJson as Map<String, dynamic>),
+        )
         .toList(),
   );
 }
@@ -111,11 +114,16 @@ class WorkSet extends HiveObject {
 
   factory WorkSet.fromJson(Map<String, dynamic> json) => WorkSet(
     value: json['value'] as double,
-    history: (json['history'] as List<dynamic>)
-        .map((entryJson) => TrackEntry.fromJson(entryJson as Map<String, dynamic>))
-        .toList(),
-    pr: json['pr'] as int,
-    enabled: json['enabled'] as bool,
+    history: json['history'] == null
+        ? []
+        : (json['history'] as List<dynamic>)
+              .map(
+                (entryJson) =>
+                    TrackEntry.fromJson(entryJson as Map<String, dynamic>),
+              )
+              .toList(),
+    pr: json['pr'] == null ? 0 : json['pr'] as int,
+    enabled: json['enabled'] == null ? false : json['enabled'] as bool,
   );
 }
 
@@ -138,19 +146,15 @@ class TrackEntry {
   );
 }
 
-@HiveType(typeId:19)
-class WorkoutVolume
-{
+@HiveType(typeId: 19)
+class WorkoutVolume {
   @HiveField(0)
   String muscleName;
   @HiveField(1)
   double volume;
-  WorkoutVolume({required this.muscleName,required this.volume});
+  WorkoutVolume({required this.muscleName, required this.volume});
 
-  Map<String, dynamic> toJson() => {
-    'muscleName': muscleName,
-    'volume': volume,
-  };
+  Map<String, dynamic> toJson() => {'muscleName': muscleName, 'volume': volume};
 
   factory WorkoutVolume.fromJson(Map<String, dynamic> json) => WorkoutVolume(
     muscleName: json['muscleName'] as String,
