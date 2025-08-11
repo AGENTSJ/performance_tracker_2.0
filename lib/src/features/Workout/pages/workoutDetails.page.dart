@@ -371,7 +371,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                       Expanded(
                                         child: Container(
                                           child: Center(
-                                            child: Text("${vol.volume}"),
+                                            child: Text(vol.volume.toStringAsFixed(1)),
                                           ),
                                         ),
                                       ),

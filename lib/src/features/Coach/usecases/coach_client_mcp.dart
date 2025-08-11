@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
@@ -34,7 +35,7 @@ class CoachClientMcp {
 
     1 updateAdvices : takes {advices: [
     {
-      "title": "string - onGoing",
+      "title": "string - onGoing (current active advices)",
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",
@@ -45,7 +46,7 @@ class CoachClientMcp {
       "type": "string onGoing"
     },
     {
-      "title": "string - worked",
+      "title": "string - worked (advices that has been sure have been worked on user)",
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",
@@ -56,7 +57,7 @@ class CoachClientMcp {
       "type": "string - worked "
     },
     {
-      "title": "string - notWorked",
+      "title": "string - notWorked (advices that has proven to not work)",
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",
@@ -68,7 +69,7 @@ class CoachClientMcp {
     }
   ]} NOTE: YOUR RESPONSE PARAMETER FOR THIS TOOL SHOULD CONTAIN THE UPDATED SET ALONG WITH THE NEWLY ADDED AND PREVIOUS IF ANY CHANGES OR SHIFTS THE UPDATED SET
   
-  2 addRoutine : takes parameters {'routineName': string -name for the routine ,'routineDesc' :'short description of routine' ,'newWorkouts':[workout object],'workoutIds':[id of  workouts if they exist (int)]}
+  2 addRoutine : takes parameters {'routineName': string - name for the routine ,'routineDesc' :'short description of routine' ,'newWorkouts':[workout object],'workoutIds':[id of  workouts if they exist (int)]}
   
   3 updateRoutine : takes parameters {'routineKey' : 'existing id of routine','newWorkouts':[workout object],'workoutIds':[id of  workouts if they exist (int)]}
   Note : the workout ids list is the updated list that is if any added the workoutIds have the new one along with old ones
@@ -100,7 +101,7 @@ class CoachClientMcp {
         }
       ]
     }
-  
+    Note muscleName can be of ${TRAINABLE_MUSCLES.join(',')}
   4 addWorkout takes : {'workout':workout object} without key attribute 
   
   5 updateWorkout takes : {'workoutId': int key of workout, 'workout': updated workout object with key attribute } make sure not to remove a set if u dont want user to do 

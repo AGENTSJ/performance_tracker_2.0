@@ -379,7 +379,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                                     Expanded(child: Text(vol.muscleName)),
                                     Expanded(
                                       child: Center(
-                                        child: Text("${vol.volume}"),
+                                        child: Text(vol.volume.toStringAsFixed(1)),
                                       ),
                                     ),
                                   ],
