@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/src/pages/nutritionHome.page/home.page.dart';
-import 'package:performance_tracker/src/pages/training.page/tarining.page.dart';
+import 'package:performance_tracker/src/features/Coach/pages/coach.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/nutrition.home.page.dart';
+import 'package:performance_tracker/src/features/Workout/pages/training.page.dart';
 import 'package:performance_tracker/src/components/bottomBar.dart';
-import 'package:performance_tracker/src/pages/activityPage.dart';
-import 'package:performance_tracker/src/pages/profile.page/profile.page.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/journey.dashboard.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/profile.page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,17 +22,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorSchemeSeed: PRIMARY,
-        scaffoldBackgroundColor: BACKGROUND,
-        textTheme: ThemeData.light().textTheme.copyWith(
-          bodyLarge: TextStyle(color: TEXT_PRIMARY),
-          bodyMedium: TextStyle(color: TEXT_PRIMARY),
+    return ScreenUtilInit(
+      designSize: Size(360, 690), // <- your reference design size
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) => MaterialApp(
+        theme: ThemeData(
+          colorSchemeSeed: PRIMARY,
+          scaffoldBackgroundColor: BACKGROUND,
+          textTheme: ThemeData.light().textTheme.copyWith(
+            bodyLarge: TextStyle(color: TEXT_PRIMARY),
+            bodyMedium: TextStyle(color: TEXT_PRIMARY),
+          ),
         ),
+        home: MainAppEntry(),
       ),
-
-      home: MainAppEntry(),
     );
   }
 }
@@ -43,33 +49,50 @@ class MainAppEntry extends StatefulWidget {
 }
 
 class _MainAppEntryState extends State<MainAppEntry> {
-  int selectedIndex = 0;
-  int nutritionModuleKey = 0;
-  late List<Widget> modules;
+  int selectedIndex = 2;
 
+  NutritionModule? nutritionModule;
+  TrainingModulePage? trainingModulePage;
+  ProfilePageModule? profilePageModule;
+  ActivityPage? activityPage;
+  CoachPage? coachPage;
   @override
   void initState() {
     super.initState();
-    modules = [
-      const NutritionModule(),
-      const ProfilePageModule(),
-      const TrainingModulePage(),
-      const ActivityPage(),
-    ];
   }
 
   _handleIndexChange(int index) {
-    if (index > modules.length - 1) {
+    if (index > 4) {
       return;
     }
     selectedIndex = index;
     setState(() {});
   }
 
+  getCurrentPage() {
+    switch (selectedIndex) {
+      case 0:
+        nutritionModule ??= NutritionModule();
+        return nutritionModule;
+      case 1:
+        trainingModulePage ??= TrainingModulePage();
+        return trainingModulePage;
+      case 2:
+        activityPage ??= ActivityPage();
+        return activityPage;
+      case 3:
+        coachPage ??= CoachPage();
+        return coachPage;
+      case 4:
+        profilePageModule ??= ProfilePageModule();
+        return profilePageModule;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: selectedIndex, children: modules),
+      body: getCurrentPage(),
       bottomNavigationBar: BottomBar(onIndexChange: _handleIndexChange),
     );
   }

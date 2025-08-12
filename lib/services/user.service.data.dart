@@ -27,4 +27,14 @@ class UserService {
   updateUser(User user) {
     return _userRepo.updateUser(user);
   }
+
+  List<User> getAllUser()
+  {
+    return _userRepo.getAllUser();
+  }
+
+  Future<User> addUser(User user)
+  {
+    return _userRepo.addUser(user);
+  }
 }

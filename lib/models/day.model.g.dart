@@ -26,13 +26,15 @@ class DayAdapter extends TypeAdapter<Day> {
       ..eveningSnacks = fields[5] as Meal
       ..meals = (fields[6] as List?)?.cast<Meal>()
       ..comments = fields[8] as DayComments?
-      ..goalForToday = fields[9] as UserGoals?;
+      ..goalForToday = fields[9] as UserGoals?
+      ..routineId = fields[10] as int?
+      ..activity = fields[11] as Activity?;
   }
 
   @override
   void write(BinaryWriter writer, Day obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.breakFast)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class DayAdapter extends TypeAdapter<Day> {
       ..writeByte(8)
       ..write(obj.comments)
       ..writeByte(9)
-      ..write(obj.goalForToday);
+      ..write(obj.goalForToday)
+      ..writeByte(10)
+      ..write(obj.routineId)
+      ..writeByte(11)
+      ..write(obj.activity);
   }
 
   @override
@@ -114,10 +120,11 @@ class DayCommentsAdapter extends TypeAdapter<DayComments> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DayComments()
-      ..macroNutrientsComments = fields[0] as GeneratedComment?
-      ..microNutrientsComments = fields[1] as GeneratedComment?
-      ..overallDietComments = fields[2] as GeneratedComment?;
+    return DayComments(
+      macroNutrientsComments: fields[0] as GeneratedComment?,
+      microNutrientsComments: fields[1] as GeneratedComment?,
+      overallDietComments: fields[2] as GeneratedComment?,
+    );
   }
 
   @override

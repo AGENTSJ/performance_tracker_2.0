@@ -1,0 +1,158 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/services/workout.service.dart';
+
+class SelectWorkout extends StatefulWidget {
+  final List<Workout> selectedWorkouts;
+  const SelectWorkout({super.key, required this.selectedWorkouts});
+
+  @override
+  SelectWorkoutState createState() => SelectWorkoutState();
+}
+
+class SelectWorkoutState extends State<SelectWorkout> {
+  var workoutService = locator<WorkoutService>();
+  var searchController = TextEditingController();
+  List<Workout> workouts = [];
+
+  @override
+  void initState() {
+    var allWorkouts = workoutService.getAllWorkouts();
+    setWorkouts(allWorkouts);
+    searchController.addListener(
+      () => handleSearchWorkouts(searchController.text),
+    );
+    super.initState();
+  }
+
+  handleSearchWorkouts(String name) {
+    var searchedRes = workoutService.searchWorkoutByName(name);
+    setWorkouts(searchedRes);
+    refreshState();
+  }
+
+  setWorkouts(List<Workout> newAvailable) {
+    workouts = [];
+    for (var work in newAvailable) {
+      if (!_foundInSelectedList(work)) {
+        workouts.add(work);
+      }
+    }
+  }
+
+  bool _foundInSelectedList(Workout work) {
+    for (var selected in widget.selectedWorkouts) {
+      if (selected.key == work.key) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  refreshState() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  handleSelectWorkout(Workout work) {
+    widget.selectedWorkouts.add(work);
+    workouts.remove(work);
+    refreshState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 14.0.h,horizontal: 12.w),
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: 'Search workout',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 260.h,
+          child: Material(
+            color: SURFACE2,
+            shape: Border.all(color: BORDER_SECONDARY),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (workouts.isEmpty) ...[
+                    Container(
+                      color: SURFACE2,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            child: empty,
+                            width: 100.w,
+                            height: 100.h,
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "No workout found...",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  ...workouts.map(
+                    (work) => Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          handleSelectWorkout(work);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: BORDER_SECONDARY,
+                              ),
+                            ),
+                            borderRadius: BorderRadius.circular(8.r)
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal:  14.0.w,vertical: 14.h),
+                            child: Row(
+                              children: [
+                                Icon(FontAwesomeIcons.dumbbell, size: 18.sp ,color: TEXT_SECONDARY,),
+                                SizedBox(width: 20.w),
+                                Text(work.name,style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w500),),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      
+      ],
+    );
+  }
+}

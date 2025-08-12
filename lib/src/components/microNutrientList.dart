@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
@@ -22,11 +22,9 @@ class microNutrientList extends StatelessWidget {
       children: totalConsumed.entries.map((entry) {
         final MeasuredUnit? microNutrient = entry.value;
         return Padding(
-          padding: const EdgeInsets.only(
-            top: 3.0,
-            bottom: 3.0,
-            left: 8,
-            right: 8,
+          padding: EdgeInsets.symmetric(
+            vertical: 10.h,
+            horizontal: 14.w
           ),
           child: Material(
             color: Colors.transparent,
@@ -40,10 +38,10 @@ class microNutrientList extends StatelessWidget {
     
                   Row(
                     children: [
-                      Icon(Icons.circle,color: Colors.grey,size: 14,),
-                      SizedBox(width: 10,),
+                      Icon(Icons.circle,color: Colors.grey,size: 14.w,),
+                      SizedBox(width: 10.w,),
                       SizedBox(
-                        width: 110,
+                        width: 110.w,
                         child: Text(
                           entry.key,
                           textAlign: TextAlign.left,
@@ -55,7 +53,7 @@ class microNutrientList extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    width: 40,
+                    width: 40.w,
                     child: Text(
                       microNutrient != null
                           ? '${_commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
@@ -67,7 +65,7 @@ class microNutrientList extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 100,
+                    width: 100.w,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [

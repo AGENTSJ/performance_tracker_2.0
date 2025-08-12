@@ -66,6 +66,32 @@ class User extends HiveObject {
     required this.userGoals,
     required this.createdAt,
   });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'age': age,
+    'gender': gender.name,
+    'height': height,
+    'weight': weight,
+    'activityLevel': activityLevel?.name,
+    'userGoals': userGoals.toJson(),
+    'id': id,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    id: json['id'] as int,
+    name: json['name'] as String,
+    age: json['age'] as int,
+    gender: Gender.values.firstWhere((e) => e.name == json['gender']),
+    height: json['height'] as double,
+    weight: json['weight'] as double,
+    activityLevel: json['activityLevel'] != null
+        ? ActivityLevel.values.firstWhere((e) => e.name == json['activityLevel'])
+        : null,
+    userGoals: UserGoals.fromJson(json['userGoals'] as Map<String, dynamic>),
+    createdAt: DateTime.parse(json['createdAt'] as String),
+  );
 }
 
 @HiveType(typeId: 12)
@@ -89,4 +115,18 @@ class UserGoals
     required this.targetWeight,
     required this.caloricChangeGoal,
   });
+
+  Map<String, dynamic> toJson() => {
+    'calorieLimit': calorieLimit,
+    'stepGoal': stepGoal,
+    'targetWeight': targetWeight,
+    'caloricChangeGoal': caloricChangeGoal,
+  };
+
+  factory UserGoals.fromJson(Map<String, dynamic> json) => UserGoals(
+    calorieLimit: json['calorieLimit'] as double,
+    stepGoal: json['stepGoal'] as int,
+    targetWeight: json['targetWeight'] as double,
+    caloricChangeGoal: json['caloricChangeGoal'] as double,
+  );
 }

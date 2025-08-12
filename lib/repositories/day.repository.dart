@@ -44,4 +44,13 @@ class DayRepository
     return "$year-$month-$dayOfMonth"; 
   }
   
+  Day? getDayById(int id)
+  {
+    return _dayBox.getAt(id);
+  }
+
+  List<Day> getAllDays()
+  {
+    return _dayBox.values.toList();
+  }
 }
