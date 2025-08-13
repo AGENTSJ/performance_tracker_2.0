@@ -79,13 +79,17 @@ class UserGoalsService {
     return true;
   }
   
-  double fetchMaintenanceCalories(User user , MacroNutrients macro,{int steps= 3000})
+  double fetchMaintenanceCalories(User user , MacroNutrients macro,{int steps= 3500})
   {
     var bmr = _getBmr(user);
     var calories = 0.0;
-    var neat = 200;
+    var neat = 150;
     var tde = _getThermicEffectOfFood(macro);
     const MET = 3;
+    if(steps<3500)
+    {
+      steps = 3500;
+    }
     var moveMin = healthService.getMoveMin(steps);
     calories = bmr+neat+tde+(moveMin.inMinutes*MET);
     return calories;

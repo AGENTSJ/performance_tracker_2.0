@@ -61,10 +61,10 @@ class _CoachPageState extends State<CoachPage> {
 
   scrollToEnd() {
     if (scrollController.hasClients) {
-      scrollController.animateTo(
+      scrollController.jumpTo(
         scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 250),
-        curve: Curves.bounceIn,
+        // duration: Duration(milliseconds: 250),
+        // curve: Curves.bounceIn,
       );
     }
   }
