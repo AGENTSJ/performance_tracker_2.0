@@ -300,4 +300,9 @@ class FoodService {
       unit: data['unit'],
     );
   }
+
+  clearAllFood()async
+  {
+    _foodRepo.clearAllFoodData();
+  }
 }

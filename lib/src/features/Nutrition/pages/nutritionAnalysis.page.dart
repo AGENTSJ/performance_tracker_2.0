@@ -131,8 +131,8 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
 
   setTotalConsumed() async {
     this.todaysMacros = new MacroNutrients(0, 0, 0, 0, 0);
-    var goal = await userGoalService.getUserGoals();
-    totalCalLimit = goal.calorieLimit;
+    var goal = widget.day.goalForToday;
+    totalCalLimit = goal!.calorieLimit;
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(value: 0, unit: micro.value.unit);
     }

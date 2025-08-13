@@ -54,20 +54,17 @@ class _JourneyGraphState extends State<JourneyGraph> {
       var day = dayService.getDayById(log.dayId);
       days.add(day!);
       var userAtDay = log.userAtDay;
-      var calories = dayService.getDaysCalories(day).calories;
-      var maintenance = goalService.fetchMaintenanceCalories(
-        userAtDay,
-        steps: day.activity!.steps,
-      );
+      var calories = dayService.getDaysCalories(day);
+      var maintenance = day.goalForToday!.calorieLimit;
       double calorieChangeAchieved = 0;
       if (userAtDay.userGoals.targetWeight <
           widget.journey.userAtStart.weight) {
         // user in cut
         isUserInCut = true;
-        calorieChangeAchieved = maintenance - calories;
+        calorieChangeAchieved = maintenance - calories.calories;
       } else {
         isUserInCut = false;
-        calorieChangeAchieved = calories - maintenance;
+        calorieChangeAchieved = calories.calories - maintenance;
       }
       maxY = max(maxY, calorieChangeAchieved + 200);
       maxY = max(maxY, day.activity!.steps.toDouble() + 1000);

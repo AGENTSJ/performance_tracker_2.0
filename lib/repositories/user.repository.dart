@@ -21,13 +21,19 @@ class UserRepository {
     await _userBox.put(user.key, user);
   }
 
-  addUser(User user) async
+  Future<User>addUser(User user) async
   {
-    await _userBox.add(user);
+    int key = await _userBox.add(user);
+    var newUser = await getUser(userId: key);
+    return newUser!;
   }
 
   List<User> getAllUser()
   {
     return _userBox.values.toList();
+  }
+  clearAllUser()async
+  {
+    await _userBox.clear();
   }
 }

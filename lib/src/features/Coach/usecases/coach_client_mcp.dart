@@ -35,7 +35,7 @@ class CoachClientMcp {
 
     1 updateAdvices : takes {advices: [
     {
-      "title": "string - onGoing (current active advices)",
+      "title": "string - onGoing ",(current active advices) 
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",
@@ -46,7 +46,7 @@ class CoachClientMcp {
       "type": "string onGoing"
     },
     {
-      "title": "string - worked (advices that has been sure have been worked on user)",
+      "title": "string - Worked", (advices that has been sure have been worked on user),
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",
@@ -57,7 +57,7 @@ class CoachClientMcp {
       "type": "string - worked "
     },
     {
-      "title": "string - notWorked (advices that has proven to not work)",
+      "title": "string - Not Worked", (advices that has proven to not work)
       "advices": [
         {
           "adviceDesc": "string - detailed advice text",

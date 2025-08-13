@@ -56,22 +56,23 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   void initState() {
     super.initState();
-    setUpUi(DateTime.now(),);
+    setUpUi(DateTime.now());
   }
 
   setUpUi(DateTime date) async {
     userGoals = await userGoalsService.getUserGoals();
     steps = await healthService.getStepsByDate(date);
     user = await userService.getUserData();
-    maintenance = userGoalsService.fetchMaintenanceCalories(
-      user!,
-      steps: steps,
-    );
     moveKm = await healthService.getMoveKm(date);
     day = await dayService.getDayDataByDate(date);
     nutrientsForToday = dayService.getDaysCalories(day!);
     currentJourney = journeyService.getActiveJourney();
     day!.activity!.steps = steps;
+    maintenance = userGoalsService.fetchMaintenanceCalories(
+      user!,
+      steps: steps,
+      nutrientsForToday!,
+    );
     await dayService.updateDayData(day!);
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     isLoading = false;
@@ -120,9 +121,11 @@ class _ActivityPageState extends State<ActivityPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10.h),
-                      JourneyComponent(onChange: () {
-                        setUpUi(DateTime.now());
-                      },),
+                      JourneyComponent(
+                        onChange: () {
+                          setUpUi(DateTime.now());
+                        },
+                      ),
                       SizedBox(height: 20.h),
                       Container(
                         decoration: BoxDecoration(
@@ -242,7 +245,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            "${(day!.goalForToday!.calorieLimit).round()}",
+                                            "${(user!.weight >= user!.userGoals.targetWeight ? day!.goalForToday!.calorieLimit - day!.goalForToday!.caloricChangeGoal : day!.goalForToday!.calorieLimit + day!.goalForToday!.caloricChangeGoal).round()}",
                                             style: smallLabelDecor,
                                           ),
                                           SizedBox(height: 5.h),
@@ -277,7 +280,10 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      if (currentJourney != null && (currentJourney!.status==JourneyStatus.onProgress ||currentJourney!.status==JourneyStatus.completed) )
+                      if (currentJourney != null &&
+                          (currentJourney!.status == JourneyStatus.onProgress ||
+                              currentJourney!.status ==
+                                  JourneyStatus.completed))
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.r),
@@ -311,7 +317,12 @@ class _ActivityPageState extends State<ActivityPage> {
                                 padding: EdgeInsets.all(14.0.r),
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
-                                  child: JourneyGraph(key: ValueKey(currentJourney?.caloriesChangeAchieved),journey: currentJourney!),
+                                  child: JourneyGraph(
+                                    key: ValueKey(
+                                      currentJourney?.caloriesChangeAchieved,
+                                    ),
+                                    journey: currentJourney!,
+                                  ),
                                 ),
                               ),
                             ],

@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 
 class UserGoalsService {
   
   var userService = locator<UserService>();
-  
+  var healthService = locator<HealthService>();
   Map<ActivityLevel,double> activityFactor = {
     ActivityLevel.sedentary : 1.2,
     ActivityLevel.lightlyActive : 1.375,
@@ -15,7 +17,6 @@ class UserGoalsService {
     ActivityLevel.veryActive : 1.725,
     ActivityLevel.extraActive : 1.9,
   };
-
 
   int getDaysToReachWeightTarget(User user)
   {
@@ -77,32 +78,26 @@ class UserGoalsService {
     await userService.updateUser(user);
     return true;
   }
-
-  setCaloricLimit(User user)
-  {
-    var maintenanceCalories = fetchMaintenanceCalories(user,steps:user.userGoals.stepGoal);
-    if(user.weight > user.userGoals.targetWeight)
-    { 
-      user.userGoals.calorieLimit = maintenanceCalories- user.userGoals.caloricChangeGoal;
-    }
-    if(user.weight < user.userGoals.targetWeight)
-    {
-      user.userGoals.calorieLimit = maintenanceCalories + user.userGoals.caloricChangeGoal;
-    }
-    if(user.weight == user.userGoals.targetWeight)
-    {
-      user.userGoals.calorieLimit = maintenanceCalories;
-    }
-  }
   
-  double fetchMaintenanceCalories(User user , {int steps= 3000})
+  double fetchMaintenanceCalories(User user , MacroNutrients macro,{int steps= 3000})
   {
     var bmr = _getBmr(user);
-    var activityLevel = getActivity(steps);
-    var factor = activityFactor[activityLevel];
-    return bmr*factor!;
+    var calories = 0.0;
+    var neat = 200;
+    var tde = _getThermicEffectOfFood(macro);
+    const MET = 3;
+    var moveMin = healthService.getMoveMin(steps);
+    calories = bmr+neat+tde+(moveMin.inMinutes*MET);
+    return calories;
   }
 
+  double _getThermicEffectOfFood(MacroNutrients macro)
+  {
+    var calBurnInProteins = macro.protein*1.2;
+    var calBurnInCarb = macro.protein*0.4;
+    var calBurnInFat = macro.protein*0.27;
+    return calBurnInFat+calBurnInCarb+calBurnInProteins;
+  }
   double getBMI(User user)
   {
     

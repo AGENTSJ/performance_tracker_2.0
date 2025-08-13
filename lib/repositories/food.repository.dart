@@ -50,4 +50,9 @@ class FoodRepository
     }
     return false;
   }
+
+  void clearAllFoodData()async
+  {
+    await foodBox.clear();
+  }
 }

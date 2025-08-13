@@ -263,7 +263,6 @@ class _GoalsWidgetState extends State<GoalsWidget> {
         ..userGoals.caloricChangeGoal =
             double.tryParse(caloricBurn.text) ??
             widget.user.userGoals.caloricChangeGoal;
-      userGoalService.setCaloricLimit(widget.user);
       await userService.updateUser(widget.user);
       var currentDay = await dayService.getDayDataByDate(DateTime.now());
       currentDay?.goalForToday = widget.user.userGoals;

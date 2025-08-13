@@ -5,6 +5,7 @@ import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
@@ -30,8 +31,8 @@ class NutritionModuleState extends State<NutritionModule> {
   final avatarService = locator<AvatarService>();
   final goalService = locator<UserGoalsService>();
   final userService = locator<UserService>();
-  final healthService = locator<HealthService>();
-  var maintenanceCalories = 1800.0;
+  final _healthService = locator<HealthService>();
+  final _commonService = locator<CommonService>();
   Day? currentDay;
   User? user;
   late MacroNutrients daysMacro;
@@ -50,12 +51,18 @@ class NutritionModuleState extends State<NutritionModule> {
     refreshState();
     var day = await dayService.getDayDataByDate(date);
     user = await userService.getUserData();
-    var steps = await healthService.getStepsByDate(date);
-    maintenanceCalories = goalService.fetchMaintenanceCalories(user!,steps: steps);
     currentDay = day;
     _setCurrentDayMarker();
     setCaloriesInDay();
     isHomePageLoading = false;
+    if(_commonService.getDateString(DateTime.now())==_commonService.getDateString(date))
+    {
+      var steps = await _healthService.getStepsByDate(date);
+      var macrosToday = dayService.getDaysCalories(day!);
+      var maintenanceCalories = goalService.fetchMaintenanceCalories(user!,steps: steps,macrosToday);
+      day.goalForToday!.calorieLimit = maintenanceCalories;
+      dayService.updateDayData(day);
+    }
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     showDateSelector = false;
     refreshState();

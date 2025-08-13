@@ -35,14 +35,14 @@ class DataService {
   final advService = locator<AdviceService>();
   final _convoRepo = locator<ConversationRepository>();
 
-  restoreBackUp(oldData)
-  {
-    if(oldData['version']!=null)
-    {
+  restoreBackUp(oldData) {
+    if (oldData['objectStore'] == null) {
       _restoreDataFromBackupMobile(oldData);
+      return;
     }
     _restoreDataFromBackupWeb(oldData);
   }
+
   _restoreDataFromBackupWeb(oldData) async {
     List<dynamic> oldWorkouts =
         oldData["objectStore"]?["data"] as List<dynamic>;
@@ -89,63 +89,76 @@ class DataService {
       List<Future<void>> futures = [
         // Restore Foods
         () async {
+          await foodService.clearAllFood();
           for (var food in data.foods) {
             await foodService.addFood(food);
           }
         }(),
         // Restore Days
         () async {
+          await dayService.clearAllDays();
+
           for (var day in data.days) {
             await dayService.addDay(day);
           }
         }(),
         // Restore Users
         () async {
+          await userService.clearAllUser();
           for (var user in data.users) {
             await userService.addUser(user);
           }
         }(),
         // Restore Routines
         () async {
+          await routService.clearAll();
           for (var routine in data.routines) {
             await routService.addRoutine(routine);
           }
         }(),
         // Restore Workouts
         () async {
+          await workService.clearAll();
           for (var workout in data.workouts) {
             await workService.addWorkout(workout);
           }
         }(),
         // Restore Journeys
         () async {
+          await jourService.clearAll();
           for (var journey in data.journeys) {
             await jourService.createJourney(journey);
           }
         }(),
         // Restore Advices
         () async {
+          await advService.clearAllAdviceSet();
           for (var advice in data.advices) {
             await advService.createAdvice(advice);
           }
         }(),
         // Restore Conversations
         () async {
+          await _convoRepo.clearAllChats();
           for (var convo in data.conversations) {
             await _convoRepo.addConversation(convo);
           }
         }(),
         // Restore Reports
         () async {
+          await reportService.clearAllReports();
           for (var report in data.reports) {
             await reportService.createReport(report);
           }
         }(),
       ];
       await Future.wait(futures);
+      // for (var fut in futures) {
+      //   await fut;
+      // }
       Fluttertoast.showToast(msg: "Importing finished");
     } catch (e) {
-      Fluttertoast.showToast(msg: "An error has occur");
+      Fluttertoast.showToast(msg: "An error has occur ${e.toString()}");
     }
   }
 
@@ -170,7 +183,7 @@ class DataService {
       advices: advService.fetchAllAdvices(),
       conversations: [await trainerAgentService.getOlderChat()],
       reports: reportService.fetchAllReports(),
-      version: ''
+      version: '',
     );
     var jsonData = appData.toJson();
     await saveJsonToFile(jsonData, "PerformanceTracker");
@@ -244,7 +257,7 @@ class AppData {
       reports: (map['reports'] as List<dynamic>)
           .map((e) => Report.fromJson(e as Map<String, dynamic>))
           .toList(),
-      version: map['version']??="",
+      version: map['version'] ??= "",
     );
   }
 }

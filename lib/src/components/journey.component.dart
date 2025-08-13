@@ -132,9 +132,11 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentJourney!.lastUpdated!,
     );
     var day = await dayService.getDayDataByDate(DateTime.now());
+    var macros = dayService.getDaysCalories(day!);
     var maintenance = userGoalService.fetchMaintenanceCalories(
       user!,
-      steps: day!.activity!.steps,
+      steps: day.activity!.steps,
+      macros
     );
     var calToday = dayService.getDaysCalories(day).calories;
     if (userInCut) {

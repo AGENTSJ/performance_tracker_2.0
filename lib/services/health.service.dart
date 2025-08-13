@@ -39,13 +39,8 @@ class HealthService {
     return steps ?? 0;
   }
 
-  Future<Duration> getMoveMin(DateTime date) async {
-    bool valid = await _makeHealthServiceAvailable();
-    if (!valid) {
-      return Duration(seconds: 0);
-    }
+    Duration getMoveMin(int steps) {
     const secondToTakeAStep = 0.5;
-    var steps = await getStepsByDate(date);
     var totalSeconds = (steps * secondToTakeAStep).round();
     return Duration(seconds: totalSeconds);
   }

@@ -32,4 +32,9 @@ class JourneyRepository {
   {
     return _journeyBox.values.toList();
   }
+
+  clearAll()async
+  {
+    _journeyBox.clear();
+  }
 }

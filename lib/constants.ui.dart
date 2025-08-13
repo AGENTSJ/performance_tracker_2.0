@@ -31,7 +31,7 @@ const Color PROTEIN_COLOR = Color(0xFF42A5F5); // Blue
 const Color FAT_COLOR = Color(0xFFFFA726); // Orange
 const Color CARBS_COLOR = Color(0xFF66BB6A); // Green
 const Color FIBER_COLOR = Color(0xFFAB47BC);
-Color CALORIE_COLOR = Color(0xFFD2691E);
+final CALORIE_COLOR = Color(0xFF8B0000);
 
 final Image empty = Image.asset("assets/empty.png",);
 final AssetImage backgroundDoodles = AssetImage("assets/doodls.png");
