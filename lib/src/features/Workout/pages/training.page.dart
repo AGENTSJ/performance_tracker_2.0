@@ -81,7 +81,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
         title: Padding(
           padding: EdgeInsets.symmetric(vertical: 12.0.r),
           child: Text(
-            "Hi, ${user?.name}",
+            "Hi, ${user?.name ?? "" }",
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 23.sp),
           ),
         ),

@@ -46,7 +46,7 @@ class NutritionModuleState extends State<NutritionModule> {
     _setHomePage(DateTime.now());
   }
 
-  _setHomePage(DateTime date) async {
+  _setHomePage(DateTime date,{bool refresh=false}) async {
     isHomePageLoading = true;
     refreshState();
     var day = await dayService.getDayDataByDate(date);
@@ -63,7 +63,10 @@ class NutritionModuleState extends State<NutritionModule> {
       day.goalForToday!.calorieLimit = maintenanceCalories;
       dayService.updateDayData(day);
     }
-    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    if(!refresh)
+    {
+      await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    }
     showDateSelector = false;
     refreshState();
   }
@@ -205,8 +208,7 @@ class NutritionModuleState extends State<NutritionModule> {
                               meal: meal,
                               day: currentDay!,
                               onMealUpdated: (value) {
-                                setCaloriesInDay();
-                                refreshState();
+                                _setHomePage(currentDay!.dayTime);
                               },
                             ),
                           ),
@@ -248,9 +250,6 @@ class NutritionModuleState extends State<NutritionModule> {
   }
 
   handleDateChange(DateTime value) async {
-    // currentDay = await dayService.getDayDataByDate(value);
-    // _setCurrentDayMarker();
-    // setCaloriesInDay();
     _setHomePage(value);
   }
 
