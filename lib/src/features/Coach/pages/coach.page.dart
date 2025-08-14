@@ -384,41 +384,47 @@ class _CoachPageState extends State<CoachPage> {
                     color: BACKGROUND,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: msgController,
-                            maxLines: null,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: SURFACE2,
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              constraints: BoxConstraints(maxHeight: 200.h),
+                              child: TextField(
+                                controller: msgController,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: SURFACE2,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  hintText: "Your message ..",
+                                ),
                               ),
-                              hintText: "Your message ..",
                             ),
                           ),
-                        ),
-                        SizedBox(width: 10.w),
-                        TextButton(
-                          onPressed: () {
-                            handleSendMessage();
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: PRIMARY,
-                            shape: CircleBorder(),
-                            minimumSize: Size(40.h, 40.h),
+                          SizedBox(width: 10.w),
+                          TextButton(
+                            onPressed: () {
+                              handleSendMessage();
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: PRIMARY,
+                              shape: CircleBorder(),
+                              minimumSize: Size(40.h, 40.h),
+                            ),
+                            child: Icon(
+                              FontAwesomeIcons.paperPlane,
+                              color: SURFACE2,
+                              size: 20,
+                            ),
                           ),
-                          child: Icon(
-                            FontAwesomeIcons.paperPlane,
-                            color: SURFACE2,
-                            size: 20,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
