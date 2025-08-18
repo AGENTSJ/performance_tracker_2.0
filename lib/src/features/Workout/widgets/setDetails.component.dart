@@ -349,12 +349,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   }
 
   handleAddNewSet(double weight) {
-    for (var set in widget.workout.sets) {
-      if (set.value == weight) {
-        Fluttertoast.showToast(msg: "Already exist");
-        return;
-      }
-    }
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
     enabledSets.add(set);
