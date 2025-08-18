@@ -3,13 +3,12 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
-import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 
 class UserGoalsService {
   
   var userService = locator<UserService>();
-  var healthService = locator<HealthService>();
+  // var healthService = locator<HealthService>();
   Map<ActivityLevel,double> activityFactor = {
     ActivityLevel.sedentary : 1.2,
     ActivityLevel.lightlyActive : 1.375,
@@ -90,7 +89,7 @@ class UserGoalsService {
     {
       steps = 3500;
     }
-    var moveMin = healthService.getMoveMin(steps);
+    var moveMin = _getMoveMin(steps);
     calories = bmr+neat+tde+(moveMin.inMinutes*MET);
     return calories;
   }
@@ -126,5 +125,10 @@ class UserGoalsService {
       default:
         return (10*user.weight)+(6.25*user.height) - (5 * user.age) -161;
     }
+  }
+  Duration _getMoveMin(int steps) {
+    const secondToTakeAStep = 0.5;
+    var totalSeconds = (steps * secondToTakeAStep).round();
+    return Duration(seconds: totalSeconds);
   }
 }
