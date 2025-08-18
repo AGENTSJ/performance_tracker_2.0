@@ -8,7 +8,6 @@ import 'package:performance_tracker/services/user.service.data.dart';
 class UserGoalsService {
   
   var userService = locator<UserService>();
-  // var healthService = locator<HealthService>();
   Map<ActivityLevel,double> activityFactor = {
     ActivityLevel.sedentary : 1.2,
     ActivityLevel.lightlyActive : 1.375,
