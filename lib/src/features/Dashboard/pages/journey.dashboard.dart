@@ -13,6 +13,7 @@ import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/calorie.chart.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/journal.lock.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/journey.graph.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/steps.chart.dart';
 import 'package:performance_tracker/src/components/journey.component.dart';
@@ -121,12 +122,14 @@ class _ActivityPageState extends State<ActivityPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10.h),
+                      // journey
                       JourneyComponent(
                         onChange: () {
                           setUpUi(DateTime.now());
                         },
                       ),
                       SizedBox(height: 20.h),
+                      // current day stats
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
@@ -280,6 +283,7 @@ class _ActivityPageState extends State<ActivityPage> {
                         ),
                       ),
                       SizedBox(height: 20.h),
+                      // journey tracker
                       if (currentJourney != null &&
                           (currentJourney!.status == JourneyStatus.onProgress ||
                               currentJourney!.status ==
@@ -328,7 +332,11 @@ class _ActivityPageState extends State<ActivityPage> {
                             ],
                           ),
                         ),
-                      SizedBox(height: 30.h),
+                      SizedBox(height: 20.h),
+                      // journal
+                      JournalLock(),
+                      SizedBox(height: 20.h),
+
                     ],
                   ),
                 ),
