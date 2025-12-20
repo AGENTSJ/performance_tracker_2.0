@@ -6,6 +6,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/journalBook.model.dart';
 import 'package:performance_tracker/models/journey.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
@@ -13,6 +14,7 @@ import 'package:performance_tracker/repositories/conversation.respository.dart';
 import 'package:performance_tracker/services/advice.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/services/jorunal.service.dart';
 import 'package:performance_tracker/services/journey.service.dart';
 import 'package:performance_tracker/services/report.service.dart';
 import 'package:performance_tracker/services/routine.service.dart';
@@ -33,6 +35,7 @@ class DataService {
   final reportService = locator<ReportService>();
   final trainerAgentService = locator<TrainerAgentService>();
   final advService = locator<AdviceService>();
+  final journalService = locator<JournalService>();
   final _convoRepo = locator<ConversationRepository>();
 
   restoreBackUp(oldData) {
@@ -173,20 +176,25 @@ class DataService {
 
   exportData() async {
     Fluttertoast.showToast(msg: "Preparing to download file");
-    AppData appData = AppData(
-      foods: foodService.getAllFoods(),
-      days: dayService.getAllDays(),
-      users: userService.getAllUser(),
-      routines: routService.getAllRoutines(),
-      workouts: workService.getAllWorkouts(),
-      journeys: jourService.getAllJourney(),
-      advices: advService.fetchAllAdvices(),
-      conversations: [await trainerAgentService.getOlderChat()],
-      reports: reportService.fetchAllReports(),
-      version: '',
-    );
-    var jsonData = appData.toJson();
-    await saveJsonToFile(jsonData, "PerformanceTracker");
+    try {
+      AppData appData = AppData(
+        foods: foodService.getAllFoods(),
+        days: dayService.getAllDays(),
+        users: userService.getAllUser(),
+        routines: routService.getAllRoutines(),
+        workouts: workService.getAllWorkouts(),
+        journeys: jourService.getAllJourney(),
+        advices: advService.fetchAllAdvices(),
+        conversations: [await trainerAgentService.getOlderChat()],
+        reports: reportService.fetchAllReports(),
+        version: '',
+        journalBook: journalService.getJournalBook()
+      );
+      var jsonData = appData.toJson();
+      await saveJsonToFile(jsonData, "PerformanceTracker");
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'An error has occur ${e}');
+    }
   }
 }
 
@@ -200,6 +208,7 @@ class AppData {
   List<AdviceSet> advices;
   List<AiChatContent> conversations;
   List<Report> reports;
+  JournalBook? journalBook;
   String version;
   AppData({
     required this.foods,
@@ -212,6 +221,7 @@ class AppData {
     required this.conversations,
     required this.reports,
     required this.version,
+    required this.journalBook,
   });
 
   Map<String, dynamic> toJson() {
@@ -225,6 +235,7 @@ class AppData {
       "advices": advices.map((advice) => advice.toJson()).toList(),
       "conversations": conversations.map((conv) => conv.toJson()).toList(),
       "reports": reports.map((report) => report.toJson()).toList(),
+      "journalBook": journalBook?.toJson(),
     };
   }
 
@@ -257,6 +268,7 @@ class AppData {
       reports: (map['reports'] as List<dynamic>)
           .map((e) => Report.fromJson(e as Map<String, dynamic>))
           .toList(),
+      journalBook: map['journalBook']!=null ? JournalBook.fromJson(map['journalBook']) : null,
       version: map['version'] ??= "",
     );
   }
@@ -266,7 +278,7 @@ Future<void> saveJsonToFile(Map<String, dynamic> data, String fileName) async {
   // Request storage permission
   var status = await Permission.storage.request();
   if (!status.isGranted) {
-    return;
+    throw( Exception('No access to storage'));
   }
 
   // Convert Map to JSON string

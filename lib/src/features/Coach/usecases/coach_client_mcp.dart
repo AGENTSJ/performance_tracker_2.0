@@ -146,7 +146,6 @@ class CoachClientMcp {
         await act(actionObj);
       }
     } catch (e) {
-      print(e.toString());
       rethrow;
     } finally {
       adviceClientPipeIsActive = false;

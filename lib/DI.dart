@@ -6,6 +6,8 @@ import 'package:performance_tracker/repositories/day.repository.dart';
 import 'package:performance_tracker/repositories/food.repository.dart';
 import 'package:performance_tracker/repositories/journal.repository.dart';
 import 'package:performance_tracker/repositories/journey.repository.dart';
+import 'package:performance_tracker/repositories/key.repository.dart';
+import 'package:performance_tracker/repositories/log.repository.dart';
 import 'package:performance_tracker/repositories/report.repository.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/repositories/user.repository.dart';
@@ -19,6 +21,8 @@ import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/jorunal.service.dart';
 import 'package:performance_tracker/services/journey.service.dart';
+import 'package:performance_tracker/services/key.service.dart';
+import 'package:performance_tracker/services/log.service.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
 import 'package:performance_tracker/services/report.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
@@ -57,6 +61,8 @@ setUpDependencyInjection()
   locator.registerLazySingleton<JournalService>(()=>JournalService());
   locator.registerLazySingleton<CoachClientMcp>(()=>CoachClientMcp());
   locator.registerLazySingleton<CoachServerMcp>(()=>CoachServerMcp());
+  locator.registerLazySingleton<LogService>(()=>LogService());
+  locator.registerLazySingleton<KeyService>(()=>KeyService());
 
   // Repo
   locator.registerLazySingleton<AdviceRepository>(()=>AdviceRepository());
@@ -68,4 +74,6 @@ setUpDependencyInjection()
   locator.registerLazySingleton<JourneyRepository>(()=>JourneyRepository());
   locator.registerLazySingleton<ConversationRepository>(()=>ConversationRepository());
   locator.registerLazySingleton<JournalRepository>(()=>JournalRepository());
+  locator.registerLazySingleton<KeyRepository>(()=>KeyRepository());
+  locator.registerLazySingleton<LogRepository>(()=>LogRepository());
 }
