@@ -154,11 +154,16 @@ class DataService {
             await reportService.createReport(report);
           }
         }(),
+        // Restore Journals
+        () async {
+          var book = data.journalBook;
+          for(var journal in book?.journals ?? [] )
+          {
+            await jourService.createJourney(journal);
+          }
+        }(),
       ];
       await Future.wait(futures);
-      // for (var fut in futures) {
-      //   await fut;
-      // }
       Fluttertoast.showToast(msg: "Importing finished");
     } catch (e) {
       Fluttertoast.showToast(msg: "An error has occur ${e.toString()}");

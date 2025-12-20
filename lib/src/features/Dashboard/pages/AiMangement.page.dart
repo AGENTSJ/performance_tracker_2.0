@@ -17,7 +17,7 @@ class _AimangementPageState extends State<AimangementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Journals'),
+        title: const Text('AI Management'),
         backgroundColor: BACKGROUND,
         actions: [
         ],
