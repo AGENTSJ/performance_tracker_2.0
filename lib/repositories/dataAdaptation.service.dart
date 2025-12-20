@@ -159,7 +159,7 @@ class DataService {
           var book = data.journalBook;
           for(var journal in book?.journals ?? [] )
           {
-            await jourService.createJourney(journal);
+            await journalService.addJournal(journal,book?.password ?? '');
           }
         }(),
       ];
