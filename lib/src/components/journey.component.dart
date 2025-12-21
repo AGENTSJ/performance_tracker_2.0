@@ -202,8 +202,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding:  EdgeInsets.symmetric(horizontal: 8.0.w,vertical: 8.0.h),
                     child: Material(
+                      color: SURFACE2,
+                      borderRadius: BorderRadius.circular(8.r),
                       child: GoalsWidget(user: user!, onUpdate: () {}),
                     ),
                   ),
@@ -212,12 +214,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
                       Navigator.of(context).pop(true);
                     },
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: SURFACE,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
-                    child: Text("Start"),
+                    child: Text("Start",style: TextStyle(color: TEXT_PRIMARY),),
                   ),
                   SizedBox(height: 10.h),
                 ],
@@ -292,12 +295,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         handleCreateJourney();
                       },
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: SURFACE,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
-                      child: Text("Start Journey"),
+                      child: Text("Start Journey",style: TextStyle(color: TEXT_PRIMARY),),
                     ),
                   ],
                 ),
