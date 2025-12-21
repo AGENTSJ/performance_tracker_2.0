@@ -48,7 +48,7 @@ class _RoutineSelectionState extends State<RoutineSelection> {
               ),
             ),
             Material(
-              color: Colors.white,
+              color: SURFACE,
               shape: Border.all(color: BORDER_SECONDARY),
               child: Column(
                 children: [

@@ -42,7 +42,7 @@ class ProgressChartState extends State<ProgressChart> {
                 return LineTooltipItem(
                   '$date\nReps: $y',
                   textAlign: TextAlign.start,
-                  const TextStyle(color: Colors.white,),
+                  TextStyle(color: TEXT_PRIMARY,),
                 );
               }).toList();
             },

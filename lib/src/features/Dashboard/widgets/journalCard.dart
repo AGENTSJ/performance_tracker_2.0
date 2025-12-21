@@ -38,7 +38,7 @@ class JournalCard extends StatelessWidget {
                     SizedBox(height: 4.h),
                     Text(
                       commonService.getDateString(journal.dateOfJournal),
-                      style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 15, color: TEXT_SECONDARY),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 8.0.h),
@@ -48,7 +48,7 @@ class JournalCard extends StatelessWidget {
                             "Lines written",
                             style: TextStyle(
                               fontSize: 15,
-                              color: Colors.grey[700],
+                              color: TEXT_SECONDARY,
                             ),
                           ),
                           SizedBox(width: 10.w),
@@ -56,7 +56,7 @@ class JournalCard extends StatelessWidget {
                             journal.journalData.length.toString(),
                             style: TextStyle(
                               fontSize: 15,
-                              color: Colors.grey[700],
+                              color: TEXT_SECONDARY,
                             ),
                           ),
                         ],
@@ -68,7 +68,7 @@ class JournalCard extends StatelessWidget {
               SizedBox(width: 12.w),
               Text(
                 "${journal.dateOfJournal.hour.toString().padLeft(2, '0')}:${journal.dateOfJournal.minute.toString().padLeft(2, '0')}",
-                style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                style: TextStyle(color: TEXT_SECONDARY, fontSize: 13),
               ),
             ],
           ),

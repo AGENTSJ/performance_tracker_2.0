@@ -98,7 +98,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY,
-        foregroundColor: Colors.white,
+        foregroundColor: SURFACE,
         elevation: 0,
         onPressed: () {
           handleAddWorkout();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 
@@ -38,7 +39,7 @@ class microNutrientList extends StatelessWidget {
     
                   Row(
                     children: [
-                      Icon(Icons.circle,color: Colors.grey,size: 14.w,),
+                      Icon(Icons.circle,color: TEXT_SECONDARY,size: 14.w,),
                       SizedBox(width: 10.w,),
                       SizedBox(
                         width: 110.w,

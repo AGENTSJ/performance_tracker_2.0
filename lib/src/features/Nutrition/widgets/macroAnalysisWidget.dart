@@ -116,6 +116,7 @@ class MacroAnalysisWidget extends StatelessWidget {
                                         macros.calories,
                                       ) /
                                       100),
+                                  color: PRIMARY,
                                 ),
                               ),
                             ),

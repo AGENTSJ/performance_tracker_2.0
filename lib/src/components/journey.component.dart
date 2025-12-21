@@ -252,14 +252,14 @@ class _JourneyComponentState extends State<JourneyComponent> {
         value: journeyCompleted,
         title: '',
         radius: 10.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: SURFACE, fontWeight: FontWeight.bold),
       ),
       PieChartSectionData(
         color: BORDER_PRIMARY,
         value: (100 - journeyCompleted).clamp(0, 100),
         title: '',
         radius: 10.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: SURFACE, fontWeight: FontWeight.bold),
       ),
     ];
   }

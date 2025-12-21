@@ -92,7 +92,7 @@ class _JournalLockState extends State<JournalLock> {
                   Center(
                     child: Icon(
                       FontAwesomeIcons.bookOpen,
-                      color: Colors.black,
+                      color: TEXT_PRIMARY,
                       size: 40.sp,
                     ),
                   ),

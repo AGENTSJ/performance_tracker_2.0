@@ -16,6 +16,7 @@ import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/config.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/services/health.service.dart';
@@ -63,6 +64,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<CoachServerMcp>(()=>CoachServerMcp());
   locator.registerLazySingleton<LogService>(()=>LogService());
   locator.registerLazySingleton<KeyService>(()=>KeyService());
+  locator.registerLazySingleton<ConfigService>(()=>ConfigService());
 
   // Repo
   locator.registerLazySingleton<AdviceRepository>(()=>AdviceRepository());

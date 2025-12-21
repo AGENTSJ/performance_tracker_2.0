@@ -98,7 +98,7 @@ class _ApiKeyWidgetState extends State<ApiKeyWidget> {
                             ),
                             padding: EdgeInsets.zero,
                           ),
-                          child: const Icon(Icons.save, color: PRIMARY),
+                          child:  Icon(Icons.save, color: PRIMARY),
                         ),
                       ),
                     ],

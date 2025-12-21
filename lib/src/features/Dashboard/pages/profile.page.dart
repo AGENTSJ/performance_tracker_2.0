@@ -17,6 +17,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/AiMangement.page.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/darkModeToggle.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 
 class ProfilePageModule extends StatefulWidget {
@@ -405,7 +406,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadiusGeometry.circular(8.r),
-                                        side: BorderSide(color: PRIMARY)
+                                        side: BorderSide(color: PRIMARY),
                                       ),
                                     ),
                                     onPressed: () {
@@ -425,6 +426,8 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20.h),
+                    DarkModeToggle(),
                   ],
                 ),
               ),

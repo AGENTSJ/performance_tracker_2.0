@@ -1,6 +1,7 @@
 // widgets/log_view_widget.dart
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/log.model.dart';
 import 'package:performance_tracker/services/log.service.dart';
 
@@ -74,7 +75,10 @@ class _LogViewWidgetState extends State<LogViewWidget> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(level.toUpperCase()),
+                    checkmarkColor: TEXT_PRIMARY,
+                    backgroundColor: SURFACE,
+                    selectedColor: SURFACE,
+                    label: Text(level.toUpperCase(),style: TextStyle(color: TEXT_PRIMARY),),
                     selected: _selectedLevel == level,
                     onSelected: (selected) {
                       setState(() {
@@ -119,13 +123,13 @@ class _LogViewWidgetState extends State<LogViewWidget> {
             Icon(
               Icons.info_outline,
               size: 48,
-              color: Colors.grey[400],
+              color: TEXT_TERTIARY,
             ),
             const SizedBox(height: 16),
             Text(
               'No logs yet',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: TEXT_TERTIARY,
                 fontSize: 16,
               ),
             ),
@@ -211,6 +215,7 @@ class _LogTile extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
+      color: SURFACE,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -250,7 +255,7 @@ class _LogTile extends StatelessWidget {
                       Text(
                         log.entityId,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: TEXT_SECONDARY,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -271,7 +276,7 @@ class _LogTile extends StatelessWidget {
                       Text(
                         log.formattedDate,
                         style: TextStyle(
-                          color: Colors.grey[500],
+                          color: TEXT_TERTIARY,
                           fontSize: 11,
                         ),
                       ),
@@ -279,7 +284,7 @@ class _LogTile extends StatelessWidget {
                       Text(
                         log.formattedTime,
                         style: TextStyle(
-                          color: Colors.grey[500],
+                          color: TEXT_TERTIARY,
                           fontSize: 11,
                         ),
                       ),

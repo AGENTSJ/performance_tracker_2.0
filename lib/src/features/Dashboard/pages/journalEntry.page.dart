@@ -27,6 +27,9 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
   late TextEditingController _titleEditController;
   late FocusNode _focusNode;
   final ButtonStyle actionBtnStyle = ElevatedButton.styleFrom(
+    iconColor: TEXT_PRIMARY,
+    backgroundColor: SURFACE,
+    foregroundColor: TEXT_PRIMARY,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadiusGeometry.circular(8.r),
     ),
@@ -37,7 +40,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
   var isEditingMode = false;
   final TextStyle titleStyle = TextStyle(
     fontSize: 20,
-    color: Colors.black,
+    color: TEXT_PRIMARY,
     fontWeight: FontWeight.w600,
     overflow: TextOverflow.ellipsis,
   );
@@ -278,7 +281,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
       context,
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: TEXT_PRIMARY,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -317,7 +320,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
                 controller: _titleEditController,
                 focusNode: _focusNode,
                 style: titleStyle,
-                cursorColor: Colors.black,
+                cursorColor: TEXT_PRIMARY,
                 backgroundCursorColor: BACKGROUND,
               )
             : Text(widget.journal.title, style: titleStyle),
@@ -327,7 +330,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
               onPressed: _onRemoveEntryPressed,
-              icon: Icon(FontAwesomeIcons.trashCan, size: 20),
+              icon: Icon(FontAwesomeIcons.trashCan, size: 20,color: TEXT_PRIMARY,),
               style: IconButton.styleFrom(backgroundColor: SURFACE),
             ),
           ),
@@ -384,12 +387,12 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.black54,
+                                    color: TEXT_PRIMARY,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
+                                  child:  Icon(
                                     Icons.close,
-                                    color: Colors.white,
+                                    color: TEXT_SECONDARY,
                                     size: 20,
                                   ),
                                 ),

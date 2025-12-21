@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
@@ -54,7 +55,7 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
         duration: Duration(milliseconds: 250), // Animation duration
         curve: Curves.decelerate,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 255, 255, 255),
+          color: SURFACE,
           borderRadius: BorderRadius.all(Radius.circular(8.r)),
         ),
         width: double.infinity,
@@ -113,6 +114,7 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
               ] else if (!showMacroAnalysis) ...[
                 Expanded(
                   child: Material(
+                    color: SURFACE2,
                     borderRadius: BorderRadius.circular(8.r),
                     child: InkWell(
                       onTap: () {
@@ -131,6 +133,7 @@ class MacroCommentsWidgetState extends State<MacroCommentsWidget> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Material(
+                      color: SURFACE2,
                       borderRadius: BorderRadius.circular(8.r),
                       child: InkWell(
                         onTap: () {

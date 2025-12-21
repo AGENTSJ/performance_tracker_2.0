@@ -224,7 +224,7 @@ class _JournalPageState extends State<JournalPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: showAddJournalDialog,
         backgroundColor: PRIMARY,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Icon(Icons.add, color: SURFACE),
       ),
     );
   }

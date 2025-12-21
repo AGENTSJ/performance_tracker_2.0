@@ -300,7 +300,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Volume
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -419,7 +419,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Notes
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -473,7 +473,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Progress
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -554,7 +554,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                           height: 50.h,
                                           width: 100.w,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: SURFACE,
                                             borderRadius: BorderRadius.circular(
                                               8,
                                             ),
@@ -689,7 +689,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
                           shadowColor: Colors.transparent,
-                          backgroundColor: Colors.white,
+                          backgroundColor: SURFACE,
                           foregroundColor: const Color.fromARGB(
                             148,
                             255,
@@ -741,7 +741,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                     ),
                     backgroundColor: PRIMARY,
                   ),
-                  child: Text("Update", style: TextStyle(color: Colors.white)),
+                  child: Text("Update", style: TextStyle(color: TEXT_PRIMARY)),
                 ),
               )
             : null,

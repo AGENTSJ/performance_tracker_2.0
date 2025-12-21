@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
@@ -56,7 +57,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
         duration: Duration(milliseconds: 250), // Animation duration
         curve: Curves.decelerate,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 255, 255, 255),
+          color: SURFACE,
           borderRadius: BorderRadius.all(Radius.circular(8.r)),
         ),
         width: double.infinity,
@@ -115,6 +116,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
               ] else if (!showMicroAnalysis) ...[
                 Expanded(
                   child: Material(
+                    color: SURFACE2,
                     borderRadius: BorderRadius.circular(8.r),
                     child: InkWell(
                       onTap: () {
@@ -133,6 +135,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Material(
+                      color: SURFACE2,
                       borderRadius: BorderRadius.circular(8.r),
                       child: InkWell(
                         onTap: () {

@@ -123,7 +123,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
                                 ? "Deficit"
                                 : "Surplus"} : ${y.round()}',
                             textAlign: TextAlign.start,
-                            const TextStyle(color: Colors.white),
+                            TextStyle(color: TEXT_SECONDARY),
                           );
                         }).toList();
                       },

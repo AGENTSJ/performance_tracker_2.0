@@ -116,7 +116,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
         backgroundColor: CONT_BACKGROUND,
-        textColor: Colors.black,
+        textColor: TEXT_PRIMARY,
         webBgColor: "white",
       );
     }

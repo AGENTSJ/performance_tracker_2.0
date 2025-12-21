@@ -311,7 +311,7 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
                           backgroundColor: PRIMARY,
                           side: BorderSide(color: BORDER_PRIMARY, width: 1),
                           padding: EdgeInsets.all(12.r),
-                          foregroundColor: Colors.white,
+                          foregroundColor: TEXT_PRIMARY,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadiusGeometry.circular(4.r),
                           ),

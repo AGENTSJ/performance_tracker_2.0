@@ -248,7 +248,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                           icon: Icon(
                             FontAwesomeIcons.plus,
                             size: 15.sp,
-                            color: Colors.white,
+                            color: TEXT_PRIMARY,
                           ),
                         ),
                       ],
@@ -331,12 +331,12 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                           children: [
                             Icon(
                               FontAwesomeIcons.faceGrinWink,
-                              color: Colors.grey,
+                              color: TEXT_SECONDARY,
                             ),
                             SizedBox(height: 10.h),
                             Text(
                               "Add some workouts to get started",
-                              style: TextStyle(color: Colors.grey),
+                              style: TextStyle(color: TEXT_TERTIARY),
                             ),
                           ],
                         ),

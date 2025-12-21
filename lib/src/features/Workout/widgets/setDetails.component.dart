@@ -22,7 +22,7 @@ class SetDetailsComponent extends StatefulWidget {
 
 class SetDetailsComponentState extends State<SetDetailsComponent> {
   bool showTrack = true;
-  static const _headingTextDecor = TextStyle(
+  static final _headingTextDecor = TextStyle(
     fontWeight: FontWeight.w500,
     color: TEXT_SECONDARY,
   );
@@ -100,7 +100,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         child: Text(
                           "Track",
                           style: TextStyle(
-                            color: showTrack ? PRIMARY : Colors.grey,
+                            color: showTrack ? PRIMARY : TEXT_PRIMARY,
                           ),
                         ),
                       ),
@@ -115,7 +115,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         child: Text(
                           "Status",
                           style: TextStyle(
-                            color: !showTrack ? PRIMARY : Colors.grey,
+                            color: !showTrack ? PRIMARY : TEXT_PRIMARY,
                           ),
                         ),
                       ),
@@ -324,12 +324,12 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                 SizedBox(height: 5.h),
                                 Icon(
                                   FontAwesomeIcons.faceGrinWink,
-                                  color: Colors.grey,
+                                  color: TEXT_PRIMARY,
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
                                   "Lets start by adding some sets",
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: TEXT_PRIMARY),
                                 ),
                               ],
                             ),
