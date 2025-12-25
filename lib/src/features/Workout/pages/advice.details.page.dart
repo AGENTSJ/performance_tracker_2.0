@@ -275,12 +275,12 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton2<AdviceStatus>(
                             isExpanded: true,
-                            hint: const Text("Choose"),
+                            hint: Text("Choose",style: TextStyle(color: TEXT_PRIMARY),),
                             value: adviceSet.type,
                             items: AdviceStatus.values.map((status) {
                               return DropdownMenuItem<AdviceStatus>(
                                 value: status,
-                                child: Text(status.name),
+                                child: Text(status.name,style: TextStyle(color: TEXT_PRIMARY),),
                               );
                             }).toList(),
                             onChanged: (value) {

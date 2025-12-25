@@ -323,7 +323,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
+                            SizedBox(
                               height: 100.h,
                               width: 100.h,
                               child: Stack(
@@ -340,6 +340,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                   Center(
                                     child: Container(
                                       decoration: BoxDecoration(
+                                        color: SURFACE2,
                                         image: DecorationImage(
                                           image: currentBadge!.badgeImage.image,
                                           fit: BoxFit.cover,
@@ -390,7 +391,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                           children: [
                             Row(
                               children: [
-                                Icon(FontAwesomeIcons.fire, size: 15.sp),
+                                Icon(FontAwesomeIcons.fire, size: 15.sp,color: TEXT_SECONDARY,),
                                 SizedBox(width: 10.w),
                                 Text(
                                   userInCut
@@ -486,6 +487,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                   child: Icon(
                                     FontAwesomeIcons.shoePrints,
                                     size: 12.sp,
+                                    color: TEXT_SECONDARY,
                                   ),
                                 ),
                                 SizedBox(width: 10.w),

@@ -324,7 +324,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               // Volume
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(
@@ -396,7 +396,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               // Notes
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(

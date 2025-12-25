@@ -57,7 +57,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
         duration: Duration(milliseconds: 250), // Animation duration
         curve: Curves.decelerate,
         decoration: BoxDecoration(
-          color: SURFACE,
+          color: SURFACE2,
           borderRadius: BorderRadius.all(Radius.circular(8.r)),
         ),
         width: double.infinity,
@@ -116,7 +116,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
               ] else if (!showMicroAnalysis) ...[
                 Expanded(
                   child: Material(
-                    color: SURFACE2,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                     child: InkWell(
                       onTap: () {
@@ -135,7 +135,7 @@ class MicroCommentsWidgetState extends State<MicroCommentsWidget> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Material(
-                      color: SURFACE2,
+                      color: SURFACE,
                       borderRadius: BorderRadius.circular(8.r),
                       child: InkWell(
                         onTap: () {

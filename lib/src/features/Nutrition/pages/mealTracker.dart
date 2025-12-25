@@ -214,7 +214,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                       visible: showSuggested && suggestedFoods.isNotEmpty,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: SURFACE,
+                          color: SURFACE2,
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Column(
@@ -228,6 +228,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
+                                      color: SURFACE2,
                                       border: Border(
                                         bottom: BorderSide(
                                           color: BORDER_PRIMARY,

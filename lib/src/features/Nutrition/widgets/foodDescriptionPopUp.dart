@@ -28,7 +28,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(8),
       ),
-      title: Text(widget.foodName),
+      title: Text(widget.foodName,style: TextStyle(color: TEXT_PRIMARY),),
       content: isGenerating
           ? Container(
               height: 150,

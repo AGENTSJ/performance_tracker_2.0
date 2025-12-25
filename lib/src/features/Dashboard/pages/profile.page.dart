@@ -77,6 +77,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
 
   InputDecoration getInputDecoration(String label) {
     return InputDecoration(
+      labelStyle: TextStyle(color: TEXT_PRIMARY),
       labelText: label,
       filled: true,
       fillColor: CONT_BACKGROUND,

@@ -380,7 +380,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: SURFACE2,
-          title: Text('Enter weight in Kg'),
+          title: Text('Enter weight in Kg',style: TextStyle(color: TEXT_PRIMARY),),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
