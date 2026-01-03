@@ -98,4 +98,8 @@ class RoutineService {
   {
     return _routineRepo.getAllRoutines();
   }
+  clearAll()async
+  {
+    await _routineRepo.clearAll();
+  }
 }

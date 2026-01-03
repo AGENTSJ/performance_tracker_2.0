@@ -28,7 +28,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(8),
       ),
-      title: Text(widget.foodName),
+      title: Text(widget.foodName,style: TextStyle(color: TEXT_PRIMARY),),
       content: isGenerating
           ? Container(
               height: 150,
@@ -116,7 +116,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
         backgroundColor: CONT_BACKGROUND,
-        textColor: Colors.black,
+        textColor: TEXT_PRIMARY,
         webBgColor: "white",
       );
     }

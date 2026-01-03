@@ -9,7 +9,7 @@ class AnimatedProgressBar extends StatefulWidget {
   final double? width;
   @override
   State<StatefulWidget> createState() => _AnimatedProgressBarState();
-  AnimatedProgressBar({super.key,required this.value ,this.color =PRIMARY, this.width});
+  AnimatedProgressBar({super.key,required this.value , required this.color , this.width});
 }
 
 class _AnimatedProgressBarState extends State<AnimatedProgressBar> with SingleTickerProviderStateMixin{

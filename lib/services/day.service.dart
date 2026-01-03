@@ -88,4 +88,9 @@ class DayService {
   {
     return _dayRepo.addDayData(day);
   }
+
+  clearAllDays()async
+  {
+    await _dayRepo.clearAllDays();
+  }
 }

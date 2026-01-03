@@ -89,14 +89,14 @@ class _StepsChartState extends State<StepsChart> {
         value: percentCompleted,
         title: '',
         radius: widget.lineRadius.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: TEXT_TERTIARY, fontWeight: FontWeight.bold),
       ),
       PieChartSectionData(
         color: BORDER_PRIMARY,
         value: (100 - percentCompleted).clamp(0, 100),
         title: '',
         radius: widget.lineRadius.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: TEXT_TERTIARY, fontWeight: FontWeight.bold),
       ),
     ];
   }

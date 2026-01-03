@@ -324,7 +324,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               // Volume
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(
@@ -396,7 +396,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
               // Notes
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: SURFACE2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(
@@ -454,7 +454,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         shadowColor: Colors.transparent,
-                        backgroundColor: Colors.white,
+                        backgroundColor: SURFACE,
                         foregroundColor: const Color.fromARGB(148, 255, 91, 91),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4.r),
@@ -501,7 +501,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
                   ),
                   backgroundColor: PRIMARY,
                 ),
-                child: Text("Update", style: TextStyle(color: Colors.white)),
+                child: Text("Update", style: TextStyle(color: TEXT_PRIMARY)),
               ),
             )
           : null,

@@ -56,4 +56,8 @@ class JourneyService {
   {
     return _journeyRepo.getALLJourney();
   }
+  clearAll()async
+  {
+    await _journeyRepo.clearAll();
+  }
 }

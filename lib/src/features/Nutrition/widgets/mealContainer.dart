@@ -62,7 +62,7 @@ class _MealContainerState extends State<MealContainer>
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: PRIMARY,
-                      foregroundColor: Colors.white,
+                      foregroundColor: TEXT_PRIMARY,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: Size(5.w, 5.h),
                       padding: EdgeInsets.all(4.sp),

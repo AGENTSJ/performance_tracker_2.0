@@ -121,7 +121,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                               Text(
                                                 'Measure :',
                                                 style: TextStyle(
-                                                  color: Colors.grey,
+                                                  color: TEXT_PRIMARY,
                                                 ),
                                               ),
                                               SizedBox(width: 10),
@@ -144,7 +144,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                         width: 80,
                                         height: 35,
                                         decoration: BoxDecoration(
-                                          color: Colors.grey[200],
+                                          color: TEXT_SECONDARY,
                                           borderRadius: BorderRadius.circular(
                                             10,
                                           ),

@@ -236,7 +236,7 @@ class RoutinesPageState extends State<RoutinesPage> {
         onPressed: () {
           handleAddRoutine();
         },
-        child: Icon(Icons.add, color: Colors.white),
+        child: Icon(Icons.add, color: TEXT_PRIMARY),
       ),
     );
   }

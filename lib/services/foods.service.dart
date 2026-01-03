@@ -219,7 +219,7 @@ class FoodService {
         $jsonResponseStructure
       ''';
 
-      var body = await _ai.getResponse(prompt, instructions,modelType: Models.Pro);
+      var body = await _ai.getResponse(prompt, instructions,modelType: Models.Flash);
       var resString = body.message;
       if(resString[0]=="`")
       {
@@ -299,5 +299,10 @@ class FoodService {
       value: (data['value'] as num).toDouble(),
       unit: data['unit'],
     );
+  }
+
+  clearAllFood()async
+  {
+    _foodRepo.clearAllFoodData();
   }
 }

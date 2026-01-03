@@ -60,9 +60,11 @@ class ReportService {
       var user = await _userService.getUserData();
       var today = await _dayService.getDayDataByDate(now);
       var stepsToday = await _healthService.getStepsByDate(now);
+      var macrosToday = _dayService.getDaysCalories(today!);
       var maintenance = _userGoalService.fetchMaintenanceCalories(
         user,
         steps: user.userGoals.stepGoal,
+        macrosToday
       );
       var nutritionToday = _dayService.getDaysCalories(today!);
       String context =

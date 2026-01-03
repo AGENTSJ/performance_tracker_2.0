@@ -65,4 +65,9 @@ class WorkoutService {
     }
     await updateWorkout(workout);
   }
+
+  clearAll()async
+  {
+    await routineRepo.clearAllWorkouts();
+  }
 }

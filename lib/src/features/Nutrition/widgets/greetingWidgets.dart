@@ -86,7 +86,7 @@ class GreetingsWidgetState extends State<GreetingsWidget>
             children: [
               Text('Hmmm lets see..'),
               SizedBox(width: 20.w,),
-              SpinKitSpinningLines(color: Colors.grey,size: 30.w,),
+              SpinKitSpinningLines(color: TEXT_SECONDARY,size: 30.w,),
             ],
           ),
         ) :Padding(

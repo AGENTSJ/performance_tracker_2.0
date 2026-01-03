@@ -73,9 +73,13 @@ class TrainerAgentService {
 
   Future<String> getJourneyContext() async {
     var journey = _journeyService.getActiveJourney();
+    if(journey==null)
+    {
+      return "No active journey";
+    }
     var user = await _userService.getUserData();
     var caloriesTotal =
-        (journey!.userAtStart.weight - user.userGoals.targetWeight).abs() *
+        (journey.userAtStart.weight - user.userGoals.targetWeight).abs() *
         7700;
     var estimatedDays =
         ((caloriesTotal - journey.caloriesChangeAchieved) /

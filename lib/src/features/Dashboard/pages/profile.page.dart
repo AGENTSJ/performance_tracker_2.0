@@ -16,6 +16,8 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/AiMangement.page.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/darkModeToggle.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 
 class ProfilePageModule extends StatefulWidget {
@@ -75,6 +77,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
 
   InputDecoration getInputDecoration(String label) {
     return InputDecoration(
+      labelStyle: TextStyle(color: TEXT_PRIMARY),
       labelText: label,
       filled: true,
       fillColor: CONT_BACKGROUND,
@@ -371,6 +374,61 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: SURFACE2,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0.r),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Ai Management",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE2,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(8.r),
+                                        side: BorderSide(color: PRIMARY),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AimangementPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text("Manage"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    DarkModeToggle(),
                   ],
                 ),
               ),
@@ -386,9 +444,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
       await dataservice.exportData();
     } catch (e) {
       Fluttertoast.showToast(msg: "An error has occur");
-    }
-    finally
-    {
+    } finally {
       isExporting = false;
     }
   }

@@ -73,4 +73,12 @@ class RoutineRepository {
   {
     return await workoutBox.put(key, workout);
   }
+  clearAll()async
+  {
+    await routineBox.clear();
+  }
+  clearAllWorkouts()async
+  {
+    await workoutBox.clear();
+  }
 }

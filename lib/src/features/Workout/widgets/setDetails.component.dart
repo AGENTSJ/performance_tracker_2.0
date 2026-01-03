@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -23,7 +22,7 @@ class SetDetailsComponent extends StatefulWidget {
 
 class SetDetailsComponentState extends State<SetDetailsComponent> {
   bool showTrack = true;
-  static const _headingTextDecor = TextStyle(
+  static final _headingTextDecor = TextStyle(
     fontWeight: FontWeight.w500,
     color: TEXT_SECONDARY,
   );
@@ -101,7 +100,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         child: Text(
                           "Track",
                           style: TextStyle(
-                            color: showTrack ? PRIMARY : Colors.grey,
+                            color: showTrack ? PRIMARY : TEXT_PRIMARY,
                           ),
                         ),
                       ),
@@ -116,7 +115,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         child: Text(
                           "Status",
                           style: TextStyle(
-                            color: !showTrack ? PRIMARY : Colors.grey,
+                            color: !showTrack ? PRIMARY : TEXT_PRIMARY,
                           ),
                         ),
                       ),
@@ -325,12 +324,12 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                                 SizedBox(height: 5.h),
                                 Icon(
                                   FontAwesomeIcons.faceGrinWink,
-                                  color: Colors.grey,
+                                  color: TEXT_PRIMARY,
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
                                   "Lets start by adding some sets",
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: TEXT_PRIMARY),
                                 ),
                               ],
                             ),
@@ -349,12 +348,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   }
 
   handleAddNewSet(double weight) {
-    for (var set in widget.workout.sets) {
-      if (set.value == weight) {
-        Fluttertoast.showToast(msg: "Already exist");
-        return;
-      }
-    }
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
     enabledSets.add(set);
@@ -387,7 +380,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: SURFACE2,
-          title: Text('Enter weight in Kg'),
+          title: Text('Enter weight in Kg',style: TextStyle(color: TEXT_PRIMARY),),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,

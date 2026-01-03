@@ -100,7 +100,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: SURFACE2,
-              title: Text('Add volume'),
+              title: Text('Add volume',style: TextStyle(color: TEXT_PRIMARY),),
               content: Row(
                 children: [
                   Expanded(
@@ -108,13 +108,13 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                       isExpanded: true,
                       isDense: true,
                       value: selectedMuscle,
-                      hint: Text('Select an option'),
+                      hint: Text('Select an option',style: TextStyle(color: TEXT_PRIMARY),),
                       items: TRAINABLE_MUSCLES.map((String muscle) {
                         return DropdownMenuItem<String>(
                           value: muscle,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(muscle, style: TextStyle(fontSize: 14)),
+                            child: Text(muscle, style: TextStyle(fontSize: 14,color: TEXT_PRIMARY)),
                           ),
                         );
                       }).toList(),
@@ -300,7 +300,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Volume
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -419,7 +419,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Notes
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -473,7 +473,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Progress
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: SURFACE,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -499,6 +499,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 15.sp,
+                                  color: TEXT_PRIMARY
                                 ),
                               ),
                               if (selectedSetForProgress != null)
@@ -538,6 +539,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                                   workSet.value.toString(),
                                                   style: TextStyle(
                                                     fontSize: 14,
+                                                    color: TEXT_PRIMARY
                                                   ),
                                                 ),
                                               ),
@@ -554,7 +556,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                           height: 50.h,
                                           width: 100.w,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: SURFACE,
                                             borderRadius: BorderRadius.circular(
                                               8,
                                             ),
@@ -689,7 +691,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
                           shadowColor: Colors.transparent,
-                          backgroundColor: Colors.white,
+                          backgroundColor: SURFACE,
                           foregroundColor: const Color.fromARGB(
                             148,
                             255,
@@ -741,7 +743,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                     ),
                     backgroundColor: PRIMARY,
                   ),
-                  child: Text("Update", style: TextStyle(color: Colors.white)),
+                  child: Text("Update", style: TextStyle(color: TEXT_PRIMARY)),
                 ),
               )
             : null,

@@ -132,9 +132,11 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentJourney!.lastUpdated!,
     );
     var day = await dayService.getDayDataByDate(DateTime.now());
+    var macros = dayService.getDaysCalories(day!);
     var maintenance = userGoalService.fetchMaintenanceCalories(
       user!,
-      steps: day!.activity!.steps,
+      steps: day.activity!.steps,
+      macros
     );
     var calToday = dayService.getDaysCalories(day).calories;
     if (userInCut) {
@@ -200,8 +202,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding:  EdgeInsets.symmetric(horizontal: 8.0.w,vertical: 8.0.h),
                     child: Material(
+                      color: SURFACE2,
+                      borderRadius: BorderRadius.circular(8.r),
                       child: GoalsWidget(user: user!, onUpdate: () {}),
                     ),
                   ),
@@ -210,12 +214,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
                       Navigator.of(context).pop(true);
                     },
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: SURFACE,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
-                    child: Text("Start"),
+                    child: Text("Start",style: TextStyle(color: TEXT_PRIMARY),),
                   ),
                   SizedBox(height: 10.h),
                 ],
@@ -250,14 +255,14 @@ class _JourneyComponentState extends State<JourneyComponent> {
         value: journeyCompleted,
         title: '',
         radius: 10.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: SURFACE, fontWeight: FontWeight.bold),
       ),
       PieChartSectionData(
         color: BORDER_PRIMARY,
         value: (100 - journeyCompleted).clamp(0, 100),
         title: '',
         radius: 10.r,
-        titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle: TextStyle(color: SURFACE, fontWeight: FontWeight.bold),
       ),
     ];
   }
@@ -290,12 +295,13 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         handleCreateJourney();
                       },
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: SURFACE,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
-                      child: Text("Start Journey"),
+                      child: Text("Start Journey",style: TextStyle(color: TEXT_PRIMARY),),
                     ),
                   ],
                 ),
@@ -317,7 +323,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
+                            SizedBox(
                               height: 100.h,
                               width: 100.h,
                               child: Stack(
@@ -334,6 +340,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                   Center(
                                     child: Container(
                                       decoration: BoxDecoration(
+                                        color: SURFACE2,
                                         image: DecorationImage(
                                           image: currentBadge!.badgeImage.image,
                                           fit: BoxFit.cover,
@@ -384,7 +391,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                           children: [
                             Row(
                               children: [
-                                Icon(FontAwesomeIcons.fire, size: 15.sp),
+                                Icon(FontAwesomeIcons.fire, size: 15.sp,color: TEXT_SECONDARY,),
                                 SizedBox(width: 10.w),
                                 Text(
                                   userInCut
@@ -480,6 +487,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                   child: Icon(
                                     FontAwesomeIcons.shoePrints,
                                     size: 12.sp,
+                                    color: TEXT_SECONDARY,
                                   ),
                                 ),
                                 SizedBox(width: 10.w),

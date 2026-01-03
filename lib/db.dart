@@ -4,7 +4,10 @@ import 'package:performance_tracker/models/activity.model.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
+import 'package:performance_tracker/models/journalBook.model.dart';
 import 'package:performance_tracker/models/journey.model.dart';
+import 'package:performance_tracker/models/key.model.dart';
+import 'package:performance_tracker/models/log.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/maintainance.service.dart';
@@ -21,7 +24,10 @@ enum Collections
   journey('journey'),
   advices('advices'),
   conversations('conversations'),
-  reports('reports');
+  reports('reports'),
+  journal('journal'),
+  key('key'),
+  logs('logs');
   final String value;
   const Collections(this.value);
 }
@@ -61,6 +67,10 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(AiChatContentAdapter());
   Hive.registerAdapter(ReportAdapter());
   Hive.registerAdapter(EntityTypeAdapter());
+  Hive.registerAdapter(JournalBookAdapter());
+  Hive.registerAdapter(JournalAdapter());
+  Hive.registerAdapter(SecretAppKeyAdapter());
+  Hive.registerAdapter(LogModelAdapter());
 
 
   await Hive.openBox<Food>(Collections.foods.value);
@@ -72,6 +82,9 @@ Future<void> setupHiveDb() async
   await Hive.openBox<AdviceSet>(Collections.advices.value);
   await Hive.openBox<AiChatContent>(Collections.conversations.value);
   await Hive.openBox<Report>(Collections.reports.value);
+  await Hive.openBox<JournalBook>(Collections.journal.value);
+  await Hive.openBox<SecretAppKey>(Collections.key.value);
+  await Hive.openBox<LogModel>(Collections.logs.value);
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);
@@ -83,6 +96,7 @@ Future<void> setupHiveDb() async
   // await Hive.deleteBoxFromDisk(Collections.advices.value);
   // await Hive.deleteBoxFromDisk(Collections.conversations.value);
   // await Hive.deleteBoxFromDisk(Collections.reports.value);
+  // await Hive.deleteBoxFromDisk(Collections.journal.value);
 
 }
 

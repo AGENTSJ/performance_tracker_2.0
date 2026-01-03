@@ -53,4 +53,9 @@ class DayRepository
   {
     return _dayBox.values.toList();
   }
+
+  clearAllDays()async
+  {
+    await _dayBox.clear();
+  }
 }

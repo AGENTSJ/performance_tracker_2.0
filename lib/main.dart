@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
+import 'package:performance_tracker/services/config.service.dart';
 import 'package:performance_tracker/src/features/Coach/pages/coach.page.dart';
 import 'package:performance_tracker/src/features/Nutrition/pages/nutrition.home.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/training.page.dart';
@@ -14,28 +15,36 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setUpDependencyInjection();
   await setupHiveDb();
-  runApp(const MyApp());
+  var config = locator<ConfigService>();
+  await config.setUpTheme();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  final config = locator<ConfigService>();
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(360, 690), // <- your reference design size
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) => MaterialApp(
-        theme: ThemeData(
-          colorSchemeSeed: PRIMARY,
-          scaffoldBackgroundColor: BACKGROUND,
-          textTheme: ThemeData.light().textTheme.copyWith(
-            bodyLarge: TextStyle(color: TEXT_PRIMARY),
-            bodyMedium: TextStyle(color: TEXT_PRIMARY),
-          ),
-        ),
-        home: MainAppEntry(),
+      builder: (context, child) => ValueListenableBuilder(
+        valueListenable: config.darkThemeNotifier,
+        builder: (context, value, child) {
+          return MaterialApp(
+            key:ValueKey(value),
+            theme: ThemeData(
+              colorSchemeSeed: PRIMARY,
+              scaffoldBackgroundColor: BACKGROUND,
+              textTheme: ThemeData.light().textTheme.copyWith(
+                bodyLarge: TextStyle(color: TEXT_PRIMARY),
+                bodyMedium: TextStyle(color: TEXT_PRIMARY),
+              ),
+            ),
+            home: MainAppEntry(),
+          );
+        }
       ),
     );
   }

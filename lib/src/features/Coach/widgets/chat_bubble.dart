@@ -120,7 +120,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                                     Text("This may take few seconds",style: TextStyle(color: SURFACE2),),
                                                     SizedBox(width: 10.w,),
                                                     SpinKitSpinningLines(
-                                                      color: Colors.white,
+                                                      color: TEXT_TERTIARY,
                                                       size: 30,
                                                     ),
                                                   ],

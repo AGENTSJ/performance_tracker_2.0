@@ -8,7 +8,6 @@ import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/comments.service.dart';
-import 'package:performance_tracker/services/health.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/services/userGoals.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
@@ -30,8 +29,6 @@ class NutritionModuleState extends State<NutritionModule> {
   final avatarService = locator<AvatarService>();
   final goalService = locator<UserGoalsService>();
   final userService = locator<UserService>();
-  final healthService = locator<HealthService>();
-  var maintenanceCalories = 1800.0;
   Day? currentDay;
   User? user;
   late MacroNutrients daysMacro;
@@ -45,18 +42,19 @@ class NutritionModuleState extends State<NutritionModule> {
     _setHomePage(DateTime.now());
   }
 
-  _setHomePage(DateTime date) async {
+  _setHomePage(DateTime date,{bool refresh=false}) async {
     isHomePageLoading = true;
     refreshState();
     var day = await dayService.getDayDataByDate(date);
     user = await userService.getUserData();
-    var steps = await healthService.getStepsByDate(date);
-    maintenanceCalories = goalService.fetchMaintenanceCalories(user!,steps: steps);
     currentDay = day;
     _setCurrentDayMarker();
     setCaloriesInDay();
     isHomePageLoading = false;
-    await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    if(!refresh)
+    {
+      await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
+    }
     showDateSelector = false;
     refreshState();
   }
@@ -198,8 +196,7 @@ class NutritionModuleState extends State<NutritionModule> {
                               meal: meal,
                               day: currentDay!,
                               onMealUpdated: (value) {
-                                setCaloriesInDay();
-                                refreshState();
+                                _setHomePage(currentDay!.dayTime);
                               },
                             ),
                           ),
@@ -241,9 +238,6 @@ class NutritionModuleState extends State<NutritionModule> {
   }
 
   handleDateChange(DateTime value) async {
-    // currentDay = await dayService.getDayDataByDate(value);
-    // _setCurrentDayMarker();
-    // setCaloriesInDay();
     _setHomePage(value);
   }
 

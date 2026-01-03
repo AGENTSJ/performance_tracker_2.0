@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
@@ -181,7 +182,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                                   height: 1.5,
                                 ), // default style
                                 children: [
-                                  TextSpan(text: 'Eat '),
+                                  TextSpan(text: 'Your maintenance '),
                                   TextSpan(
                                     text:
                                         '${widget.user.userGoals.calorieLimit.round()}',
@@ -190,7 +191,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                                     ), // bold word
                                   ),
                                   TextSpan(
-                                    text: ' and you will reach your goal in ',
+                                    text: ' , you will reach your goal in ',
                                   ),
                                   TextSpan(
                                     text:
@@ -254,16 +255,18 @@ class _GoalsWidgetState extends State<GoalsWidget> {
 
   Future<void> _handleUpdate(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
+      var steps = int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal;
+      var maintenanceCalories = userGoalService.fetchMaintenanceCalories(widget.user,steps: steps,MacroNutrients(0, 0, 0, 0, 0));
       widget.user
         ..userGoals.stepGoal =
-            int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal
+            steps
         ..userGoals.targetWeight =
             double.tryParse(targetWeight.text) ??
             widget.user.userGoals.targetWeight
         ..userGoals.caloricChangeGoal =
             double.tryParse(caloricBurn.text) ??
-            widget.user.userGoals.caloricChangeGoal;
-      userGoalService.setCaloricLimit(widget.user);
+            widget.user.userGoals.caloricChangeGoal
+        ..userGoals.calorieLimit = maintenanceCalories;
       await userService.updateUser(widget.user);
       var currentDay = await dayService.getDayDataByDate(DateTime.now());
       currentDay?.goalForToday = widget.user.userGoals;
@@ -306,7 +309,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
 
   void updateFormUi(User user) {
     targetWeight.text = user.userGoals.targetWeight.toString();
-    caloricLimit.text = user.userGoals.calorieLimit.round().toString();
+    caloricLimit.text = user.weight>=user.userGoals.targetWeight? (user.userGoals.calorieLimit -user.userGoals.caloricChangeGoal).round().toString() :(user.userGoals.calorieLimit + user.userGoals.caloricChangeGoal).round().toString();
     targetSteps.text = user.userGoals.stepGoal.toString();
     caloricBurn.text = user.userGoals.caloricChangeGoal.round().toString();
   }

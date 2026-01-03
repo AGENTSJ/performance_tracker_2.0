@@ -37,4 +37,8 @@ class UserService {
   {
     return _userRepo.addUser(user);
   }
+  clearAllUser()async
+  {
+    await _userRepo.clearAllUser();
+  }
 }
