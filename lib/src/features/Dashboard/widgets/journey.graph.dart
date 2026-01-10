@@ -17,180 +17,217 @@ class JourneyGraph extends StatefulWidget {
   const JourneyGraph({super.key, required this.journey});
 
   @override
-  _JourneyGraphState createState() => _JourneyGraphState();
+  State<JourneyGraph> createState() => _JourneyGraphState();
 }
 
 class _JourneyGraphState extends State<JourneyGraph> {
-  final List<FlSpot> stepsPoints = [];
-  final List<FlSpot> calPoints = [];
-  var dayService = locator<DayService>();
-  var userService = locator<UserService>();
-  var commonService = locator<CommonService>();
-  var goalService = locator<UserGoalsService>();
+  final List<BarChartGroupData> barGroups = [];
+
+  final dayService = locator<DayService>();
+  final userService = locator<UserService>();
+  final commonService = locator<CommonService>();
+  final goalService = locator<UserGoalsService>();
+  double clampPercent(double value) => value.clamp(-100, 100).round().toDouble();
   User? user;
+  List<Day> days = [];
+  List<_DataRepresentation> barMetaData = [];
   double graphWidth = 50;
   double widthPerPoint = 70;
-  bool isUserInCut = true;
   double maxY = 0;
-  double maxX = 0;
-  List<Day> days = [];
+  bool isUserInCut = true;
+
   @override
   void initState() {
     super.initState();
-    setUpUi();
+    _setUpUi();
   }
 
-  setUpUi() async {
+  Future<void> _setUpUi() async {
     user = await userService.getUserData();
     await _setUpGraphData();
-    refreshState();
+    if (mounted) setState(() {});
   }
-
-  _setUpGraphData() async {
-    var count = widget.journey.logs.length;
-
-    for (var i = 0; i < count; i++) {
-      var log = widget.journey.logs[i];
-      var day = dayService.getDayById(log.dayId);
-      days.add(day!);
-      var userAtDay = log.userAtDay;
-      var calories = dayService.getDaysCalories(day);
-      var maintenance = day.goalForToday!.calorieLimit;
-      double calorieChangeAchieved = 0;
-      if (userAtDay.userGoals.targetWeight <
-          widget.journey.userAtStart.weight) {
-        // user in cut
-        isUserInCut = true;
-        calorieChangeAchieved = maintenance - calories.calories;
-      } else {
-        isUserInCut = false;
-        calorieChangeAchieved = calories.calories - maintenance;
-      }
-      maxY = max(maxY, calorieChangeAchieved + 200);
-      maxY = max(maxY, day.activity!.steps.toDouble() + 1000);
-      stepsPoints.add(FlSpot(i.toDouble(), day.activity!.steps.toDouble()));
-      calPoints.add(FlSpot(i.toDouble(), calorieChangeAchieved));
+  _DataRepresentation _getCaloriesAndStepDataByLog(Day day , JourneyLog log)
+  {
+    final calories = dayService.getDaysCalories(day);
+    final maintenance = day.goalForToday!.calorieLimit;
+    double calorieChangePercentage;
+    if (log.userAtDay.userGoals.targetWeight <
+        widget.journey.userAtStart.weight) {
+      isUserInCut = true;
+      calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.calorieLimit)*100;
+    } else {
+      isUserInCut = false;
+      calorieChangePercentage = calories.calories - maintenance;
     }
-    graphWidth = widthPerPoint * count;
-  }
 
-  refreshState() {
-    if (!mounted) return;
-    setState(() {});
+    var stepChangeGoalPerentage = (3000 / log.userAtDay.userGoals.stepGoal)*100;
+    return _DataRepresentation(calorieGraphValue: clampPercent(calorieChangePercentage), stepGraphValue: clampPercent(stepChangeGoalPerentage), caloriePercentage: calorieChangePercentage.round().toDouble(), stepsPercentage: stepChangeGoalPerentage.round().toDouble());
+  }
+  Future<void> _setUpGraphData() async {
+    final count = widget.journey.logs.length;
+    barMetaData = [];
+    
+    for (int i = 0; i < count; i++) {
+      final log = widget.journey.logs[i];
+      final day = dayService.getDayById(log.dayId)!;
+      days.add(day);
+      var data = _getCaloriesAndStepDataByLog(day, log);
+      barMetaData.add(data);
+      maxY = max(
+        maxY,
+        max(data.stepGraphValue, data.calorieGraphValue) + 10
+      );
+      barGroups.add(
+        BarChartGroupData(
+          x: i,
+          barsSpace: 6,
+          barRods: [
+            /// Steps
+            BarChartRodData(
+              toY: data.stepGraphValue ,
+              width: 8.w,
+              color: PRIMARY,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            /// Calories (Deficit / Surplus)
+            BarChartRodData(
+              toY: data.calorieGraphValue,
+              width: 8.w,
+              color: CALORIE_COLOR,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+      );
+    }
+
+    graphWidth = widthPerPoint * count;
   }
 
   @override
   Widget build(BuildContext context) {
-    return (calPoints.isEmpty && stepsPoints.isEmpty)
-        ? SizedBox(
-            height: 200.h,
-            child: Column(
-              children: [
-                Expanded(child: empty),
-                Text(
-                  "No journey log found !!",
-                  style: TextStyle(
-                    color: TEXT_TERTIARY,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12.sp,
-                  ),
-                ),
-              ],
+    if (barGroups.isEmpty) {
+      return SizedBox(
+        height: 200.h,
+        child: Column(
+          children: [
+            Expanded(child: empty),
+            Text(
+              "No journey log found !!",
+              style: TextStyle(
+                color: TEXT_TERTIARY,
+                fontWeight: FontWeight.w400,
+                fontSize: 12.sp,
+              ),
             ),
-          )
-        : SizedBox(
-            height: 200.h,
-            width: graphWidth.w,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal:  24.0.w),
-              child: LineChart(
-                LineChartData(
-                  minY: -1000,
-                  maxY: maxY,
-                  lineTouchData: LineTouchData(
-                    touchTooltipData: LineTouchTooltipData(
-                      fitInsideHorizontally: true,
-                      fitInsideVertically: true,
-              
-                      getTooltipItems: (touchedSpots) {
-                        return touchedSpots.map((touchedSpot) {
-                          final y = touchedSpot.y;
-                          final lineIndex = touchedSpot.barIndex;
-                          return LineTooltipItem(
-                            '${lineIndex == 0
-                                ? "Steps"
-                                : isUserInCut
-                                ? "Deficit"
-                                : "Surplus"} : ${y.round()}',
-                            textAlign: TextAlign.start,
-                            TextStyle(color: TEXT_SECONDARY),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        reservedSize: 45.sp,
-                        showTitles: true,
-                        interval: 1,
-                        getTitlesWidget: (value, meta) {
-                          int index = value.toInt();
-                          List<String> date = commonService.getDateString(
-                            days[index].dayTime,
-                          ).split(' ');
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 4.h,),
-                              Text(
-                                date[0],
-                                style: TextStyle(
-                                  color: TEXT_TERTIARY,
-                                  fontSize: 10.sp,
-                                ),
-                              ),
-                              Text(
-                                "${date[1].substring(0,3)} ${date[2]}",
-                                style: TextStyle(
-                                  color: TEXT_TERTIARY,
-                                  fontSize: 10.sp,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                    topTitles: AxisTitles(),
-                    rightTitles: AxisTitles(),
-                  ),
-                  gridData: FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: stepsPoints,
-                      isCurved: false,
-                      barWidth: 1,
-                      color: PRIMARY,
-                      dotData: FlDotData(show: true),
-                    ),
-                    
-                    LineChartBarData(
-                      spots: calPoints,
-                      isCurved: false,
-                      barWidth: 1,
-                      color: CALORIE_COLOR,
-                      dotData: FlDotData(show: true),
-                    ),
-                  ],
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 200.h,
+      width: graphWidth.w,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: BarChart(
+          BarChartData(
+            minY: -100,
+            maxY: 100,
+            alignment: BarChartAlignment.spaceBetween,
+            barGroups: barGroups,
+            gridData: FlGridData(show: false),
+            borderData: FlBorderData(show: false),
+            barTouchData: BarTouchData(
+              enabled: true,
+              touchTooltipData: BarTouchTooltipData(
+                fitInsideHorizontally: true,
+                fitInsideVertically: true,
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  var label = '';
+                  var labelData = '';
+                  if(rodIndex == 0) // step
+                  {
+                    label = 'Steps';
+                    labelData = "${barMetaData[groupIndex].stepsPercentage}%";
+                  }
+                  else
+                  {
+                    label = isUserInCut
+                          ? "Deficit"
+                          : "Surplus";
+                    labelData = "${barMetaData[groupIndex].caloriePercentage}%";
+                  }
+                  return BarTooltipItem(
+                      "$label : $labelData",
+                      TextStyle(color: TEXT_SECONDARY),
+                    );
+                },
+              ),
+            ),
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              rightTitles: AxisTitles(),
+              topTitles: AxisTitles(),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 45.sp,
+                  getTitlesWidget: (value, meta) {
+                    final index = value.toInt();
+                    if (index >= days.length) return const SizedBox();
+
+                    final date = commonService
+                        .getDateString(days[index].dayTime)
+                        .split(' ');
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 4.h),
+                        Text(
+                          date[0],
+                          style: TextStyle(
+                            color: TEXT_TERTIARY,
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                        Text(
+                          "${date[1].substring(0, 3)} ${date[2]}",
+                          style: TextStyle(
+                            color: TEXT_TERTIARY,
+                            fontSize: 10.sp,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
-          );
+            extraLinesData:ExtraLinesData(
+              horizontalLines: [
+                HorizontalLine(
+                  y: 100,
+                  color: TEXT_TERTIARY,
+                  strokeWidth: 1,
+                ),
+              ]
+            ) 
+          ),
+        ),
+      ),
+    );
   }
+}
+
+class _DataRepresentation {
+  double calorieGraphValue;
+  double stepGraphValue;
+  double caloriePercentage;
+  double stepsPercentage;
+  _DataRepresentation({required this.calorieGraphValue,required this.stepGraphValue,required this.caloriePercentage,required this.stepsPercentage});
 }
