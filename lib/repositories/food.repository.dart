@@ -16,7 +16,14 @@ class FoodRepository
   {
     foodBox.add(food);
   }
+  removeFood(Food food) async
+  {
+    final items = foodBox.values.where((f) => f.name == food.name);
 
+    for (var food in items) {
+      await (food as dynamic ).delete(); // ✅ clean
+    }
+  }
   List<Food> searchFoodByName(String name)
   {
     List<Food> allFoods = foodBox.values.toList();

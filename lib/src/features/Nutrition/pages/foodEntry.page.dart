@@ -5,6 +5,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
@@ -24,6 +25,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
   var caloriesController = TextEditingController();
   Food? standard;
   var commonService = locator<CommonService>();
+  var foodService = locator<FoodService>();
   bool allowMicroScroll = false;
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(backgroundColor: BACKGROUND,scrolledUnderElevation: 0,),
+      appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0),
       body: Container(
         child: SingleChildScrollView(
           child: Padding(
@@ -159,6 +161,13 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                                 .digitsOnly,
                                           ],
                                           decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: const Color.fromARGB(
+                                              255,
+                                              172,
+                                              172,
+                                              172,
+                                            ),
                                             border: OutlineInputBorder(
                                               borderSide: BorderSide.none,
                                             ),
@@ -222,13 +231,13 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
                                     Icon(
-                                      FontAwesomeIcons.drumstickBite,color:PROTEIN_COLOR,
+                                      FontAwesomeIcons.drumstickBite,
+                                      color: PROTEIN_COLOR,
                                       size: 15,
                                     ),
                                     SizedBox(width: 20),
@@ -242,21 +251,19 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                 ),
                                 Text(
                                   "${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
                             SizedBox(height: 12),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
                                     Icon(
-                                      FontAwesomeIcons.breadSlice,color:CARBS_COLOR,
+                                      FontAwesomeIcons.breadSlice,
+                                      color: CARBS_COLOR,
                                       size: 15,
                                     ),
                                     SizedBox(width: 20),
@@ -270,20 +277,21 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                 ),
                                 Text(
                                   "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
                             SizedBox(height: 12),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.cheese,color:FAT_COLOR, size: 15),
+                                    Icon(
+                                      FontAwesomeIcons.cheese,
+                                      color: FAT_COLOR,
+                                      size: 15,
+                                    ),
                                     SizedBox(width: 20),
                                     Text(
                                       'Fat',
@@ -295,20 +303,21 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                 ),
                                 Text(
                                   "${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
                             SizedBox(height: 12),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(FontAwesomeIcons.wheatAwn,color:FIBER_COLOR, size: 15),
+                                    Icon(
+                                      FontAwesomeIcons.wheatAwn,
+                                      color: FIBER_COLOR,
+                                      size: 15,
+                                    ),
                                     SizedBox(width: 20),
                                     Text(
                                       'Fiber',
@@ -320,9 +329,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                 ),
                                 Text(
                                   "${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
@@ -353,12 +360,30 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                       SizedBox(
                         height: 300,
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 20,bottom: 0,left: 12,right: 12),
-                          child: microNutrientList(totalConsumed: widget.food.micros.microMap,allowScroll: allowMicroScroll,),
+                          padding: const EdgeInsets.only(
+                            top: 20,
+                            bottom: 0,
+                            left: 12,
+                            right: 12,
+                          ),
+                          child: microNutrientList(
+                            totalConsumed: widget.food.micros.microMap,
+                            allowScroll: allowMicroScroll,
+                          ),
                         ),
                       ),
-                      if(!allowMicroScroll)
-                      TextButton(onPressed: (){handleMicroScrollEnable();}, child: Text('Show More' ,style: TextStyle(color: const Color.fromARGB(255, 104, 104, 104)),))
+                      if (!allowMicroScroll)
+                        TextButton(
+                          onPressed: () {
+                            handleMicroScrollEnable();
+                          },
+                          child: Text(
+                            'Show More',
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 104, 104, 104),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -369,19 +394,44 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ElevatedButton(
-          onPressed: () {
-            addFood();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: PRIMARY,
-            minimumSize: Size(double.infinity, 50),
-            foregroundColor: CONT_BACKGROUND,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadiusGeometry.circular(5),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  addFood();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PRIMARY,
+                  minimumSize: Size(double.infinity, 50),
+                  foregroundColor: CONT_BACKGROUND,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusGeometry.circular(5),
+                  ),
+                ),
+                child: Text(
+                  widget.isCreateMode ? "Add To Meal" : "Update Food",
+                ),
+              ),
             ),
-          ),
-          child: Text(widget.isCreateMode ? "Add To Meal" : "Update Food"),
+            // SizedBox(width: 10,),
+            // Expanded(
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       removeFood();
+            //     },
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.redAccent,
+            //       minimumSize: Size(double.infinity, 50),
+            //       foregroundColor: Colors.white,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadiusGeometry.circular(5),
+            //       ),
+            //     ),
+            //     child: Text("Remove Food"),
+            //   ),
+            // ),
+          ],
         ),
       ),
     );
@@ -404,6 +454,11 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
 
   addFood() {
     Navigator.pop(context, widget.food);
+  }
+
+  removeFood() async{
+    await this.foodService.removeFood(this.widget.food);
+    Navigator.pop(context);
   }
 
   getStandardFood(Food food) {
@@ -496,7 +551,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
         value: (food.quantity.value / baseQuant),
         unit: food.quantity.unit,
       ),
-      servings: []
+      servings: [],
     );
 
     return newFood;
@@ -608,10 +663,8 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
     caloriesController.dispose();
   }
 
-  handleMicroScrollEnable()
-  {
+  handleMicroScrollEnable() {
     this.allowMicroScroll = true;
-    setState(() {
-    });
+    setState(() {});
   }
 }

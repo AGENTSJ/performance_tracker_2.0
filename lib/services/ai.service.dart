@@ -28,13 +28,13 @@ class AiService {
         apiKey: API_KEY,
         modelName: modelName,
         endpoint:
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=$API_KEY",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemma-4-26b-a4b-it:generateContent?key=${API_KEY}",
       ),
       Models.Flash: _AI_Provider(
         apiKey: API_KEY,
         modelName: modelName,
         endpoint:
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$API_KEY",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemma-4-26b-a4b-it:generateContent?key=${API_KEY}",
       ),
     };
   }
@@ -61,9 +61,6 @@ class AiService {
             ],
           },
         ],
-        "generationConfig": {
-          "thinkingConfig": {"thinkingBudget": -1},
-        },
       };
       var response = await _restService.POST(model!.endpoint, payload);
       if (response.statusCode != 200) {
@@ -73,8 +70,13 @@ class AiService {
       }
       _logService.addSuccessLog(logKey, "Success ${modelType}");
       var body = jsonDecode(response.body);
+      final parts = body['candidates'][0]['content']['parts'];
+      final text = parts
+          .where((p) => p['thought'] != true)
+          .map((p) => p['text'] ?? '')
+          .join();
       var aiResp = AiResponse(
-        message: body['candidates'][0]['content']['parts'][0]['text'],
+        message: text,
         success: true,
         responseEnded: true,
       );
@@ -103,8 +105,13 @@ class AiService {
       _logService.addSuccessLog(logKey, "Success ${modelType}");
 
       var body = jsonDecode(response.body);
+      final parts = body['candidates'][0]['content']['parts'];
+      final text = parts
+          .where((p) => p['thought'] != true)
+          .map((p) => p['text'] ?? '')
+          .join();
       var aiResp = AiResponse(
-        message: body['candidates'][0]['content']['parts'][0]['text'],
+        message: text,
         success: true,
         responseEnded: true,
       );
@@ -123,7 +130,7 @@ class AiService {
         StreamController<AiResponse>();
     var test = jsonEncode(chatContent.toJson());
     final uri = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemma-4-26b-a4b-it:generateContent?key=AIzaSyCYPombOhSAqcDQMDm_LfPbu8YYrjHcYkU',
     );
     _logService.addInfoLog(logKey, "Send Stream Req gemini-2.5-flash");
 

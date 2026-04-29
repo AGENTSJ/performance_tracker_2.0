@@ -248,7 +248,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                           icon: Icon(
                             FontAwesomeIcons.plus,
                             size: 15.sp,
-                            color: TEXT_PRIMARY,
+                            color: Colors.white,
                           ),
                         ),
                       ],

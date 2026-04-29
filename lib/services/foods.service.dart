@@ -5,23 +5,17 @@ import 'package:performance_tracker/repositories/food.repository.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
+// import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
 
 class FoodService {
   final _ai = locator<AiService>();
   final _foodRepo = locator<FoodRepository>();
-  final nutriApi = locator<NutritionServiceProvider>();
+  // final nutriApi = locator<NutritionServiceProvider>();
   final dayService = locator<DayService>();
 
   Future<List<Food>> searchFood(String key) async {
     var foods = _foodRepo.searchFoodByName(key);
-    var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
-    for (var food in foodsFromApi) {
-      if (!_foodRepo.foodExist(food.name)) {
-        _foodRepo.addFood(food);
-        foods.add(food);
-      }
-    }
+    // var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
     return foods;
   }
 
@@ -59,7 +53,10 @@ class FoodService {
   addFood(Food food) {
     _foodRepo.addFood(food);
   }
-
+  removeFood(Food food) async
+  {
+    await _foodRepo.removeFood(food);
+  }
   bool foodExist(String name) {
     return _foodRepo.foodExist(name);
   }

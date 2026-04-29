@@ -38,12 +38,6 @@ class GreetingsWidgetState extends State<GreetingsWidget>
     refreshState();
   }
 
-  @override
-  void initState() {
-    handleGetGreeting();
-    super.initState();
-  }
-
   refreshState()
   {
     if(!mounted) return;
