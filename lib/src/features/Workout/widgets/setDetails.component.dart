@@ -57,9 +57,11 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
         enabledSets.add(set);
       }
     }
+    refreshState();
   }
 
   setSets(bool setsUpdated) async {
+    enabledSets = [];
     if (setsUpdated) {
       var work = await workoutService.getWorkOutById(widget.workout.key);
       widget.workout.sets = work!.sets;
@@ -92,7 +94,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                         onPressed: () {
                           showTrack = true;
                           setEnabledSets();
-                          refreshState();
                         },
                         style: showTrack
                             ? enabledButtonDecor
@@ -107,7 +108,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       TextButton(
                         onPressed: () {
                           showTrack = false;
-                          refreshState();
+                          setSets(true);
                         },
                         style: !showTrack
                             ? enabledButtonDecor
