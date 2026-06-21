@@ -18,10 +18,20 @@ class FatigueService {
   final _repo = locator<FatigueRepository>();
 
   /// Lower/upper bounds the fatigue context is clamped to.
-  static const double fatigueContextMin = 0;
-  static const double fatigueContextMax = 2;
+  // static const double fatigueContextMin = 0;
+  // static const double fatigueContextMax = 2;
 
   String _dateKey(DateTime date) => "${date.year}-${date.month}-${date.day}";
+
+  /// Parses a stored [dateKey] ("year-month-day") back into a [DateTime].
+  DateTime dateFromKey(String dateKey) {
+    final parts = dateKey.split('-');
+    return DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+  }
 
   /// Returns the accumulated fatigue map for [date] (defaults to today).
   /// Returns an empty map when no fatigue has accumulated yet for that day.
@@ -29,6 +39,21 @@ class FatigueService {
     date ??= DateTime.now();
     final day = _repo.getByDateKey(_dateKey(date));
     return day?.muscleFatigue ?? {};
+  }
+
+  /// Past daily fatigue records (excluding today), most recent first.
+  /// Pass [limit] to cap how many days are returned.
+  List<FatigueDay> getPastFatigueDays({int? limit}) {
+    final todayKey = _dateKey(DateTime.now());
+    final days = _repo
+        .getAll()
+        .where((d) => d.dateKey != todayKey && d.muscleFatigue.isNotEmpty)
+        .toList();
+    days.sort((a, b) => dateFromKey(b.dateKey).compareTo(dateFromKey(a.dateKey)));
+    if (limit != null && days.length > limit) {
+      return days.sublist(0, limit);
+    }
+    return days;
   }
 
   /// Calculates the fatigue context for performing [workout] given the fatigue
