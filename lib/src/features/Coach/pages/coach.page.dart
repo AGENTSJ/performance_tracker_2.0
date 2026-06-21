@@ -6,9 +6,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/src/components/model_picker.dialog.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
@@ -24,6 +26,7 @@ class CoachPage extends StatefulWidget {
 class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var avatarService = locator<AvatarService>();
+  var aiService = locator<AiService>();
   var msgController = TextEditingController();
   var scrollController = ScrollController();
   Widget? coachIconImg;
@@ -33,10 +36,29 @@ class _CoachPageState extends State<CoachPage> {
   ChatDTO? latestChatDto;
   Timer? refreshTimer;
   bool isLoaded = false;
+  String? _selectedModel;
+  String _thinkingText = "";
+  CancelToken? _cancelToken;
+  bool _stoppedByUser = false;
+
+  String _modelLabel() =>
+      (_selectedModel ?? AiService.defaultModel).replaceFirst('models/', '');
+
+  Future<void> _changeModel() async {
+    var selected = await showDialog<String>(
+      context: context,
+      builder: (context) => ModelPickerDialog(currentModel: _selectedModel),
+    );
+    if (selected != null) {
+      await aiService.setSelectedModel(selected);
+      if (mounted) setState(() => _selectedModel = selected);
+    }
+  }
 
   setUpUi() async {
     latestChatDto = null;
     coachIconImg = avatarService.getMaleAvatar();
+    _selectedModel = await aiService.getSelectedModel();
     olderChats = await trainerService.getOlderChat();
     setUpConversationWindow();
     refreshState();
@@ -74,6 +96,9 @@ class _CoachPageState extends State<CoachPage> {
     var message = msgController.text;
     msgController.text = "";
     isTyping = true;
+    _thinkingText = "";
+    _stoppedByUser = false;
+    _cancelToken = CancelToken();
     chats.add(
       AiChatSegment(
         role: ChatRoles.user,
@@ -82,10 +107,19 @@ class _CoachPageState extends State<CoachPage> {
     );
     refreshState();
     scrollToEnd();
-    var response = await trainerService.chatWithCoach(message);
+    var response = await trainerService.chatWithCoachThinking(
+      message,
+      cancelToken: _cancelToken,
+      onProgress: (thoughts, answer) {
+        _thinkingText = thoughts.isNotEmpty ? thoughts : answer;
+        controlledRefresh();
+      },
+    );
     latestChatDto = response;
+    _cancelToken = null;
+    _thinkingText = "";
     if (response == null) {
-      Fluttertoast.showToast(msg: "An error has occur");
+      if (!_stoppedByUser) Fluttertoast.showToast(msg: "An error has occur");
       isTyping = false;
       refreshState();
       return;
@@ -99,6 +133,11 @@ class _CoachPageState extends State<CoachPage> {
 
     isTyping = false;
     refreshState();
+  }
+
+  handleStopGeneration() {
+    _stoppedByUser = true;
+    _cancelToken?.cancel();
   }
 
   refreshState() {
@@ -149,6 +188,71 @@ class _CoachPageState extends State<CoachPage> {
   }
 
   handleViewAdvices() {}
+
+  Widget _buildThinkingIndicator() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 5.h),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: SURFACE2,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: BORDER_PRIMARY),
+        ),
+        padding: EdgeInsets.all(10.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  _thinkingText.isEmpty ? "Typing" : "Thinking…",
+                  style: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
+                ),
+                SizedBox(width: 6.w),
+                SpinKitThreeBounce(color: TEXT_SECONDARY, size: 16.sp),
+                const Spacer(),
+                InkWell(
+                  onTap: handleStopGeneration,
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 2.h,
+                    ),
+                    child: Text(
+                      "Stop",
+                      style: TextStyle(
+                        color: Colors.redAccent.shade100,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_thinkingText.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 160.h),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Text(
+                    _thinkingText,
+                    style: TextStyle(
+                      color: TEXT_SECONDARY,
+                      fontSize: 11.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +359,46 @@ class _CoachPageState extends State<CoachPage> {
                       ),
                     ),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: _changeModel,
+                      child: Row(
+                        children: [
+                          Icon(Icons.memory, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Model",
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                                Text(
+                                  _modelLabel(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -335,46 +479,7 @@ class _CoachPageState extends State<CoachPage> {
                                   ),
                                 ),
                         ),
-                        if (isTyping)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.0.w,
-                              vertical: 5.h,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: BORDER_PRIMARY,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            "Typing",
-                                            style: TextStyle(
-                                              color: TEXT_SECONDARY,
-                                              fontSize: 12.sp,
-                                            ),
-                                          ),
-                                          SpinKitThreeBounce(
-                                            color: TEXT_SECONDARY,
-                                            size: 22.sp,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(flex: 2, child: SizedBox()),
-                              ],
-                            ),
-                          ),
+                        if (isTyping) _buildThinkingIndicator(),
                       ],
                     ),
                   ),

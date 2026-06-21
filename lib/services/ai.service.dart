@@ -313,6 +313,129 @@ class AiService {
     }
   }
 
+  /// Streams a `generateContent` response over SSE for a full conversation
+  /// ([AiChatContent], including system instruction + history), so callers can
+  /// surface live progress. [onProgress] is invoked on every chunk with the
+  /// cumulative (thoughts, answer) text so far. The returned [AiResponse] holds
+  /// the full concatenated answer. Falls back to the non-streaming
+  /// [getResponse2] if streaming can't be started.
+  ///
+  /// Pass a [cancelToken] to abort: cancelling cancels the stream subscription
+  /// and closes the HTTP client. The result then has `success == false`.
+  Future<AiResponse> getResponseStream2(
+    AiChatContent content, {
+    Models modelType = Models.Flash,
+    String? modelName,
+    void Function(String thoughts, String answer)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    if (cancelToken?.isCancelled == true) {
+      return AiResponse(message: '', success: false, responseEnded: true);
+    }
+    final client = http.Client();
+    try {
+      await setModels();
+      var modelPath = modelName ?? _models[modelType]!.modelName;
+      if (!modelPath.startsWith('models/')) modelPath = 'models/$modelPath';
+      _logService.addInfoLog(logKey, "Send Stream Req $modelPath");
+
+      final uri = Uri.parse(
+        "https://generativelanguage.googleapis.com/v1beta/$modelPath:streamGenerateContent?alt=sse&key=$API_KEY",
+      );
+
+      final request = http.Request('POST', uri)
+        ..headers['Content-Type'] = 'application/json'
+        ..body = jsonEncode(content.toJson());
+      final response = await client.send(request);
+
+      if (response.statusCode != 200) {
+        _logService.addWarningLog(
+          logKey,
+          "Stream status ${response.statusCode}, falling back",
+        );
+        client.close();
+        return getResponse2(content, modelType: modelType);
+      }
+
+      final answerBuffer = StringBuffer();
+      final thoughtBuffer = StringBuffer();
+      final completer = Completer<void>();
+
+      final subscription = response.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .listen(
+            (line) {
+              if (!line.startsWith('data:')) return;
+              final data = line.substring(5).trim();
+              if (data.isEmpty || data == '[DONE]') return;
+              try {
+                final json = jsonDecode(data);
+                final parts =
+                    json['candidates']?[0]?['content']?['parts']
+                        as List<dynamic>?;
+                if (parts == null) return;
+                for (final p in parts) {
+                  final text = (p['text'] ?? '') as String;
+                  if (text.isEmpty) continue;
+                  if (p['thought'] == true) {
+                    thoughtBuffer.write(text);
+                  } else {
+                    answerBuffer.write(text);
+                  }
+                }
+                onProgress?.call(
+                  thoughtBuffer.toString(),
+                  answerBuffer.toString(),
+                );
+              } catch (_) {
+                // Ignore keep-alive / partial non-JSON lines.
+              }
+            },
+            onError: (e) {
+              if (!completer.isCompleted) completer.completeError(e);
+            },
+            onDone: () {
+              if (!completer.isCompleted) completer.complete();
+            },
+            cancelOnError: true,
+          );
+
+      cancelToken?.onCancel = () {
+        subscription.cancel();
+        client.close();
+        if (!completer.isCompleted) completer.complete();
+      };
+
+      await completer.future;
+
+      if (cancelToken?.isCancelled == true) {
+        _logService.addInfoLog(logKey, "Stream aborted $modelPath");
+        return AiResponse(
+          message: answerBuffer.toString(),
+          success: false,
+          responseEnded: true,
+        );
+      }
+
+      _logService.addSuccessLog(logKey, "Stream success $modelPath");
+      return AiResponse(
+        message: answerBuffer.toString(),
+        success: true,
+        responseEnded: true,
+      );
+    } catch (e) {
+      _logService.addErrorLog(logKey, "Stream error ${e.toString()}");
+      if (cancelToken?.isCancelled == true) {
+        return AiResponse(message: '', success: false, responseEnded: true);
+      }
+      return getResponse2(content, modelType: modelType);
+    } finally {
+      cancelToken?.onCancel = null;
+      client.close();
+    }
+  }
+
   Future<AiResponse> getResponse2(
     AiChatContent content, {
     Models modelType = Models.Flash,
