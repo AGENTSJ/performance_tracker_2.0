@@ -6,8 +6,21 @@ import 'package:performance_tracker/services/log.service.dart';
 import 'package:performance_tracker/services/rest.service.dart';
 import 'package:http/http.dart' as http;
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum Models { Pro, Flash }
+
+/// A Gemini model as returned by the list-models endpoint.
+class GeminiModel {
+  final String name; // e.g. "models/gemini-2.0-flash"
+  final String displayName; // e.g. "Gemini 2.0 Flash"
+  GeminiModel({required this.name, required this.displayName});
+
+  factory GeminiModel.fromJson(Map<String, dynamic> json) => GeminiModel(
+    name: json['name'] as String,
+    displayName: (json['displayName'] ?? json['name']) as String,
+  );
+}
 
 class AiService {
   final _restService = locator<RestService>();
@@ -17,8 +30,53 @@ class AiService {
   String API_KEY = '';
   final logKey = 'AI';
 
+  // App-wide selected Gemini model (persisted). Used by the AI food creator.
+  static const String defaultModel = 'models/gemini-2.0-flash';
+  static const String _keySelectedModel = 'selectedAiModel';
+
   AiService() {
     setModels();
+  }
+
+  /// The currently selected Gemini model name, or [defaultModel] if none set.
+  Future<String> getSelectedModel() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keySelectedModel) ?? defaultModel;
+  }
+
+  Future<void> setSelectedModel(String modelName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keySelectedModel, modelName);
+  }
+
+  /// Fetches the Gemini models available for the configured API key, keeping
+  /// only those that support `generateContent`.
+  Future<List<GeminiModel>> fetchAvailableModels() async {
+    try {
+      await setModels();
+      final url =
+          "https://generativelanguage.googleapis.com/v1beta/models?key=$API_KEY";
+      final response = await _restService.GET(url);
+      if (response.statusCode != 200) {
+        _logService.addWarningLog(
+          logKey,
+          "List models status ${response.statusCode}",
+        );
+        return [];
+      }
+      final body = jsonDecode(response.body);
+      final models = (body['models'] as List<dynamic>? ?? [])
+          .where(
+            (m) => ((m['supportedGenerationMethods'] as List<dynamic>?) ?? [])
+                .contains('generateContent'),
+          )
+          .map((m) => GeminiModel.fromJson(m as Map<String, dynamic>))
+          .toList();
+      return models;
+    } catch (e) {
+      _logService.addErrorLog(logKey, "List models error ${e.toString()}");
+      return [];
+    }
   }
   setModels() async {
     API_KEY = await keyService.getAiApiKey() ?? '';
@@ -43,11 +101,18 @@ class AiService {
     String promt,
     String? instructions, {
     Models modelType = Models.Flash,
+    String? modelName,
   }) async {
     try {
       await setModels();
-      _logService.addInfoLog(logKey, "Send Req ${modelType.toString()}");
-      var model = _models[modelType];
+      _logService.addInfoLog(
+        logKey,
+        "Send Req ${modelName ?? modelType.toString()}",
+      );
+      // An explicit modelName overrides the legacy Pro/Flash mapping.
+      final endpoint = modelName != null
+          ? "https://generativelanguage.googleapis.com/v1beta/$modelName:generateContent?key=$API_KEY"
+          : _models[modelType]!.endpoint;
       dynamic payload = {
         "system_instruction": {
           "parts": [
@@ -62,7 +127,7 @@ class AiService {
           },
         ],
       };
-      var response = await _restService.POST(model!.endpoint, payload);
+      var response = await _restService.POST(endpoint, payload);
       if (response.statusCode != 200) {
         _logService.addWarningLog(logKey, "Status code ${response.statusCode}");
 
