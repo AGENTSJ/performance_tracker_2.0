@@ -14,10 +14,12 @@ class AiFoodGenState {
   final AiFoodGenStatus status;
   final String? foodName; // name being / that was generated
   final Food? result; // set when status == ready
+  final String progressText; // live model output while generating
   const AiFoodGenState({
     this.status = AiFoodGenStatus.idle,
     this.foodName,
     this.result,
+    this.progressText = '',
   });
 }
 
@@ -278,7 +280,22 @@ class FoodService {
       ''';
 
       var selectedModel = await _ai.getSelectedModel();
-      var body = await _ai.getResponse(prompt, instructions, modelName: selectedModel);
+      var body = await _ai.getResponseStream(
+        prompt,
+        instructions,
+        modelName: selectedModel,
+        onProgress: (thoughts, answer) {
+          // Surface live progress only while this generation is still running.
+          if (aiFoodGenNotifier.value.status != AiFoodGenStatus.generating) {
+            return;
+          }
+          aiFoodGenNotifier.value = AiFoodGenState(
+            status: AiFoodGenStatus.generating,
+            foodName: name,
+            progressText: thoughts.isNotEmpty ? thoughts : answer,
+          );
+        },
+      );
       var resString = body.message;
       if(resString[0]=="`")
       {

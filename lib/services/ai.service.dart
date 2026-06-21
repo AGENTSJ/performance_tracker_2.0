@@ -152,6 +152,122 @@ class AiService {
     }
   }
 
+  /// Streams a `generateContent` response over SSE so callers can surface live
+  /// progress. [onProgress] is invoked on every chunk with the cumulative
+  /// (thoughts, answer) text so far. The returned [AiResponse] holds the full
+  /// concatenated answer text, ready to be parsed like [getResponse]. Falls
+  /// back to the non-streaming [getResponse] if streaming can't be started.
+  Future<AiResponse> getResponseStream(
+    String promt,
+    String? instructions, {
+    Models modelType = Models.Flash,
+    String? modelName,
+    void Function(String thoughts, String answer)? onProgress,
+  }) async {
+    try {
+      await setModels();
+      var modelPath = modelName ?? _models[modelType]!.modelName;
+      if (!modelPath.startsWith('models/')) modelPath = 'models/$modelPath';
+      _logService.addInfoLog(logKey, "Send Stream Req $modelPath");
+
+      final uri = Uri.parse(
+        "https://generativelanguage.googleapis.com/v1beta/$modelPath:streamGenerateContent?alt=sse&key=$API_KEY",
+      );
+      dynamic payload = {
+        "system_instruction": {
+          "parts": [
+            {"text": instructions ?? ""},
+          ],
+        },
+        "contents": [
+          {
+            "parts": [
+              {"text": promt},
+            ],
+          },
+        ],
+      };
+
+      final request = http.Request('POST', uri)
+        ..headers['Content-Type'] = 'application/json'
+        ..body = jsonEncode(payload);
+      final response = await request.send();
+
+      if (response.statusCode != 200) {
+        _logService.addWarningLog(
+          logKey,
+          "Stream status ${response.statusCode}, falling back",
+        );
+        return getResponse(
+          promt,
+          instructions,
+          modelType: modelType,
+          modelName: modelName,
+        );
+      }
+
+      final answerBuffer = StringBuffer();
+      final thoughtBuffer = StringBuffer();
+      final completer = Completer<void>();
+
+      response.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .listen(
+            (line) {
+              if (!line.startsWith('data:')) return;
+              final data = line.substring(5).trim();
+              if (data.isEmpty || data == '[DONE]') return;
+              try {
+                final json = jsonDecode(data);
+                final parts =
+                    json['candidates']?[0]?['content']?['parts']
+                        as List<dynamic>?;
+                if (parts == null) return;
+                for (final p in parts) {
+                  final text = (p['text'] ?? '') as String;
+                  if (text.isEmpty) continue;
+                  if (p['thought'] == true) {
+                    thoughtBuffer.write(text);
+                  } else {
+                    answerBuffer.write(text);
+                  }
+                }
+                onProgress?.call(
+                  thoughtBuffer.toString(),
+                  answerBuffer.toString(),
+                );
+              } catch (_) {
+                // Ignore keep-alive / partial non-JSON lines.
+              }
+            },
+            onError: (e) {
+              if (!completer.isCompleted) completer.completeError(e);
+            },
+            onDone: () {
+              if (!completer.isCompleted) completer.complete();
+            },
+            cancelOnError: true,
+          );
+
+      await completer.future;
+      _logService.addSuccessLog(logKey, "Stream success $modelPath");
+      return AiResponse(
+        message: answerBuffer.toString(),
+        success: true,
+        responseEnded: true,
+      );
+    } catch (e) {
+      _logService.addErrorLog(logKey, "Stream error ${e.toString()}");
+      return getResponse(
+        promt,
+        instructions,
+        modelType: modelType,
+        modelName: modelName,
+      );
+    }
+  }
+
   Future<AiResponse> getResponse2(
     AiChatContent content, {
     Models modelType = Models.Flash,

@@ -113,10 +113,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   Widget _buildContent(AiFoodGenState state) {
     switch (state.status) {
       case AiFoodGenStatus.generating:
-        return _statusMessage(
-          icon: SpinKitSpinningLines(color: PRIMARY, size: 50),
-          message: "Master chef is cooking ✨✨",
-        );
+        return _thinkingView(state.progressText);
       case AiFoodGenStatus.ready:
         return _statusMessage(
           icon: Icon(Icons.restaurant_menu, color: PRIMARY, size: 44),
@@ -166,6 +163,60 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     }
   }
 
+  Widget _thinkingView(String progress) {
+    return SizedBox(
+      width: double.infinity,
+      height: 200,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SpinKitThreeBounce(color: PRIMARY, size: 16),
+              const SizedBox(width: 10),
+              Text(
+                'Thinking…',
+                style: TextStyle(
+                  color: TEXT_PRIMARY,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: SURFACE,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: BORDER_PRIMARY),
+              ),
+              child: progress.isEmpty
+                  ? Text(
+                      'Warming up the kitchen ✨',
+                      style: TextStyle(color: TEXT_TERTIARY, fontSize: 12),
+                    )
+                  : SingleChildScrollView(
+                      reverse: true,
+                      child: Text(
+                        progress,
+                        style: TextStyle(
+                          color: TEXT_SECONDARY,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _fieldLabel(String text) => Text(
     text,
     style: TextStyle(
@@ -196,7 +247,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
     padding: const EdgeInsets.only(left: 12),
     decoration: BoxDecoration(
       color: SURFACE,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(20),
       border: Border.all(color: BORDER_PRIMARY),
     ),
     child: Row(
@@ -213,7 +264,7 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
         TextButton(
           onPressed: _changeModel,
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 5),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             foregroundColor: PRIMARY,
