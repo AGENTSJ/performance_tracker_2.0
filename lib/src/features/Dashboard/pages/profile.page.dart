@@ -17,6 +17,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/AiMangement.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/foodManagement.page.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/darkModeToggle.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 
@@ -419,6 +420,58 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                       );
                                     },
                                     child: Text("Manage"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: SURFACE2,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0.r),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Food Management",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE2,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(8.r),
+                                        side: BorderSide(color: PRIMARY),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FoodManagementPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text("Manage foods"),
                                   ),
                                 ),
                               ],

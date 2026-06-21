@@ -18,11 +18,11 @@ class FoodRepository
   }
   removeFood(Food food) async
   {
-    final items = foodBox.values.where((f) => f.name == food.name);
-
-    for (var food in items) {
-      await (food as dynamic ).delete(); // ✅ clean
-    }
+    // Food isn't a HiveObject, so delete by key rather than .delete().
+    final keysToDelete = foodBox.keys
+        .where((key) => foodBox.get(key)?.name == food.name)
+        .toList();
+    await foodBox.deleteAll(keysToDelete);
   }
   List<Food> searchFoodByName(String name)
   {

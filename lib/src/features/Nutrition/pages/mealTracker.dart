@@ -392,7 +392,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       ),
     );
     if (returnedFood != null) {
-      widget.meal.foods.add(returnedFood);
+      widget.meal.foods.add(returnedFood.clone());
       dayService.updateDayData(widget.day);
     }
     foodNameControl.text = '';
