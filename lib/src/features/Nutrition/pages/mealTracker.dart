@@ -78,29 +78,48 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   focusedBorder: inputBorder,
                   border: inputBorder,
                   enabledBorder: inputBorder,
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Tooltip(
-                          message: 'Let AI help you create a custom food entry',
-                          child: Icon(
-                            FontAwesomeIcons.wandSparkles,
-                            color: Colors.amber[400],
-                            size: 14.w,
-                          ),
-                        ),
-                        onPressed: () {
-                          handleAICustomFood();
-                        },
-                      ),
-                    ],
-                  ),
                 ),
                 controller: foodNameControl,
                 onChanged: (str) {
                   handleSearchChange(str);
                 },
+              ),
+              SizedBox(height: 10.h),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Material(
+                  color: PRIMARY.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10.r),
+                    onTap: handleAICustomFood,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 8.h,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.wandSparkles,
+                            color: PRIMARY,
+                            size: 14.w,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Create with AI',
+                            style: TextStyle(
+                              color: PRIMARY,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
               if (showSearchRes) ...[
                 // search
@@ -402,22 +421,20 @@ class _MealTrackerState extends State<MealTrackerPage> {
   }
 
   handleAICustomFood() async {
-    if (foodNameControl.text.isNotEmpty) {
-      var returnedFood = await showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) =>
-            FoodDescriptionPopUp(foodName: foodNameControl.text),
-      );
-      if (returnedFood != null) {
-        setState(() {
-          widget.meal.foods.add(returnedFood);
-          dayService.updateDayData(widget.day);
-          foodNameControl.text = '';
-          showSearchRes = false;
-          searchfoods = [];
-        });
-      }
+    var returnedFood = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) =>
+          FoodDescriptionPopUp(initialName: foodNameControl.text),
+    );
+    if (returnedFood != null) {
+      setState(() {
+        widget.meal.foods.add(returnedFood);
+        dayService.updateDayData(widget.day);
+        foodNameControl.text = '';
+        showSearchRes = false;
+        searchfoods = [];
+      });
     }
   }
 }
