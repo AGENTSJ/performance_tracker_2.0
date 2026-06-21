@@ -34,7 +34,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   WorkSet? selectedSetForProgress;
   double graphWidth = 25;
   double widthPerPoint = 25;
-  // bool
+  bool adjustFatigue = false;
   @override
   void initState() {
     super.initState();
@@ -494,25 +494,95 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "Progress",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15.sp,
-                                  color: TEXT_PRIMARY
-                                ),
-                              ),
-                              if (selectedSetForProgress != null)
-                                Text(
-                                  "Max : ${selectedSetForProgress!.pr}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15.sp,
-                                  ),
-                                ),
-
                               Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  Text(
+                                    "Progress",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15.sp,
+                                      color: TEXT_PRIMARY,
+                                    ),
+                                  ),
+                                  if (selectedSetForProgress != null) ...[
+                                    SizedBox(width: 8.w),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w,
+                                        vertical: 3.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: PRIMARY.withValues(alpha: 0.10),
+                                        borderRadius: BorderRadius.circular(6.r),
+                                      ),
+                                      child: Text(
+                                        "Max ${selectedSetForProgress!.pr}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12.sp,
+                                          color: PRIMARY,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => setState(() {
+                                      adjustFatigue = !adjustFatigue;
+                                    }),
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 200,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10.w,
+                                        vertical: 7.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: adjustFatigue
+                                            ? PRIMARY.withValues(alpha: 0.12)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(
+                                          20.r,
+                                        ),
+                                        border: Border.all(
+                                          color: adjustFatigue
+                                              ? PRIMARY
+                                              : BORDER_PRIMARY,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.bolt,
+                                            size: 11.sp,
+                                            color: adjustFatigue
+                                                ? PRIMARY
+                                                : TEXT_SECONDARY,
+                                          ),
+                                          SizedBox(width: 6.w),
+                                          Text(
+                                            "Fatigue",
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: adjustFatigue
+                                                  ? PRIMARY
+                                                  : TEXT_SECONDARY,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
                                   if (widget.workout.sets.isNotEmpty)
                                     SizedBox(
                                       width: 100.w,
@@ -582,6 +652,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                         ),
                                       ),
                                     ),
+
                                 ],
                               ),
                             ],
@@ -631,9 +702,11 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: ProgressChart(
+                                            isFatigueAdjusted: adjustFatigue,
                                             set: selectedSetForProgress!,
+                                            workout: widget.workout,
                                             key: ValueKey(
-                                              selectedSetForProgress!.value,
+                                              "${selectedSetForProgress!.value}-${adjustFatigue}",
                                             ),
                                           ),
                                         ),

@@ -82,6 +82,13 @@ class Workout extends HiveObject {
         )
         .toList(),
   );
+  // Returns reps that is assumed to be capable by user if previously no workout have been done
+  double getFatigueAdjustedReps(double fatigue , int reps)
+  {
+    var sumOfAllVolumes = 0.0;
+    volumes.forEach((vol)=> sumOfAllVolumes+=vol.volume);
+    return (reps + (fatigue / sumOfAllVolumes));
+  }
 }
 
 @HiveType(typeId: 15)

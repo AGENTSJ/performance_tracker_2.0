@@ -7,7 +7,9 @@ import 'package:performance_tracker/services/common.service.dart';
 
 class ProgressChart extends StatefulWidget {
   final WorkSet set;
-  const ProgressChart({super.key, required this.set});
+  final bool isFatigueAdjusted;
+  final Workout workout;
+  const ProgressChart({super.key, required this.set, required this.workout ,required this.isFatigueAdjusted});
   @override
   State<StatefulWidget> createState() => ProgressChartState();
 }
@@ -21,7 +23,8 @@ class ProgressChartState extends State<ProgressChart> {
     super.initState();
     var i = 0;
     for (var entry in widget.set.history) {
-      dataPoints.add(FlSpot(i.toDouble(), entry.value.toDouble()));
+      final valueToShow = widget.isFatigueAdjusted ? widget.workout.getFatigueAdjustedReps(entry.fatigueContext, entry.value): entry.value.toDouble(); 
+      dataPoints.add(FlSpot(i.toDouble(),valueToShow ));
       i++;
     }
   }
