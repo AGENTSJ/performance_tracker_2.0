@@ -154,17 +154,20 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
     return TrackEntry(
       entryDate: fields[0] as DateTime,
       value: fields[1] as int,
+      fatigueContext: fields[2] == null ? 0.0 : fields[2] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, TrackEntry obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.entryDate)
       ..writeByte(1)
-      ..write(obj.value);
+      ..write(obj.value)
+      ..writeByte(2)
+      ..write(obj.fatigueContext);
   }
 
   @override

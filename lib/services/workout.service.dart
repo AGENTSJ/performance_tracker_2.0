@@ -2,10 +2,12 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/services/fatigue.service.dart';
 
 class WorkoutService {
   var routineRepo = locator<RoutineRepository>();
   var commonService = locator<CommonService>();
+  var fatigueService = locator<FatigueService>();
 
   Future<Workout?> getWorkOutById(int key) {
     return routineRepo.getWorkoutById(key);
@@ -52,8 +54,14 @@ class WorkoutService {
     var last = set.history.lastOrNull;
     if(last==null || (commonService.getDateString(last.entryDate)!=commonService.getDateString(DateTime.now())))
     {
-      last = TrackEntry(entryDate: DateTime.now(), value: repVal);
+      // First time this set is recorded today: capture the fatigue context from
+      // the daily fatigue state BEFORE this set contributes to it.
+      var fatigueContext = fatigueService.calculateFatigueContext(workout);
+      last = TrackEntry(entryDate: DateTime.now(), value: repVal, fatigueContext: fatigueContext);
       set.history.add(last);
+      // Apply this set's muscle volumes to the daily fatigue map AFTER storing
+      // the entry, so it accumulates only once per set per day.
+      await fatigueService.accumulateFatigue(workout);
     }
     else
     {

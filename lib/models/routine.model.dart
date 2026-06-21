@@ -133,16 +133,29 @@ class TrackEntry {
   DateTime entryDate;
   @HiveField(1)
   int value;
-  TrackEntry({required this.entryDate, required this.value});
+
+  /// Accumulated muscle fatigue context present when this set was performed,
+  /// calculated from the daily fatigue map BEFORE this set contributed to it.
+  /// Normalized to the range [0, 2]. Stored as metadata; never modifies [value].
+  @HiveField(2)
+  double fatigueContext;
+
+  TrackEntry({
+    required this.entryDate,
+    required this.value,
+    this.fatigueContext = 0,
+  });
 
   Map<String, dynamic> toJson() => {
     'entryDate': entryDate.toIso8601String(),
     'value': value,
+    'fatigueContext': fatigueContext,
   };
 
   factory TrackEntry.fromJson(Map<String, dynamic> json) => TrackEntry(
     entryDate: DateTime.parse(json['entryDate'] as String),
     value: json['value'] as int,
+    fatigueContext: (json['fatigueContext'] as num?)?.toDouble() ?? 0,
   );
 }
 
