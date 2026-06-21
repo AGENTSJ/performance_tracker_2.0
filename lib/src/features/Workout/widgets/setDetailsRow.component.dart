@@ -83,6 +83,9 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     widget.set.enabled = val;
     await workoutService.updateWorkout(widget.workout);
     setState(() {});
+    // Keep the parent's "Track" (enabled-only) list in sync. No DB reload
+    // needed — the flag was already mutated in-place and persisted.
+    widget.onSetUpdated(false);
   }
 
   @override

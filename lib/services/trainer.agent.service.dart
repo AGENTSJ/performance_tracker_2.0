@@ -180,6 +180,64 @@ class TrainerAgentService {
     );
   }
 
+  /// Streaming chat that surfaces the model's live thinking/answer via
+  /// [onProgress] and uses the user-selected Gemini model. Mirrors
+  /// [chatWithCoach] but streams the response so the UI can show progress.
+  /// Pass a [cancelToken] to abort an in-flight response.
+  Future<ChatDTO?> chatWithCoachThinking(
+    String message, {
+    void Function(String thoughts, String answer)? onProgress,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      var old = await getOlderChat();
+      old.contents.add(
+        AiChatSegment(
+          role: ChatRoles.user,
+          parts: [ChatPart(text: message)],
+        ),
+      );
+      String workoutContext = await getPerformanceContext(null);
+      String advContext = await getAdviceContext();
+      String journeyContext = await getJourneyContext();
+      Report nutritionNdBodyContext = await _reportService.getNutritionReport();
+      AiChatContent content = AiChatContent(
+        system_instruction: AiChatSegment(
+          role: null,
+          parts: [
+            ChatPart(
+              text:
+                  '''Your role is of an Training coach\nplatform provides\n\t1 calorie tracking\n\t2 workout creation and progress tracking reps and sets\n\t3 activity tracking\nYour context\n\t1 Workout Context : $workoutContext\n\t2 Physique & Nutrition Context : $nutritionNdBodyContext\n\t3 Journey context : $journeyContext\n\t3 Advice context : $advContext\nYou have 2 modes\n\t1 Advice mode\n\t\tin this mode you are taking big responsibility you must carefully take in all information form user and provide Quantitative advices,\n\t\tas this is a fitness platform your advices such be such , and the platform must support these advices ,DO NOT GIVE advices for the sake of giving advice,\n\t\tsince these advices determine users progress , at the same time due to the known fact that every person is unique you should try experiments with user on the basis of training , nutrition in a way that the platform supports it , and hence some times you can find advices to be not effective and hence you should also advice user to update the status of advice and u cannot do that on ur own u should advice, when you respond in advice mode make sure you include 'Here is your advice' then proceed with precise and well directed quantitative advices for an example 'lets add x more volume to chest training ' or 'lets reduce x volume from chest training' this is an example direct user based on what you think the best advice would be make sure u give only advices and no jargons of sugar coating in advice response\n\t2 Normal mode\n\t\tyou chat with user and know user more and be coach also a good supportive person\nNote the above is not part of the chat that u are going to have with user this is for you to keep in mind''',
+            ),
+          ],
+        ),
+        contents: old.contents,
+      );
+      var selectedModel = await _aiService.getSelectedModel();
+      var response = await _aiService.getResponseStream2(
+        content,
+        modelName: selectedModel,
+        onProgress: onProgress,
+        cancelToken: cancelToken,
+      );
+      var respMessage = response.message;
+
+      if (response.success) {
+        old.contents.add(
+          AiChatSegment(
+            role: ChatRoles.model,
+            parts: [ChatPart(text: respMessage)],
+          ),
+        );
+        await _conversationRepo.updateConversation(old.key, old);
+        return ChatDTO(data: respMessage, advices: []);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<ChatDTO?> chatWithCoach(String message) async {
     try {
       var old = await getOlderChat();
