@@ -10,6 +10,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum Models { Pro, Flash }
 
+/// Lightweight cancellation handle for an in-flight streamed request.
+/// Calling [cancel] aborts the underlying HTTP connection.
+class CancelToken {
+  bool isCancelled = false;
+  void Function()? onCancel;
+  void cancel() {
+    if (isCancelled) return;
+    isCancelled = true;
+    onCancel?.call();
+  }
+}
+
 /// A Gemini model as returned by the list-models endpoint.
 class GeminiModel {
   final String name; // e.g. "models/gemini-2.0-flash"
@@ -157,13 +169,22 @@ class AiService {
   /// (thoughts, answer) text so far. The returned [AiResponse] holds the full
   /// concatenated answer text, ready to be parsed like [getResponse]. Falls
   /// back to the non-streaming [getResponse] if streaming can't be started.
+  ///
+  /// Pass a [cancelToken] to abort: cancelling cancels the stream subscription
+  /// and closes the HTTP client, tearing down the connection. The result then
+  /// has `success == false`.
   Future<AiResponse> getResponseStream(
     String promt,
     String? instructions, {
     Models modelType = Models.Flash,
     String? modelName,
     void Function(String thoughts, String answer)? onProgress,
+    CancelToken? cancelToken,
   }) async {
+    if (cancelToken?.isCancelled == true) {
+      return AiResponse(message: '', success: false, responseEnded: true);
+    }
+    final client = http.Client();
     try {
       await setModels();
       var modelPath = modelName ?? _models[modelType]!.modelName;
@@ -191,13 +212,14 @@ class AiService {
       final request = http.Request('POST', uri)
         ..headers['Content-Type'] = 'application/json'
         ..body = jsonEncode(payload);
-      final response = await request.send();
+      final response = await client.send(request);
 
       if (response.statusCode != 200) {
         _logService.addWarningLog(
           logKey,
           "Stream status ${response.statusCode}, falling back",
         );
+        client.close();
         return getResponse(
           promt,
           instructions,
@@ -210,7 +232,7 @@ class AiService {
       final thoughtBuffer = StringBuffer();
       final completer = Completer<void>();
 
-      response.stream
+      final subscription = response.stream
           .transform(utf8.decoder)
           .transform(const LineSplitter())
           .listen(
@@ -250,7 +272,24 @@ class AiService {
             cancelOnError: true,
           );
 
+      // Wire the cancel handle: tear down the subscription + connection.
+      cancelToken?.onCancel = () {
+        subscription.cancel();
+        client.close();
+        if (!completer.isCompleted) completer.complete();
+      };
+
       await completer.future;
+
+      if (cancelToken?.isCancelled == true) {
+        _logService.addInfoLog(logKey, "Stream aborted $modelPath");
+        return AiResponse(
+          message: answerBuffer.toString(),
+          success: false,
+          responseEnded: true,
+        );
+      }
+
       _logService.addSuccessLog(logKey, "Stream success $modelPath");
       return AiResponse(
         message: answerBuffer.toString(),
@@ -259,12 +298,18 @@ class AiService {
       );
     } catch (e) {
       _logService.addErrorLog(logKey, "Stream error ${e.toString()}");
+      if (cancelToken?.isCancelled == true) {
+        return AiResponse(message: '', success: false, responseEnded: true);
+      }
       return getResponse(
         promt,
         instructions,
         modelType: modelType,
         modelName: modelName,
       );
+    } finally {
+      cancelToken?.onCancel = null;
+      client.close();
     }
   }
 

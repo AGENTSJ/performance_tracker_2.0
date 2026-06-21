@@ -311,11 +311,17 @@ class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
   List<Widget> _buildActions(AiFoodGenState state) {
     switch (state.status) {
       case AiFoodGenStatus.generating:
-        // Generation continues in the service; just close the modal.
+        // Close hides the modal but generation keeps running in the service;
+        // Stop aborts the request (closes the connection) and resets the form.
         return [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: foodService.cancelFoodGeneration,
+            style: TextButton.styleFrom(foregroundColor: ACCENT),
+            child: const Text('Stop'),
           ),
         ];
       case AiFoodGenStatus.ready:

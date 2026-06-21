@@ -39,6 +39,9 @@ class FoodService {
   bool get isGeneratingFood =>
       aiFoodGenNotifier.value.status == AiFoodGenStatus.generating;
 
+  // Cancel handle for the in-flight generation (one at a time).
+  CancelToken? _genCancelToken;
+
   Future<List<Food>> searchFood(String key) async {
     var foods = _foodRepo.searchFoodByName(key);
     // var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
@@ -92,11 +95,16 @@ class FoodService {
   // Only one generation may run at a time.
   Future<void> startFoodGeneration(String name, String? description) async {
     if (isGeneratingFood) return;
+    var cancelToken = CancelToken();
+    _genCancelToken = cancelToken;
     aiFoodGenNotifier.value = AiFoodGenState(
       status: AiFoodGenStatus.generating,
       foodName: name,
     );
-    var food = await _generateFood(name, description);
+    var food = await _generateFood(name, description, cancelToken);
+    // The user aborted: leave the state as cancelFoodGeneration set it (idle).
+    if (cancelToken.isCancelled) return;
+    _genCancelToken = null;
     if (food != null) {
       addFood(food);
       aiFoodGenNotifier.value = AiFoodGenState(
@@ -112,6 +120,13 @@ class FoodService {
     }
   }
 
+  // Aborts the in-flight generation (closes the connection) and resets to idle.
+  void cancelFoodGeneration() {
+    _genCancelToken?.cancel();
+    _genCancelToken = null;
+    aiFoodGenNotifier.value = const AiFoodGenState();
+  }
+
   // Returns the generated food (if ready) and resets state to idle.
   Food? consumeGeneratedFood() {
     var food = aiFoodGenNotifier.value.result;
@@ -124,7 +139,11 @@ class FoodService {
     aiFoodGenNotifier.value = const AiFoodGenState();
   }
 
-  Future<Food?> _generateFood(String name, String? description) async {
+  Future<Food?> _generateFood(
+    String name,
+    String? description,
+    CancelToken cancelToken,
+  ) async {
     try {
       const String jsonResponseStructure = '''
       {
@@ -284,6 +303,7 @@ class FoodService {
         prompt,
         instructions,
         modelName: selectedModel,
+        cancelToken: cancelToken,
         onProgress: (thoughts, answer) {
           // Surface live progress only while this generation is still running.
           if (aiFoodGenNotifier.value.status != AiFoodGenStatus.generating) {
