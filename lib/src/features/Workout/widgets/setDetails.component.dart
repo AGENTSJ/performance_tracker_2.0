@@ -43,25 +43,13 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
     ),
   );
   var workoutService = locator<WorkoutService>();
-  List<WorkSet> enabledSets = [];
-  @override
-  void initState() {
-    super.initState();
-    setEnabledSets();
-  }
 
-  setEnabledSets() {
-    enabledSets = [];
-    for (var set in widget.workout.sets) {
-      if (set.enabled) {
-        enabledSets.add(set);
-      }
-    }
-    refreshState();
-  }
+  /// Sets shown in the "Track" tab — derived live from the workout so it can
+  /// never drift out of sync with each set's `enabled` flag.
+  List<WorkSet> get enabledSets =>
+      widget.workout.sets.where((set) => set.enabled).toList();
 
   setSets(bool setsUpdated) async {
-    enabledSets = [];
     if (setsUpdated) {
       var work = await workoutService.getWorkOutById(widget.workout.key);
       widget.workout.sets = work!.sets;
@@ -93,7 +81,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       TextButton(
                         onPressed: () {
                           showTrack = true;
-                          setEnabledSets();
+                          refreshState();
                         },
                         style: showTrack
                             ? enabledButtonDecor
@@ -293,7 +281,7 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
                       children: [
                         ...(showTrack ? enabledSets : widget.workout.sets).map(
                           (set) => SetDetailRowComponent(
-                            key: ValueKey(DateTime.now()),
+                            key: ObjectKey(set),
                             set: set,
                             showTrack: showTrack,
                             workout: widget.workout,
@@ -351,7 +339,6 @@ class SetDetailsComponentState extends State<SetDetailsComponent> {
   handleAddNewSet(double weight) {
     var set = WorkSet(value: weight, history: [], pr: 0, enabled: true);
     widget.workout.sets.add(set);
-    enabledSets.add(set);
     workoutService.updateWorkout(widget.workout);
     refreshState();
   }
