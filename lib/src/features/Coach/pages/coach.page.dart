@@ -12,7 +12,6 @@ import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/model_picker.dialog.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
-import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
 import 'package:performance_tracker/src/features/Coach/usecases/coach_client_mcp.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
@@ -34,15 +33,13 @@ class _CoachPageState extends State<CoachPage> {
   Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
-  bool isTyping = false;
-  ChatDTO? latestChatDto;
   Timer? refreshTimer;
   bool isLoaded = false;
   String? _selectedModel;
   String? _selectedActModel;
-  String _thinkingText = "";
-  CancelToken? _cancelToken;
-  bool _stoppedByUser = false;
+  // Tracks the previous responding state so we can detect when a reply just
+  // finished (and pull the committed exchange into the conversation window).
+  bool _wasResponding = false;
 
   String _modelLabel() =>
       (_selectedModel ?? AiService.defaultModel).replaceFirst('models/', '');
@@ -73,7 +70,7 @@ class _CoachPageState extends State<CoachPage> {
   }
 
   setUpUi() async {
-    latestChatDto = null;
+    _wasResponding = trainerService.isResponding;
     coachIconImg = avatarService.getMaleAvatar();
     _selectedModel = await aiService.getSelectedModel();
     _selectedActModel = await aiService.getSelectedActModel();
@@ -96,20 +93,39 @@ class _CoachPageState extends State<CoachPage> {
   @override
   void initState() {
     super.initState();
-    // Reflect the centralised act progress (which keeps running even while
-    // this page is gone) whenever it changes.
+    // Reflect the centralised act + chat progress (which keep running even
+    // while this page is gone) whenever they change.
     coachClient.actProgress.addListener(_onActProgress);
+    trainerService.chatProgress.addListener(_onChatProgress);
     setUpUi();
   }
 
   @override
   void dispose() {
     coachClient.actProgress.removeListener(_onActProgress);
+    trainerService.chatProgress.removeListener(_onChatProgress);
     refreshTimer?.cancel();
     super.dispose();
   }
 
   void _onActProgress() => refreshState();
+
+  void _onChatProgress() {
+    final responding = trainerService.chatProgress.value.isResponding;
+    // Reply just finished: pull the committed exchange into the window.
+    if (_wasResponding && !responding) {
+      _reloadChats();
+    }
+    _wasResponding = responding;
+    controlledRefresh();
+  }
+
+  Future<void> _reloadChats() async {
+    olderChats = await trainerService.getOlderChat();
+    setUpConversationWindow();
+    refreshState();
+    Future.delayed(Duration(milliseconds: 100), scrollToEnd);
+  }
 
   scrollToEnd() {
     if (scrollController.hasClients) {
@@ -121,53 +137,23 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
-  handleSendMessage() async {
-    if (isTyping || msgController.text.isEmpty) return;
+  handleSendMessage() {
+    if (trainerService.isResponding || msgController.text.isEmpty) return;
     var message = msgController.text;
     msgController.text = "";
-    isTyping = true;
-    _thinkingText = "";
-    _stoppedByUser = false;
-    _cancelToken = CancelToken();
-    chats.add(
-      AiChatSegment(
-        role: ChatRoles.user,
-        parts: [ChatPart(text: message)],
-      ),
-    );
+    // Fire and forget: progress is centralised in TrainerAgentService, so the
+    // reply keeps streaming (and is restored) across navigation. The pending
+    // user message is shown from chatProgress until the exchange is committed.
+    trainerService.sendCoachMessage(message);
+    // sendCoachMessage sets the pending-message state synchronously, so show
+    // it (and the thinking indicator) immediately rather than waiting for the
+    // throttled progress tick.
     refreshState();
     scrollToEnd();
-    var response = await trainerService.chatWithCoachThinking(
-      message,
-      cancelToken: _cancelToken,
-      onProgress: (thoughts, answer) {
-        _thinkingText = thoughts.isNotEmpty ? thoughts : answer;
-        controlledRefresh();
-      },
-    );
-    latestChatDto = response;
-    _cancelToken = null;
-    _thinkingText = "";
-    if (response == null) {
-      if (!_stoppedByUser) Fluttertoast.showToast(msg: "An error has occur");
-      isTyping = false;
-      refreshState();
-      return;
-    }
-    chats.add(
-      AiChatSegment(
-        role: ChatRoles.model,
-        parts: [ChatPart(text: response.data)],
-      ),
-    );
-
-    isTyping = false;
-    refreshState();
   }
 
   handleStopGeneration() {
-    _stoppedByUser = true;
-    _cancelToken?.cancel();
+    trainerService.cancelChat();
   }
 
   refreshState() {
@@ -220,6 +206,7 @@ class _CoachPageState extends State<CoachPage> {
   handleViewAdvices() {}
 
   Widget _buildThinkingIndicator() {
+    final thinkingText = trainerService.chatProgress.value.thinking;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 5.h),
       child: Container(
@@ -236,7 +223,7 @@ class _CoachPageState extends State<CoachPage> {
             Row(
               children: [
                 Text(
-                  _thinkingText.isEmpty ? "Typing" : "Thinking…",
+                  thinkingText.isEmpty ? "Typing" : "Thinking…",
                   style: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
                 ),
                 SizedBox(width: 6.w),
@@ -261,14 +248,14 @@ class _CoachPageState extends State<CoachPage> {
                 ),
               ],
             ),
-            if (_thinkingText.isNotEmpty) ...[
+            if (thinkingText.isNotEmpty) ...[
               SizedBox(height: 8.h),
               ConstrainedBox(
                 constraints: BoxConstraints(maxHeight: 160.h),
                 child: SingleChildScrollView(
                   reverse: true,
                   child: Text(
-                    _thinkingText,
+                    thinkingText,
                     style: TextStyle(
                       color: TEXT_SECONDARY,
                       fontSize: 11.sp,
@@ -614,7 +601,7 @@ class _CoachPageState extends State<CoachPage> {
                     child: Column(
                       children: [
                         SizedBox(height: 30.h),
-                        if (chats.isEmpty)
+                        if (chats.isEmpty && !trainerService.isResponding)
                           ChatBubble(
                             data:
                                 "Hello there let me guide you !! and make you see progress by optimising your workout and other things",
@@ -633,7 +620,23 @@ class _CoachPageState extends State<CoachPage> {
                                   ),
                                 ),
                         ),
-                        if (isTyping) _buildThinkingIndicator(),
+                        if (trainerService
+                            .chatProgress
+                            .value
+                            .pendingUserMessage
+                            .isNotEmpty)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0.h),
+                            child: ChatBubble(
+                              data: trainerService
+                                  .chatProgress
+                                  .value
+                                  .pendingUserMessage,
+                              type: ChatRoles.user,
+                            ),
+                          ),
+                        if (trainerService.isResponding)
+                          _buildThinkingIndicator(),
                         if (coachClient.actProgress.value.isActing)
                           _buildActIndicator(),
                       ],
