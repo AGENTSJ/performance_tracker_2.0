@@ -42,9 +42,13 @@ class AiService {
   String API_KEY = '';
   final logKey = 'AI';
 
-  // App-wide selected Gemini model (persisted). Used by the AI food creator.
+  // App-wide selected Gemini model (persisted). Used by the AI food creator
+  // and the coach chat.
   static const String defaultModel = 'models/gemini-2.0-flash';
   static const String _keySelectedModel = 'selectedAiModel';
+  // Separate model used by the coach when *acting* (applying advice). Kept
+  // independent of the chat/food-creator model so it can be tuned on its own.
+  static const String _keySelectedActModel = 'selectedActAiModel';
 
   AiService() {
     setModels();
@@ -59,6 +63,17 @@ class AiService {
   Future<void> setSelectedModel(String modelName) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keySelectedModel, modelName);
+  }
+
+  /// The model used for coach "act" (advice application), or [defaultModel].
+  Future<String> getSelectedActModel() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keySelectedActModel) ?? defaultModel;
+  }
+
+  Future<void> setSelectedActModel(String modelName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keySelectedActModel, modelName);
   }
 
   /// Fetches the Gemini models available for the configured API key, keeping

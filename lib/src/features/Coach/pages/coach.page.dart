@@ -14,6 +14,7 @@ import 'package:performance_tracker/src/components/model_picker.dialog.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
+import 'package:performance_tracker/src/features/Coach/usecases/coach_client_mcp.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
 
 class CoachPage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var avatarService = locator<AvatarService>();
   var aiService = locator<AiService>();
+  var coachClient = locator<CoachClientMcp>();
   var msgController = TextEditingController();
   var scrollController = ScrollController();
   Widget? coachIconImg;
@@ -37,12 +39,16 @@ class _CoachPageState extends State<CoachPage> {
   Timer? refreshTimer;
   bool isLoaded = false;
   String? _selectedModel;
+  String? _selectedActModel;
   String _thinkingText = "";
   CancelToken? _cancelToken;
   bool _stoppedByUser = false;
 
   String _modelLabel() =>
       (_selectedModel ?? AiService.defaultModel).replaceFirst('models/', '');
+
+  String _actModelLabel() =>
+      (_selectedActModel ?? AiService.defaultModel).replaceFirst('models/', '');
 
   Future<void> _changeModel() async {
     var selected = await showDialog<String>(
@@ -55,10 +61,22 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
+  Future<void> _changeActModel() async {
+    var selected = await showDialog<String>(
+      context: context,
+      builder: (context) => ModelPickerDialog(currentModel: _selectedActModel),
+    );
+    if (selected != null) {
+      await aiService.setSelectedActModel(selected);
+      if (mounted) setState(() => _selectedActModel = selected);
+    }
+  }
+
   setUpUi() async {
     latestChatDto = null;
     coachIconImg = avatarService.getMaleAvatar();
     _selectedModel = await aiService.getSelectedModel();
+    _selectedActModel = await aiService.getSelectedActModel();
     olderChats = await trainerService.getOlderChat();
     setUpConversationWindow();
     refreshState();
@@ -78,8 +96,20 @@ class _CoachPageState extends State<CoachPage> {
   @override
   void initState() {
     super.initState();
+    // Reflect the centralised act progress (which keeps running even while
+    // this page is gone) whenever it changes.
+    coachClient.actProgress.addListener(_onActProgress);
     setUpUi();
   }
+
+  @override
+  void dispose() {
+    coachClient.actProgress.removeListener(_onActProgress);
+    refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onActProgress() => refreshState();
 
   scrollToEnd() {
     if (scrollController.hasClients) {
@@ -254,6 +284,90 @@ class _CoachPageState extends State<CoachPage> {
     );
   }
 
+  /// Persistent panel showing the live progress of a coach "act" (advice
+  /// application). Reads the centralised [CoachClientMcp.actProgress] so it
+  /// reflects work that continued while the user was on another page.
+  Widget _buildActIndicator() {
+    final progress = coachClient.actProgress.value;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 5.h),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: SURFACE2,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: PRIMARY),
+        ),
+        padding: EdgeInsets.all(10.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(FontAwesomeIcons.gears, color: PRIMARY, size: 14.sp),
+                SizedBox(width: 6.w),
+                Text(
+                  "Applying advice…",
+                  style: TextStyle(
+                    color: TEXT_PRIMARY,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                SpinKitThreeBounce(color: TEXT_SECONDARY, size: 16.sp),
+                const Spacer(),
+                InkWell(
+                  onTap: coachClient.cancelAct,
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 2.h,
+                    ),
+                    child: Text(
+                      "Stop",
+                      style: TextStyle(
+                        color: Colors.redAccent.shade100,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (progress.adviceDesc.isNotEmpty) ...[
+              SizedBox(height: 6.h),
+              Text(
+                progress.adviceDesc,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: TEXT_TERTIARY, fontSize: 11.sp),
+              ),
+            ],
+            if (progress.thinking.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 160.h),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Text(
+                    progress.thinking,
+                    style: TextStyle(
+                      color: TEXT_SECONDARY,
+                      fontSize: 11.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -399,6 +513,46 @@ class _CoachPageState extends State<CoachPage> {
                       ),
                     ),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: _changeActModel,
+                      child: Row(
+                        children: [
+                          Icon(FontAwesomeIcons.gears, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Act model",
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                                Text(
+                                  _actModelLabel(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -480,6 +634,8 @@ class _CoachPageState extends State<CoachPage> {
                                 ),
                         ),
                         if (isTyping) _buildThinkingIndicator(),
+                        if (coachClient.actProgress.value.isActing)
+                          _buildActIndicator(),
                       ],
                     ),
                   ),
