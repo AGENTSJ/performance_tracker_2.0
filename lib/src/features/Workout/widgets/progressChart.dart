@@ -57,12 +57,6 @@ class ProgressChartState extends State<ProgressChart> {
 
   void _buildData() {
     dataPoints = [];
-    for(var j = 0; j < 1000;j++)
-    {
-      final random = Random();
-      final value = (random.nextInt(22 - 5 + 1) + 5).toDouble();
-      dataPoints.add(FlSpot(j.toDouble(), value));
-    }
     for (var i = 0; i < widget.set.history.length; i++) {
       final entry = widget.set.history[i];
       final raw = widget.isFatigueAdjusted
