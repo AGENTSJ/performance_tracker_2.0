@@ -34,7 +34,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
   double graphWidth = 50;
   double widthPerPoint = 70;
   double maxY = 0;
-  bool isUserInCut = true;
+  JourneyMode mode = JourneyMode.cut;
 
   @override
   void initState() {
@@ -44,6 +44,8 @@ class _JourneyGraphState extends State<JourneyGraph> {
 
   Future<void> _setUpUi() async {
     user = await userService.getUserData();
+    // The journey's mode is fixed by the user's goal when it started.
+    mode = goalService.getJourneyMode(widget.journey.userAtStart);
     await _setUpGraphData();
     if (mounted) setState(() {});
   }
@@ -52,16 +54,21 @@ class _JourneyGraphState extends State<JourneyGraph> {
     final calories = dayService.getDaysCalories(day);
     final maintenance = day.goalForToday!.calorieLimit;
     double calorieChangePercentage;
-    if (log.userAtDay.userGoals.targetWeight <
-        widget.journey.userAtStart.weight) {
-      isUserInCut = true;
-      calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.calorieLimit)*100;
-    } else {
-      isUserInCut = false;
-      calorieChangePercentage = calories.calories - maintenance;
+    switch (mode) {
+      case JourneyMode.cut:
+        calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.calorieLimit)*100;
+        break;
+      case JourneyMode.bulk:
+        calorieChangePercentage = calories.calories - maintenance;
+        break;
+      case JourneyMode.maintenance:
+        // Closer to 0 is better: how far the day strayed from maintenance.
+        calorieChangePercentage = goalService.getMaintenanceDeviationPercent(
+            calories.calories, maintenance);
+        break;
     }
 
-    var stepChangeGoalPerentage = (3000 / log.userAtDay.userGoals.stepGoal)*100;
+    var stepChangeGoalPerentage = ((day.activity?.steps ?? 0) / log.userAtDay.userGoals.stepGoal)*100;
     return _DataRepresentation(calorieGraphValue: clampPercent(calorieChangePercentage), stepGraphValue: clampPercent(stepChangeGoalPerentage), caloriePercentage: calorieChangePercentage.round().toDouble(), stepsPercentage: stepChangeGoalPerentage.round().toDouble());
   }
   Future<void> _setUpGraphData() async {
@@ -154,9 +161,17 @@ class _JourneyGraphState extends State<JourneyGraph> {
                   }
                   else
                   {
-                    label = isUserInCut
-                          ? "Deficit"
-                          : "Surplus";
+                    switch (mode) {
+                      case JourneyMode.cut:
+                        label = "Deficit";
+                        break;
+                      case JourneyMode.bulk:
+                        label = "Surplus";
+                        break;
+                      case JourneyMode.maintenance:
+                        label = "Deviation";
+                        break;
+                    }
                     labelData = "${barMetaData[groupIndex].caloriePercentage}%";
                   }
                   return BarTooltipItem(

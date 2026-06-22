@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/journey.model.dart';
 import 'package:performance_tracker/models/user.model.dart';
@@ -41,7 +42,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
   JourneyBadge? currentBadge;
   bool isLoaded = false;
   double journeyCompleted = 0;
-  bool userInCut = true;
+  JourneyMode mode = JourneyMode.cut;
+  int adheredDays = 0;
+  int maintenanceTargetDays = MAINTENANCE_JOURNEY_DAYS;
+  bool get isMaintenance => mode == JourneyMode.maintenance;
   @override
   void initState() {
     super.initState();
@@ -52,27 +56,38 @@ class _JourneyComponentState extends State<JourneyComponent> {
     this.currentJourney = journeyService.getActiveJourney();
     user = await userService.getUserData();
     if (currentJourney != null) {
-      if (user!.userGoals.targetWeight <= user!.weight) {
-        // user in cut
-        userInCut = true;
+      mode = userGoalService.getJourneyMode(user!);
+      if (isMaintenance) {
+        // No weight to reach: the goal is to stay near maintenance for a set
+        // number of adherent days.
+        adheredDays = _countAdheredDays(currentJourney!);
+        estimatedDays =
+            (maintenanceTargetDays - adheredDays).clamp(0, maintenanceTargetDays);
+        stepsTotal =
+            maintenanceTargetDays * currentJourney!.userAtStart.userGoals.stepGoal;
+        caloriesAchievePercent = commonService
+            .getPercentage(
+              maintenanceTargetDays.toDouble(),
+              adheredDays.toDouble(),
+            )
+            .roundToDouble()
+            .clamp(0, 100);
       } else {
-        // user in bulk
-        userInCut = false;
+        caloriesTotal =
+            (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight).abs() *
+            7700;
+        estimatedDays =
+            ((caloriesTotal - currentJourney!.caloriesChangeAchieved) /
+                    currentJourney!.userAtStart.userGoals.caloricChangeGoal)
+                .round()
+                .abs();
+        stepsTotal =
+            estimatedDays * currentJourney!.userAtStart.userGoals.stepGoal;
+        caloriesAchievePercent = commonService
+            .getPercentage(caloriesTotal, currentJourney!.caloriesChangeAchieved)
+            .roundToDouble()
+            .clamp(0, 100);
       }
-      caloriesTotal =
-          (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight).abs() *
-          7700;
-      estimatedDays =
-          ((caloriesTotal - currentJourney!.caloriesChangeAchieved) /
-                  currentJourney!.userAtStart.userGoals.caloricChangeGoal)
-              .round()
-              .abs();
-      stepsTotal =
-          estimatedDays * currentJourney!.userAtStart.userGoals.stepGoal;
-      caloriesAchievePercent = commonService
-          .getPercentage(caloriesTotal, currentJourney!.caloriesChangeAchieved)
-          .roundToDouble()
-          .clamp(0, 100);
       stepAchievePercent = commonService
           .getPercentage(
             stepsTotal.toDouble(),
@@ -86,6 +101,21 @@ class _JourneyComponentState extends State<JourneyComponent> {
     isLoaded = true;
 
     refreshState();
+  }
+
+  /// Counts how many logged days stayed within the maintenance tolerance.
+  int _countAdheredDays(Journey journey) {
+    var count = 0;
+    for (final log in journey.logs) {
+      final day = dayService.getDayById(log.dayId);
+      if (day == null || day.goalForToday == null) continue;
+      final cals = dayService.getDaysCalories(day).calories;
+      if (userGoalService.isWithinMaintenance(
+          cals, day.goalForToday!.calorieLimit)) {
+        count++;
+      }
+    }
+    return count;
   }
 
   handleStopJourney() async {
@@ -139,12 +169,17 @@ class _JourneyComponentState extends State<JourneyComponent> {
       macros
     );
     var calToday = dayService.getDaysCalories(day).calories;
-    if (userInCut) {
-      // user in cut
-      calDiffAchievedToday = maintenance - calToday;
-    } else {
-      // user in bulk
-      calDiffAchievedToday = calToday - maintenance;
+    switch (mode) {
+      case JourneyMode.cut:
+        calDiffAchievedToday = maintenance - calToday;
+        break;
+      case JourneyMode.bulk:
+        calDiffAchievedToday = calToday - maintenance;
+        break;
+      case JourneyMode.maintenance:
+        // Progress is measured by adherent days, not accumulated calories.
+        calDiffAchievedToday = 0;
+        break;
     }
 
     currentJourney!.lastCaloriesValue ??= 0;
@@ -394,7 +429,9 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                 Icon(FontAwesomeIcons.fire, size: 15.sp,color: TEXT_SECONDARY,),
                                 SizedBox(width: 10.w),
                                 Text(
-                                  userInCut
+                                  isMaintenance
+                                      ? "Days On Track"
+                                      : mode == JourneyMode.cut
                                       ? "Calories To Cut"
                                       : "Calories to gain",
                                   style: TextStyle(
@@ -405,7 +442,9 @@ class _JourneyComponentState extends State<JourneyComponent> {
                               ],
                             ),
                             Text(
-                              "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining",
+                              isMaintenance
+                                  ? "$adheredDays / $maintenanceTargetDays days"
+                                  : "${(caloriesTotal - currentJourney!.caloriesChangeAchieved).clamp(0, double.infinity).round()} Cal remaining",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 12.sp,
@@ -466,7 +505,9 @@ class _JourneyComponentState extends State<JourneyComponent> {
                         Row(
                           children: [
                             Text(
-                              " ${currentJourney!.caloriesChangeAchieved >= 0 ? currentJourney!.caloriesChangeAchieved.round() : 0} / ${currentJourney!.caloriesChangeAchieved >= 0 ? caloriesTotal.round() : (caloriesTotal + currentJourney!.caloriesChangeAchieved).round()} Cal",
+                              isMaintenance
+                                  ? " $adheredDays / $maintenanceTargetDays days on track"
+                                  : " ${currentJourney!.caloriesChangeAchieved >= 0 ? currentJourney!.caloriesChangeAchieved.round() : 0} / ${currentJourney!.caloriesChangeAchieved >= 0 ? caloriesTotal.round() : (caloriesTotal + currentJourney!.caloriesChangeAchieved).round()} Cal",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 12.sp,
