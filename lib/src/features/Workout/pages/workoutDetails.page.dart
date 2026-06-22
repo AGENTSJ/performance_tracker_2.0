@@ -27,14 +27,11 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   var workoutService = locator<WorkoutService>();
   var workNameController = TextEditingController();
   var workDescriptionController = TextEditingController();
-  var progressChartScrollController = ScrollController();
   List<WorkSet> enabledSets = [];
   bool isEditModeOn = false;
   bool isNameEdit = false;
   Workout? workout;
   WorkSet? selectedSetForProgress;
-  double graphWidth = 25;
-  double widthPerPoint = 25;
   bool adjustFatigue = false;
   @override
   void initState() {
@@ -47,7 +44,6 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     workDescriptionController.text = widget.workout.desc;
     if (widget.workout.sets.isNotEmpty) {
       selectedSetForProgress = widget.workout.sets[0];
-      setGraphHeight();
     }
     workDescriptionController.addListener(() {
       if (!isEditModeOn) {
@@ -72,21 +68,6 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
         enabledSets.add(set);
       }
     }
-  }
-
-  setGraphHeight() {
-    graphWidth = widthPerPoint * selectedSetForProgress!.history.length;
-    try {
-      Future.delayed(Duration(seconds: 2), () {
-        if (progressChartScrollController.hasClients) {
-          progressChartScrollController.animateTo(
-            progressChartScrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 400),
-            curve: Curves.bounceIn,
-          );
-        }
-      });
-    } catch (e) {}
   }
 
   handleAddVolume() async {
@@ -518,7 +499,6 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                           onChanged: (WorkSet? newValue) {
                                             setState(() {
                                               selectedSetForProgress = newValue;
-                                              setGraphHeight();
                                             });
                                           },
                                           buttonStyleData: ButtonStyleData(
@@ -560,82 +540,52 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                       ),
                       if (selectedSetForProgress != null &&
                           selectedSetForProgress!.history.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            RotatedBox(
-                              quarterTurns: 3,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Reps",
-                                      style: TextStyle(
-                                        color: TEXT_SECONDARY,
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.w),
-                                    Icon(
-                                      FontAwesomeIcons.arrowRight,
-                                      size: 12.sp,
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(8.w, 18.h, 16.w, 6.h),
+                          child: SizedBox(
+                            height: 220.h,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Text(
+                                    "Reps",
+                                    style: TextStyle(
                                       color: TEXT_SECONDARY,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                controller: progressChartScrollController,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    minHeight: 200.h,
-                                    maxHeight: 200.h,
-                                  ),
-                                  width: graphWidth.w,
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: ProgressChart(
-                                            isFatigueAdjusted: adjustFatigue,
-                                            set: selectedSetForProgress!,
-                                            workout: widget.workout,
-                                            key: ValueKey(
-                                              "${selectedSetForProgress!.value}-${adjustFatigue}",
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
-                              ),
+                                SizedBox(width: 4.w),
+                                Expanded(
+                                  child: ProgressChart(
+                                    isFatigueAdjusted: adjustFatigue,
+                                    set: selectedSetForProgress!,
+                                    workout: widget.workout,
+                                    key: ValueKey(
+                                      "${selectedSetForProgress!.value}-$adjustFatigue",
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 14.h),
+                          child: Center(
+                            child: Text(
                               "Attempts",
                               style: TextStyle(
                                 color: TEXT_SECONDARY,
-                                fontSize: 12.sp,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(width: 10.w),
-                            Icon(
-                              FontAwesomeIcons.arrowRight,
-                              size: 12.sp,
-                              color: TEXT_SECONDARY,
-                            ),
-                          ],
+                          ),
                         ),
-                        SizedBox(height: 10.h),
                       ] else ...[
                         SizedBox(height: 200.h, width: 200.w, child: empty),
                         Row(
