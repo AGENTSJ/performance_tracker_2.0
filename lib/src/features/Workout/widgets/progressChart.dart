@@ -206,9 +206,11 @@ class ProgressChartState extends State<ProgressChart> {
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((touchedSpot) {
               final x = touchedSpot.x.toInt();
-              final date = commonService.getDateString(
-                widget.set.history[x].entryDate,
-              );
+              final date = (x >= 0 && x < widget.set.history.length)
+                  ? commonService.getDateString(
+                      widget.set.history[x].entryDate,
+                    )
+                  : null;
               final reps = widget.isFatigueAdjusted
                   ? touchedSpot.y.toStringAsFixed(1)
                   : touchedSpot.y.toStringAsFixed(0);
@@ -216,14 +218,15 @@ class ProgressChartState extends State<ProgressChart> {
                 '',
                 const TextStyle(),
                 children: [
-                  TextSpan(
-                    text: '$date\n',
-                    style: TextStyle(
-                      color: TEXT_SECONDARY,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
+                  if (date != null)
+                    TextSpan(
+                      text: '$date\n',
+                      style: TextStyle(
+                        color: TEXT_SECONDARY,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
                   TextSpan(
                     text: '$reps reps',
                     style: TextStyle(
