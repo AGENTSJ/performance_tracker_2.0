@@ -86,4 +86,11 @@ class FatigueService {
     }
     await _repo.upsert(day);
   }
+
+  addFatigueDay(DateTime date , Map<String, double> muscleFatigue) async
+  {
+    final key = _dateKey(date);
+    final day = FatigueDay(dateKey: key, muscleFatigue: muscleFatigue);
+    await _repo.upsert(day);
+  }
 }

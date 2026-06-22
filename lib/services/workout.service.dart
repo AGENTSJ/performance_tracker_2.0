@@ -5,11 +5,21 @@ import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/repositories/routine.repository.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/fatigue.service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WorkoutService {
   var routineRepo = locator<RoutineRepository>();
   var commonService = locator<CommonService>();
   var fatigueService = locator<FatigueService>();
+
+  // Set once the one-time rep-normalisation/fatigue-context backfill has run,
+  // so the migration (and its UI entry point) is not offered again.
+  static const String _keyRepNormalisedMigrated = 'repNormalisedMigrated';
+
+  Future<bool> isRepNormalisedMigrated() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyRepNormalisedMigrated) ?? false;
+  }
 
   Future<Workout?> getWorkOutById(int key) {
     return routineRepo.getWorkoutById(key);
@@ -80,7 +90,10 @@ class WorkoutService {
     await routineRepo.clearAllWorkouts();
   }
 
-  WorkSetProgression getWorkSetProgression(Workout workout, List<TrackEntry> entries) {
+  WorkSetProgression getWorkSetProgression(
+    Workout workout,
+    List<TrackEntry> entries,
+  ) {
     final List<double> reps = [];
     final totalEntries = entries.length;
     var sumOfReps = 0.0;
@@ -105,38 +118,88 @@ class WorkoutService {
     var num = 0.0;
     var deno = 0.0;
     for (var i = 1; i < totalEntries + 1; i++) {
-      final rep = reps[i-1];
+      final rep = reps[i - 1];
       num += ((i - meanX) * (rep - meanY));
       deno += pow(i - meanX, 2);
     }
 
     final slope = (num / deno);
-    final intercept = meanY - (slope*meanX);
+    final intercept = meanY - (slope * meanX);
 
     // Confidence (R squared)
     var rNum = 0.0;
     var rDeno = 0.0;
 
     for (var i = 1; i < totalEntries + 1; i++) {
-      final rep = reps[i-1];
-      final yIntercept = (slope*i) + intercept;
+      final rep = reps[i - 1];
+      final yIntercept = (slope * i) + intercept;
       rNum += pow(rep - yIntercept, 2);
       rDeno += pow(rep - meanY, 2);
     }
 
     final confidence = 1 - (rNum / rDeno);
 
-    if(slope > 0.05 && confidence >0.5)
-    {
+    if (slope > 0.05 && confidence > 0.5) {
       return WorkSetProgression.progressing;
     }
-    if(slope < -0.05 && confidence > 0.5)
-    {
+    if (slope < -0.05 && confidence > 0.5) {
       return WorkSetProgression.regressing;
     }
     return WorkSetProgression.stale;
   }
 
+  Future<void> repNormalisedMigration() async {
+    final allRoutines = this.routineRepo.getAllRoutines();
+    allRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    Set<Workout> workoutSet = {};
+    for (var routine in allRoutines) {
+      final dateOfRoutine = routine.createdAt;
+      List<WorkoutEntryMap> trackingsOnThisDay = [];
+
+      for (var wId in routine.workoutsIds) {
+        final workout = await getWorkOutById(wId);
+        if (workout == null) {
+          continue;
+        }
+        workoutSet.add(workout);
+        for (var set in workout.sets) {
+          for (var entry in set.history) {
+            if (isSameDay(entry.entryDate, dateOfRoutine)) {
+              trackingsOnThisDay.add(
+                WorkoutEntryMap(entry: entry, workout: workout),
+              );
+            }
+          }
+        }
+      }
+      trackingsOnThisDay.sort(
+        (a, b) => a.entry.entryDate.compareTo(b.entry.entryDate),
+      );
+      Map<String, double> muscleFatigue = {};
+
+      for (var entry in trackingsOnThisDay) {
+        double fatigueContext = 0.0;
+        for (final vol in entry.workout.volumes) {
+          muscleFatigue[vol.muscleName] ??= 0;
+          fatigueContext += muscleFatigue[vol.muscleName]! * vol.volume;
+          muscleFatigue[vol.muscleName] =
+              muscleFatigue[vol.muscleName]! + vol.volume;
+        }
+        entry.entry.fatigueContext = fatigueContext;
+      }
+      await fatigueService.addFatigueDay(dateOfRoutine, muscleFatigue);
+    }
+    
+    for (var work in workoutSet) {
+      await updateWorkout(work);
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyRepNormalisedMigrated, true);
+  }
+
+  bool isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
 enum WorkSetProgression {
@@ -146,4 +209,10 @@ enum WorkSetProgression {
 
   final String value;
   const WorkSetProgression(this.value);
+}
+
+class WorkoutEntryMap {
+  TrackEntry entry;
+  Workout workout;
+  WorkoutEntryMap({required this.entry, required this.workout});
 }
