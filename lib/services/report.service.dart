@@ -194,11 +194,12 @@ class ReportService {
               routineEntityLastUpdatedAt,
             ))) {
       print("started ${routine.name} context");
-
+      final modelName = await _aiService.getSelectedModel();
       var resp = await _aiService.getResponse(
         routineSummary,
         "Summaries this routine and draw out important observation",
         modelType: Models.Pro,
+        modelName: modelName
       );
       print("finished ${routine.name} context");
 
