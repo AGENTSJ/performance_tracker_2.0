@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/repositories/report.repository.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
@@ -20,6 +21,7 @@ class ReportService {
   final _healthService = locator<HealthService>();
   final _aiService = locator<AiService>();
   final _routineService = locator<RoutineService>();
+  final _workoutService = locator<WorkoutService>();
   ReportService();
 
   Future<void> createReport(Report report) async {
@@ -120,6 +122,8 @@ class ReportService {
     buffer.writeln();
 
     buffer.write(_buildSetMatrix(workout, enabledSets, summaryFromDate));
+    buffer.writeln("Performance Analysis For Each Set");
+    buffer.write(_buildProgressionTable(workout, enabledSets,));
     if (workout.desc.trim().isNotEmpty) {
       buffer.writeln(
         "**User journal while doing the workout:** ${workout.desc}",
@@ -199,7 +203,7 @@ class ReportService {
         routineSummary,
         "Summaries this routine and draw out important observation",
         modelType: Models.Pro,
-        modelName: modelName
+        modelName: modelName,
       );
       print("finished ${routine.name} context");
 
@@ -278,6 +282,24 @@ class ReportService {
     }
     buffer.writeln();
 
+    return buffer.toString();
+  }
+
+  String _buildProgressionTable(Workout workout, List<WorkSet> enabledSets) {
+    final buffer = StringBuffer();
+
+    buffer.writeln("| Weight | Trend |");
+    buffer.writeln("| --- | --- |");
+
+    for (final set in enabledSets) {
+      final progression = _workoutService.getWorkSetProgression(
+        workout,
+        set.history,
+      );
+
+      buffer.writeln("| ${set.value}kg | ${progression.name} |");
+    }
+    buffer.writeln();
     return buffer.toString();
   }
 }

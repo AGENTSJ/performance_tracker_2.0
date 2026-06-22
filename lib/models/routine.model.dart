@@ -82,6 +82,7 @@ class Workout extends HiveObject {
         )
         .toList(),
   );
+  
   // Returns reps that is assumed to be capable by user if previously no workout have been done
   double getFatigueAdjustedReps(double fatigue , int reps)
   {
