@@ -56,7 +56,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
     double calorieChangePercentage;
     switch (mode) {
       case JourneyMode.cut:
-        calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.calorieLimit)*100;
+        calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.caloricChangeGoal)*100;
         break;
       case JourneyMode.bulk:
         calorieChangePercentage = calories.calories - maintenance;
@@ -95,14 +95,14 @@ class _JourneyGraphState extends State<JourneyGraph> {
               toY: data.stepGraphValue ,
               width: 8.w,
               color: PRIMARY,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(2),
             ),
             /// Calories (Deficit / Surplus)
             BarChartRodData(
               toY: data.calorieGraphValue,
               width: 8.w,
               color: CALORIE_COLOR,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(2),
             ),
           ],
         ),
@@ -222,16 +222,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
                   },
                 ),
               ),
-            ),
-            extraLinesData:ExtraLinesData(
-              horizontalLines: [
-                HorizontalLine(
-                  y: 100,
-                  color: TEXT_TERTIARY,
-                  strokeWidth: 1,
-                ),
-              ]
-            ) 
+            )
           ),
         ),
       ),
