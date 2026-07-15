@@ -7,6 +7,7 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/addVolumeDialog.dart';
 import 'package:performance_tracker/src/features/Workout/widgets/progressChart.dart';
 import 'package:performance_tracker/src/features/Workout/widgets/setDetails.component.dart';
 
@@ -26,15 +27,12 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
   var workoutService = locator<WorkoutService>();
   var workNameController = TextEditingController();
   var workDescriptionController = TextEditingController();
-  var progressChartScrollController = ScrollController();
   List<WorkSet> enabledSets = [];
   bool isEditModeOn = false;
   bool isNameEdit = false;
   Workout? workout;
   WorkSet? selectedSetForProgress;
-  double graphWidth = 25;
-  double widthPerPoint = 25;
-  // bool
+  bool adjustFatigue = false;
   @override
   void initState() {
     super.initState();
@@ -46,7 +44,6 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     workDescriptionController.text = widget.workout.desc;
     if (widget.workout.sets.isNotEmpty) {
       selectedSetForProgress = widget.workout.sets[0];
-      setGraphHeight();
     }
     workDescriptionController.addListener(() {
       if (!isEditModeOn) {
@@ -73,143 +70,20 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     }
   }
 
-  setGraphHeight() {
-    graphWidth = widthPerPoint * selectedSetForProgress!.history.length;
-    try {
-      Future.delayed(Duration(seconds: 2), () {
-        if (progressChartScrollController.hasClients) {
-          progressChartScrollController.animateTo(
-            progressChartScrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 400),
-            curve: Curves.bounceIn,
-          );
-        }
-      });
-    } catch (e) {}
-  }
-
   handleAddVolume() async {
-    var vol = await showDialog<WorkoutVolume>(
-      barrierColor: const Color.fromARGB(87, 90, 90, 90),
+    final vol = await showDialog<WorkoutVolume>(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
-        final volController = TextEditingController();
-        String? selectedMuscle = TRAINABLE_MUSCLES[0];
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              backgroundColor: SURFACE2,
-              title: Text('Add volume',style: TextStyle(color: TEXT_PRIMARY),),
-              content: Row(
-                children: [
-                  Expanded(
-                    child: DropdownButton2<String>(
-                      isExpanded: true,
-                      isDense: true,
-                      value: selectedMuscle,
-                      hint: Text('Select an option',style: TextStyle(color: TEXT_PRIMARY),),
-                      items: TRAINABLE_MUSCLES.map((String muscle) {
-                        return DropdownMenuItem<String>(
-                          value: muscle,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(muscle, style: TextStyle(fontSize: 14,color: TEXT_PRIMARY)),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedMuscle = newValue;
-                        });
-                      },
-                      buttonStyleData: ButtonStyleData(
-                        height: 50.h,
-                        width: 100.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4.r),
-                          border: Border.all(color: BORDER_PRIMARY),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        padding: EdgeInsets.zero,
-                        width: 100.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.r),
-                          color: SURFACE2,
-                        ),
-                      ),
-                      underline: Container(
-                        height: 1,
-                        color: Colors.transparent,
-                      ),
-                      menuItemStyleData: MenuItemStyleData(
-                        height: 40.h,
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: BORDER_PRIMARY),
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 3.0.r,
-                          horizontal: 3.0.r,
-                        ),
-                        child: TextField(
-                          controller: volController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'e.g. 1',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 10.h,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final vol = WorkoutVolume(
-                      muscleName: selectedMuscle ?? '',
-                      volume: double.tryParse(volController.text) ?? 0,
-                    );
-                    Navigator.of(context).pop(vol);
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-            );
-          },
-        );
-      },
+      barrierColor: const Color.fromARGB(87, 90, 90, 90),
+      builder: (_) => const AddVolumeDialog(),
     );
 
-    if (vol != null) {
-      widget.workout.volumes.add(vol);
-    }
+    if (vol == null) return;
+
+    widget.workout.volumes.add(vol);
+
     await workoutService.updateWorkout(widget.workout);
+
     refreshState();
   }
 
@@ -300,7 +174,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Volume
                 Container(
                   decoration: BoxDecoration(
-                    color: SURFACE,
+                    color: SURFACE2,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
@@ -371,7 +245,9 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                       Expanded(
                                         child: Container(
                                           child: Center(
-                                            child: Text(vol.volume.toStringAsFixed(1)),
+                                            child: Text(
+                                              vol.volume.toStringAsFixed(1),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -419,10 +295,11 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Notes
                 Container(
                   decoration: BoxDecoration(
-                    color: SURFACE,
+                    color: SURFACE2,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         height: 50.h,
@@ -473,75 +350,144 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                 // Progress
                 Container(
                   decoration: BoxDecoration(
-                    color: SURFACE,
+                    color: SURFACE2,
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(color: BORDER_SECONDARY),
                           ),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
-                        height: 50.h,
+                        // height: 60.h,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            vertical: 4.0.r,
+                            vertical: 12.0.r,
                             horizontal: 12.r,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Progress",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15.sp,
-                                  color: TEXT_PRIMARY
-                                ),
-                              ),
-                              if (selectedSetForProgress != null)
-                                Text(
-                                  "Max : ${selectedSetForProgress!.pr}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15.sp,
-                                  ),
-                                ),
-
                               Row(
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  if (widget.workout.sets.isNotEmpty)
-                                    SizedBox(
-                                      width: 100.w,
-                                      height: 50.h,
+                                  Text(
+                                    "Progress",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15.sp,
+                                      color: TEXT_PRIMARY,
+                                    ),
+                                  ),
+                                  if (selectedSetForProgress != null) ...[
+                                    SizedBox(width: 8.w),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w,
+                                        vertical: 3.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: PRIMARY.withValues(alpha: 0.10),
+                                        borderRadius: BorderRadius.circular(
+                                          6.r,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "Max ${selectedSetForProgress!.pr}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12.sp,
+                                          color: PRIMARY,
+                                        ),
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () => setState(() {
+                                        adjustFatigue = !adjustFatigue;
+                                      }),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w,
+                                          vertical: 6.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: adjustFatigue
+                                              ? PRIMARY.withValues(alpha: 0.12)
+                                              : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            20.r,
+                                          ),
+                                          border: Border.all(
+                                            color: adjustFatigue
+                                                ? PRIMARY
+                                                : BORDER_PRIMARY,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              FontAwesomeIcons.fireFlameCurved,
+                                              size: 11.sp,
+                                              color: adjustFatigue
+                                                  ? PRIMARY
+                                                  : TEXT_SECONDARY,
+                                            ),
+                                            SizedBox(width: 6.w),
+                                            Text(
+                                              "Adjust Fatigue",
+                                              style: TextStyle(
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: adjustFatigue
+                                                    ? PRIMARY
+                                                    : TEXT_SECONDARY,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              if (selectedSetForProgress != null) ...[
+                                SizedBox(height: 5.h),
+                                Row(
+                                  children: [
+                                    Expanded(
                                       child: DropdownButton2<WorkSet>(
                                         isExpanded: true,
                                         isDense: true,
                                         value: selectedSetForProgress,
-                                        hint: Text('Select an option'),
+                                        hint: Text(
+                                          'Select a set',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: TEXT_SECONDARY,
+                                          ),
+                                        ),
                                         items: widget.workout.sets.map((
                                           WorkSet workSet,
                                         ) {
                                           return DropdownMenuItem<WorkSet>(
                                             value: workSet,
-                                            child: Container(
-                                              padding: EdgeInsets.zero,
-                                              decoration: BoxDecoration(),
-                                              alignment: Alignment.centerLeft,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(
-                                                  8.0,
-                                                ),
-                                                child: Text(
-                                                  workSet.value.toString(),
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: TEXT_PRIMARY
-                                                  ),
-                                                ),
+                                            child: Text(
+                                              workSet.value.toString(),
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: TEXT_PRIMARY,
                                               ),
                                             ),
                                           );
@@ -549,121 +495,109 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                         onChanged: (WorkSet? newValue) {
                                           setState(() {
                                             selectedSetForProgress = newValue;
-                                            setGraphHeight();
                                           });
                                         },
                                         buttonStyleData: ButtonStyleData(
-                                          height: 50.h,
-                                          width: 100.w,
+                                          height: 30.h,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 5.w,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: SURFACE,
                                             borderRadius: BorderRadius.circular(
-                                              8,
+                                              8.r,
+                                            ),
+                                            border: Border.all(
+                                              color: BORDER_PRIMARY,
+                                              width: 1,
                                             ),
                                           ),
                                         ),
+                                        iconStyleData: IconStyleData(
+                                          icon: Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                            color: TEXT_SECONDARY,
+                                          ),
+                                          iconSize: 20.w,
+                                        ),
                                         dropdownStyleData: DropdownStyleData(
                                           padding: EdgeInsets.zero,
-                                          width: 100.h,
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(
                                               8.r,
                                             ),
                                             color: SURFACE2,
+                                            border: Border.all(
+                                              color: BORDER_PRIMARY,
+                                              width: 1,
+                                            ),
                                           ),
                                         ),
-                                        underline: Container(
-                                          height: 1,
-                                          color: Colors.transparent,
-                                        ),
+                                        underline: const SizedBox.shrink(),
                                         menuItemStyleData: MenuItemStyleData(
-                                          height: 40.h,
-                                          padding: EdgeInsets.zero,
+                                          height: 42.h,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         ),
                       ),
+                      
                       if (selectedSetForProgress != null &&
                           selectedSetForProgress!.history.isNotEmpty) ...[
-                        Row(
-                          children: [
-                            RotatedBox(
-                              quarterTurns: 3,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Reps",
-                                      style: TextStyle(
-                                        color: TEXT_SECONDARY,
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.w),
-                                    Icon(
-                                      FontAwesomeIcons.arrowRight,
-                                      size: 12.sp,
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(8.w, 18.h, 16.w, 6.h),
+                          child: SizedBox(
+                            height: 220.h,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                RotatedBox(
+                                  quarterTurns: 3,
+                                  child: Text(
+                                    "Reps",
+                                    style: TextStyle(
                                       color: TEXT_SECONDARY,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                controller: progressChartScrollController,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    minHeight: 200.h,
-                                    maxHeight: 200.h,
-                                  ),
-                                  width: graphWidth.w,
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: ProgressChart(
-                                            set: selectedSetForProgress!,
-                                            key: ValueKey(
-                                              selectedSetForProgress!.value,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
-                              ),
+                                SizedBox(width: 4.w),
+                                Expanded(
+                                  child: ProgressChart(
+                                    isFatigueAdjusted: adjustFatigue,
+                                    set: selectedSetForProgress!,
+                                    workout: widget.workout,
+                                    key: ValueKey(
+                                      "${selectedSetForProgress!.value}-$adjustFatigue",
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 14.h),
+                          child: Center(
+                            child: Text(
                               "Attempts",
                               style: TextStyle(
                                 color: TEXT_SECONDARY,
-                                fontSize: 12.sp,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(width: 10.w),
-                            Icon(
-                              FontAwesomeIcons.arrowRight,
-                              size: 12.sp,
-                              color: TEXT_SECONDARY,
-                            ),
-                          ],
+                          ),
                         ),
-                        SizedBox(height: 10.h),
                       ] else ...[
                         SizedBox(height: 200.h, width: 200.w, child: empty),
                         Row(

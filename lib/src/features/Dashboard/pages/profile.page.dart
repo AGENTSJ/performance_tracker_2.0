@@ -13,10 +13,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/user.service.data.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/components/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/AiMangement.page.dart';
+import 'package:performance_tracker/src/features/Dashboard/pages/journeyManagement.page.dart';
+import 'package:performance_tracker/src/features/Nutrition/pages/foodManagement.page.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/darkModeToggle.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 
@@ -31,6 +34,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   final userService = locator<UserService>();
   final avatarService = locator<AvatarService>();
   final dataservice = locator<DataService>();
+  final _workoutService = locator<WorkoutService>();
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final genderController = TextEditingController();
@@ -42,11 +46,14 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
   User? user;
   bool isLoaded = false;
   bool isExporting = false;
+  bool isMigrated = false;
+  bool isMigrating = false;
   _ProfilePageModuleState() {
     setUpProfilePageUi();
   }
   setUpProfilePageUi() async {
     user = await userService.getUserData();
+    isMigrated = await _workoutService.isRepNormalisedMigrated();
     ignoreChanges = true;
     nameController.text = user!.name;
     ageController.text = user!.age.toString();
@@ -428,12 +435,137 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                       ),
                     ),
                     SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: SURFACE2,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0.r),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Food Management",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE2,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(8.r),
+                                        side: BorderSide(color: PRIMARY),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FoodManagementPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text("Manage foods"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: SURFACE2,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0.r),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Journey Management",
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: SURFACE2,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(8.r),
+                                        side: BorderSide(color: PRIMARY),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              JourneyManagementPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text("Manage journeys"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    if (!isMigrated)
+                      TextButton(
+                        onPressed: isMigrating ? null : _handleMigrate,
+                        child: Text(isMigrating ? "Migrating..." : "Migrate"),
+                      ),
+                    SizedBox(height: 20.h),
+
                     DarkModeToggle(),
                   ],
                 ),
               ),
             ),
     );
+  }
+
+  _handleMigrate() async {
+    if (isMigrating) return;
+    setState(() => isMigrating = true);
+    try {
+      await _workoutService.repNormalisedMigration();
+      isMigrated = await _workoutService.isRepNormalisedMigrated();
+      Fluttertoast.showToast(msg: "Migration complete");
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error has occur");
+    } finally {
+      if (mounted) setState(() => isMigrating = false);
+    }
   }
 
   handleExport() async {

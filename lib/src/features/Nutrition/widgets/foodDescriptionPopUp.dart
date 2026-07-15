@@ -1,124 +1,400 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/src/components/model_picker.dialog.dart';
 import 'package:performance_tracker/src/features/Nutrition/pages/foodEntry.page.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class FoodDescriptionPopUp extends StatefulWidget {
-  final String foodName;
-  const FoodDescriptionPopUp({super.key, required this.foodName});
+  final String? initialName;
+  const FoodDescriptionPopUp({super.key, this.initialName});
   @override
   State<StatefulWidget> createState() => _FoodDescriptionPopupState();
 }
 
 class _FoodDescriptionPopupState extends State<FoodDescriptionPopUp> {
+  late final TextEditingController nameController = TextEditingController(
+    text: widget.initialName ?? '',
+  );
   late final TextEditingController descriptionController =
       TextEditingController();
   var foodService = locator<FoodService>();
-  bool isGenerating = false;
+  var aiService = locator<AiService>();
+  String? _selectedModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedModel();
+  }
+
+  Future<void> _loadSelectedModel() async {
+    var model = await aiService.getSelectedModel();
+    if (mounted) setState(() => _selectedModel = model);
+  }
+
+  String _modelLabel() =>
+      (_selectedModel ?? AiService.defaultModel).replaceFirst('models/', '');
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: CONT_BACKGROUND,
-      actionsPadding: EdgeInsets.all(5),
-      titlePadding: EdgeInsets.only(left: 15, top: 16, right: 15, bottom: 0),
-      contentPadding: EdgeInsets.all(15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.circular(8),
-      ),
-      title: Text(widget.foodName,style: TextStyle(color: TEXT_PRIMARY),),
-      content: isGenerating
-          ? Container(
-              height: 150,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SpinKitSpinningLines(color: PRIMARY, size: 50),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(
-                      "Master chef is cooking ✨✨",
-                      style: TextStyle(fontSize: 14, height: 2),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : SizedBox(
-              height: 150,
-              width: double.infinity,
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadiusGeometry.circular(8),
-                    color: SURFACE,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: descriptionController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter a description for ${widget.foodName}',
-                        border: InputBorder.none,
-                      ),
-                      maxLines: 6,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-      actions: [
-        if (!isGenerating) ...[
-          TextButton(
-            onPressed: () {
-              generateFood();
-            },
-            child: Text('Add'),
+    return ValueListenableBuilder<AiFoodGenState>(
+      valueListenable: foodService.aiFoodGenNotifier,
+      builder: (context, state, _) {
+        return AlertDialog(
+          backgroundColor: CONT_BACKGROUND,
+          actionsPadding: EdgeInsets.fromLTRB(12, 0, 12, 8),
+          titlePadding: EdgeInsets.fromLTRB(20, 18, 20, 0),
+          contentPadding: EdgeInsets.fromLTRB(20, 14, 20, 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Back'),
-          ),
-        ],
-      ],
+          title: _buildTitle(state),
+          content: _buildContent(state),
+          actions: _buildActions(state),
+        );
+      },
     );
   }
 
-  generateFood() async {
-    setState(() {
-      isGenerating = true;
-    });
-    var food = await foodService.AI_CreateFood(
-      widget.foodName,
-      descriptionController.text,
-    );
-    setState(() {
-      isGenerating = false;
-    });
-
-    if (food != null) {
-      var returnedFood = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FoodEntryPage(food: food, isCreateMode: true),
-        ),
-      );
-      Navigator.of(context).pop(returnedFood);
-    } else {
-      Fluttertoast.showToast(
-        msg: "Mysterious food indeed !!, Try again.",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.TOP,
-        backgroundColor: CONT_BACKGROUND,
-        textColor: TEXT_PRIMARY,
-        webBgColor: "white",
+  Widget _buildTitle(AiFoodGenState state) {
+    if (state.status == AiFoodGenStatus.idle) {
+      return Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: PRIMARY.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.auto_awesome, color: PRIMARY, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Create with AI',
+                  style: TextStyle(
+                    color: TEXT_PRIMARY,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  'Generate nutrition for any food',
+                  style: TextStyle(color: TEXT_SECONDARY, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     }
+    return Text(
+      state.foodName ?? 'Create with AI',
+      style: TextStyle(
+        color: TEXT_PRIMARY,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
+  Widget _buildContent(AiFoodGenState state) {
+    switch (state.status) {
+      case AiFoodGenStatus.generating:
+        return _thinkingView(state.progressText);
+      case AiFoodGenStatus.ready:
+        return _statusMessage(
+          icon: Icon(Icons.restaurant_menu, color: PRIMARY, size: 44),
+          message: "Your food is ready ✨\nTap continue to review it.",
+        );
+      case AiFoodGenStatus.error:
+        return _statusMessage(
+          icon: Icon(Icons.error_outline, color: ACCENT, size: 44),
+          message: "Mysterious food indeed !!\nTry again.",
+        );
+      case AiFoodGenStatus.idle:
+        return SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _fieldLabel('Food name'),
+              const SizedBox(height: 6),
+              _boxed(
+                child: TextField(
+                  controller: nameController,
+                  onChanged: (_) => setState(() {}),
+                  textCapitalization: TextCapitalization.words,
+                  style: TextStyle(color: TEXT_PRIMARY, fontSize: 14),
+                  decoration: _hint('e.g. Grilled chicken breast'),
+                ),
+              ),
+              const SizedBox(height: 14),
+              _fieldLabel('Description (optional)'),
+              const SizedBox(height: 6),
+              _boxed(
+                child: TextField(
+                  controller: descriptionController,
+                  maxLines: 4,
+                  style: TextStyle(color: TEXT_PRIMARY, fontSize: 14),
+                  decoration: _hint(
+                    'Cooking method, brand, portion hints...',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              _modelRow(),
+            ],
+          ),
+        );
+    }
+  }
+
+  Widget _thinkingView(String progress) {
+    return SizedBox(
+      width: double.infinity,
+      height: 200,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SpinKitThreeBounce(color: PRIMARY, size: 16),
+              const SizedBox(width: 10),
+              Text(
+                'Thinking…',
+                style: TextStyle(
+                  color: TEXT_PRIMARY,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: SURFACE,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: BORDER_PRIMARY),
+              ),
+              child: progress.isEmpty
+                  ? Text(
+                      'Warming up the kitchen ✨',
+                      style: TextStyle(color: TEXT_TERTIARY, fontSize: 12),
+                    )
+                  : SingleChildScrollView(
+                      reverse: true,
+                      child: Text(
+                        progress,
+                        style: TextStyle(
+                          color: TEXT_SECONDARY,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fieldLabel(String text) => Text(
+    text,
+    style: TextStyle(
+      color: TEXT_SECONDARY,
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+    ),
+  );
+
+  InputDecoration _hint(String hint) => InputDecoration(
+    hintText: hint,
+    hintStyle: TextStyle(color: TEXT_TERTIARY, fontSize: 13),
+    border: InputBorder.none,
+    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+  );
+
+  Widget _boxed({required Widget child}) => Container(
+    decoration: BoxDecoration(
+      color: SURFACE,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: BORDER_PRIMARY),
+    ),
+    child: child,
+  );
+
+  Widget _modelRow() => Container(
+    padding: const EdgeInsets.only(left: 12),
+    decoration: BoxDecoration(
+      color: SURFACE,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: BORDER_PRIMARY),
+    ),
+    child: Row(
+      children: [
+        Icon(Icons.memory, size: 15, color: TEXT_SECONDARY),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            _modelLabel(),
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: TEXT_PRIMARY, fontSize: 12),
+          ),
+        ),
+        TextButton(
+          onPressed: _changeModel,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 5),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            foregroundColor: PRIMARY,
+          ),
+          child: const Text('Change', style: TextStyle(fontSize: 12)),
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _changeModel() async {
+    var selected = await showDialog<String>(
+      context: context,
+      builder: (context) => ModelPickerDialog(currentModel: _selectedModel),
+    );
+    if (selected != null) {
+      await aiService.setSelectedModel(selected);
+      if (mounted) setState(() => _selectedModel = selected);
+    }
+  }
+
+  Widget _statusMessage({required Widget icon, required String message}) {
+    return SizedBox(
+      height: 160,
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          icon,
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, height: 1.6, color: TEXT_PRIMARY),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildActions(AiFoodGenState state) {
+    switch (state.status) {
+      case AiFoodGenStatus.generating:
+        // Close hides the modal but generation keeps running in the service;
+        // Stop aborts the request (closes the connection) and resets the form.
+        return [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: foodService.cancelFoodGeneration,
+            style: TextButton.styleFrom(foregroundColor: ACCENT),
+            child: const Text('Stop'),
+          ),
+        ];
+      case AiFoodGenStatus.ready:
+        return [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Back'),
+          ),
+          ElevatedButton(
+            onPressed: openGeneratedFood,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PRIMARY,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Continue'),
+          ),
+        ];
+      case AiFoodGenStatus.error:
+        return [
+          TextButton(
+            onPressed: () {
+              foodService.resetFoodGeneration();
+            },
+            child: const Text('Edit'),
+          ),
+          ElevatedButton(
+            onPressed: () => foodService.startFoodGeneration(
+              state.foodName ?? nameController.text.trim(),
+              descriptionController.text,
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PRIMARY,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Retry'),
+          ),
+        ];
+      case AiFoodGenStatus.idle:
+        final canSubmit = nameController.text.trim().isNotEmpty;
+        return [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: canSubmit
+                ? () => foodService.startFoodGeneration(
+                    nameController.text.trim(),
+                    descriptionController.text,
+                  )
+                : null,
+            icon: const Icon(Icons.auto_awesome, size: 16),
+            label: const Text('Generate'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PRIMARY,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ];
+    }
+  }
+
+  openGeneratedFood() async {
+    var food = foodService.consumeGeneratedFood();
+    if (food == null) return;
+    var returnedFood = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FoodEntryPage(food: food, isCreateMode: true),
+      ),
+    );
+    if (!mounted) return;
+    Navigator.of(context).pop(returnedFood);
   }
 }

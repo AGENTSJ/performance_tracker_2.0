@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/models/day.model.dart';
@@ -288,7 +289,9 @@ Future<void> saveJsonToFile(Map<String, dynamic> data, String fileName) async {
 
   // Convert Map to JSON string
   String jsonString = jsonEncode(data);
-  String? directoryPath = await FilePicker.platform.getDirectoryPath();
+   final directory = await getApplicationDocumentsDirectory();
+
+  String? directoryPath = directory.path;
 
   if (directoryPath == null) {
     return;

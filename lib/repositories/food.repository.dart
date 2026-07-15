@@ -16,7 +16,14 @@ class FoodRepository
   {
     foodBox.add(food);
   }
-
+  removeFood(Food food) async
+  {
+    // Food isn't a HiveObject, so delete by key rather than .delete().
+    final keysToDelete = foodBox.keys
+        .where((key) => foodBox.get(key)?.name == food.name)
+        .toList();
+    await foodBox.deleteAll(keysToDelete);
+  }
   List<Food> searchFoodByName(String name)
   {
     List<Food> allFoods = foodBox.values.toList();

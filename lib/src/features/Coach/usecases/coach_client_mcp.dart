@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
@@ -9,10 +10,49 @@ import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.d
 import 'package:performance_tracker/src/features/Coach/models/coach_server_dto.dart';
 import 'package:performance_tracker/src/features/Coach/usecases/coach_server.mcp.dart';
 
+/// Live progress of a coach "act" (advice application). Held in the
+/// [CoachClientMcp] singleton so it survives navigation away from the coach
+/// page and can be observed by any widget.
+class CoachActProgress {
+  /// Whether an act is currently running.
+  final bool isActing;
+  /// Cumulative thinking/answer text streamed from the model.
+  final String thinking;
+  /// The advice text being applied (used to match the originating chat bubble).
+  final String adviceDesc;
+  const CoachActProgress({
+    required this.isActing,
+    this.thinking = '',
+    this.adviceDesc = '',
+  });
+  const CoachActProgress.idle()
+      : isActing = false,
+        thinking = '',
+        adviceDesc = '';
+
+  CoachActProgress copyWith({
+    bool? isActing,
+    String? thinking,
+    String? adviceDesc,
+  }) => CoachActProgress(
+        isActing: isActing ?? this.isActing,
+        thinking: thinking ?? this.thinking,
+        adviceDesc: adviceDesc ?? this.adviceDesc,
+      );
+}
+
 class CoachClientMcp {
   final aiService = locator<AiService>();
   final coachServer = locator<CoachServerMcp>();
   bool adviceClientPipeIsActive = false;
+
+  /// Observable, centralised state of the in-flight act. Survives navigation
+  /// because [CoachClientMcp] is a singleton.
+  final ValueNotifier<CoachActProgress> actProgress =
+      ValueNotifier(const CoachActProgress.idle());
+  CancelToken? _actCancelToken;
+
+  bool get isActing => actProgress.value.isActing;
   final stringServerToolDesc = '''
   You are a client who are going to produce an payload your payload structure would look like
   {
@@ -117,6 +157,9 @@ class CoachClientMcp {
       );
       return;
     }
+    adviceClientPipeIsActive = true;
+    _actCancelToken = CancelToken();
+    actProgress.value = CoachActProgress(isActing: true, adviceDesc: desc);
     try {
       String knowledge = await coachServer.getKnowledgeBase();
       AiChatContent payload = AiChatContent(
@@ -136,7 +179,28 @@ class CoachClientMcp {
           ),
         ],
       );
-      var response = await aiService.getResponse2(payload);
+      // Stream so the coach page can show live thinking, using the dedicated
+      // act model so it can be configured independently of the chat model.
+      var actModel = await aiService.getSelectedActModel();
+      var response = await aiService.getResponseStream2(
+        payload,
+        modelName: actModel,
+        cancelToken: _actCancelToken,
+        onProgress: (thoughts, answer) {
+          actProgress.value = actProgress.value.copyWith(
+            thinking: thoughts.isNotEmpty ? thoughts : answer,
+          );
+        },
+      );
+      if (!response.success) {
+        // A user-initiated cancel is silent; anything else is a real error.
+        if (_actCancelToken?.isCancelled != true) {
+          Fluttertoast.showToast(msg: "An error has occur");
+        }
+        return;
+      }
+      actProgress.value =
+          actProgress.value.copyWith(thinking: "Applying changes…");
       var data = aiService.removeJsonAnnotation(response.message);
       var json = jsonDecode(data);
       var actionList = json["actions"];
@@ -145,11 +209,19 @@ class CoachClientMcp {
         var actionObj = ServerProtocolDTO.fromJson(action);
         await act(actionObj);
       }
+      Fluttertoast.showToast(msg: "Advice has been taken");
     } catch (e) {
-      rethrow;
+      Fluttertoast.showToast(msg: "An error has occur");
     } finally {
       adviceClientPipeIsActive = false;
+      _actCancelToken = null;
+      actProgress.value = const CoachActProgress.idle();
     }
+  }
+
+  /// Aborts the in-flight act (if any). The streamed request is torn down.
+  void cancelAct() {
+    _actCancelToken?.cancel();
   }
 
   Future<dynamic> act(ServerProtocolDTO received) async {

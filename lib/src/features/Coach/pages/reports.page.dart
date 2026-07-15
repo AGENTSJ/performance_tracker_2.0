@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:markdown_widget/config/configs.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
@@ -19,6 +20,19 @@ class _ReportsPageState extends State<ReportsPage> {
   final commonService = locator<CommonService>();
   var selectedType = EntityType.workout;
   List<Report> reports = [];
+
+  // Dark theme to match the app, with wide tables (e.g. the fatigue matrix)
+  // made horizontally scrollable so they never overflow the card.
+  final markdownConfig = MarkdownConfig.darkConfig.copy(
+    configs: [
+      TableConfig(
+        wrapper: (table) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: table,
+        ),
+      ),
+    ],
+  );
   ButtonStyle navButtonStyle = TextButton.styleFrom(
     shape: BeveledRectangleBorder(
       borderRadius: BorderRadiusGeometry.circular(0),
@@ -255,6 +269,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                   child: MarkdownWidget(
                                     data: report.reportData,
                                     shrinkWrap: true,
+                                    config: markdownConfig,
                                   ),
                                 ),
                               ],

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/advice.model.dart';
 import 'package:performance_tracker/repositories/conversation.respository.dart';
@@ -12,6 +14,39 @@ import 'package:performance_tracker/services/user.service.data.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
+
+/// Live progress of an in-flight coach chat reply. Held in the
+/// [TrainerAgentService] singleton (in memory, not persisted) so a response
+/// keeps streaming even when the user navigates away from the coach page, and
+/// is restored when they return.
+class CoachChatProgress {
+  /// Whether the coach is currently producing a reply.
+  final bool isResponding;
+  /// Cumulative thinking/answer text streamed from the model so far.
+  final String thinking;
+  /// The user message being answered; shown as a transient bubble until the
+  /// exchange is committed to the conversation history.
+  final String pendingUserMessage;
+  const CoachChatProgress({
+    required this.isResponding,
+    this.thinking = '',
+    this.pendingUserMessage = '',
+  });
+  const CoachChatProgress.idle()
+      : isResponding = false,
+        thinking = '',
+        pendingUserMessage = '';
+
+  CoachChatProgress copyWith({
+    bool? isResponding,
+    String? thinking,
+    String? pendingUserMessage,
+  }) => CoachChatProgress(
+        isResponding: isResponding ?? this.isResponding,
+        thinking: thinking ?? this.thinking,
+        pendingUserMessage: pendingUserMessage ?? this.pendingUserMessage,
+      );
+}
 
 class TrainerAgentService {
   final _aiService = locator<AiService>();
@@ -28,6 +63,13 @@ class TrainerAgentService {
   StreamController<AiResponse>? get chatStreamExternal => _chatStreamExternal;
   bool get streamPipeLineActive => _streamPipeLineActive;
   String chatRespData = "";
+
+  /// Observable, centralised state of the in-flight chat reply. Survives
+  /// navigation because [TrainerAgentService] is a singleton.
+  final ValueNotifier<CoachChatProgress> chatProgress =
+      ValueNotifier(const CoachChatProgress.idle());
+  CancelToken? _chatCancelToken;
+  bool get isResponding => chatProgress.value.isResponding;
 
   Future<String> getPerformanceContext(DateTime? summaryFromDate) async {
     var routines = _routineService.getAllCustomRoutines();
@@ -178,6 +220,84 @@ class TrainerAgentService {
       eventStream: null,
       advices: [],
     );
+  }
+
+  /// Streaming chat reply whose progress is centralised in [chatProgress] so it
+  /// survives the user leaving and returning to the coach page. Fire-and-forget:
+  /// the UI observes [chatProgress] rather than awaiting the result. Uses the
+  /// user-selected Gemini model. The user message and the reply are only
+  /// committed to the conversation history once the reply succeeds, so an
+  /// aborted/failed reply leaves no dangling user message on disk (and no
+  /// duplicate bubble when the page is rebuilt mid-flight).
+  Future<void> sendCoachMessage(String message) async {
+    if (isResponding) return;
+    _chatCancelToken = CancelToken();
+    chatProgress.value =
+        CoachChatProgress(isResponding: true, pendingUserMessage: message);
+    try {
+      var old = await getOlderChat();
+      final userSegment = AiChatSegment(
+        role: ChatRoles.user,
+        parts: [ChatPart(text: message)],
+      );
+      // Build the request history without mutating the persisted conversation.
+      final history = [...old.contents, userSegment];
+      String workoutContext = await getPerformanceContext(null);
+      String advContext = await getAdviceContext();
+      String journeyContext = await getJourneyContext();
+      Report nutritionNdBodyContext = await _reportService.getNutritionReport();
+      AiChatContent content = AiChatContent(
+        system_instruction: AiChatSegment(
+          role: null,
+          parts: [
+            ChatPart(
+              text:
+                  '''Your role is of an Training coach\nplatform provides\n\t1 calorie tracking\n\t2 workout creation and progress tracking reps and sets\n\t3 activity tracking\nYour context\n\t1 Workout Context : $workoutContext\n\t2 Physique & Nutrition Context : $nutritionNdBodyContext\n\t3 Journey context : $journeyContext\n\t3 Advice context : $advContext\nYou have 2 modes\n\t1 Advice mode\n\t\tin this mode you are taking big responsibility you must carefully take in all information form user and provide Quantitative advices,\n\t\tas this is a fitness platform your advices such be such , and the platform must support these advices ,DO NOT GIVE advices for the sake of giving advice,\n\t\tsince these advices determine users progress , at the same time due to the known fact that every person is unique you should try experiments with user on the basis of training , nutrition in a way that the platform supports it , and hence some times you can find advices to be not effective and hence you should also advice user to update the status of advice and u cannot do that on ur own u should advice, when you respond in advice mode make sure you include 'Here is your advice' then proceed with precise and well directed quantitative advices for an example 'lets add x more volume to chest training ' or 'lets reduce x volume from chest training' this is an example direct user based on what you think the best advice would be make sure u give only advices and no jargons of sugar coating in advice response\n\t2 Normal mode\n\t\tyou chat with user and know user more and be coach also a good supportive person\nNote the above is not part of the chat that u are going to have with user this is for you to keep in mind''',
+            ),
+          ],
+        ),
+        contents: history,
+      );
+      var selectedModel = await _aiService.getSelectedModel();
+      var response = await _aiService.getResponseStream2(
+        content,
+        modelName: selectedModel,
+        cancelToken: _chatCancelToken,
+        onProgress: (thoughts, answer) {
+          chatProgress.value = chatProgress.value.copyWith(
+            thinking: thoughts.isNotEmpty ? thoughts : answer,
+          );
+        },
+      );
+
+      if (!response.success) {
+        // A user-initiated cancel is silent; anything else is a real error.
+        if (_chatCancelToken?.isCancelled != true) {
+          Fluttertoast.showToast(msg: "An error has occur");
+        }
+        return;
+      }
+      // Commit the exchange now that we have a full reply.
+      old.contents.add(userSegment);
+      old.contents.add(
+        AiChatSegment(
+          role: ChatRoles.model,
+          parts: [ChatPart(text: response.message)],
+        ),
+      );
+      await _conversationRepo.updateConversation(old.key, old);
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error has occur");
+    } finally {
+      _chatCancelToken = null;
+      chatProgress.value = const CoachChatProgress.idle();
+    }
+  }
+
+  /// Aborts the in-flight chat reply (if any). The streamed request is torn down
+  /// and nothing is committed to history.
+  void cancelChat() {
+    _chatCancelToken?.cancel();
   }
 
   Future<ChatDTO?> chatWithCoach(String message) async {

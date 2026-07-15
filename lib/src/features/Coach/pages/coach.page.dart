@@ -6,12 +6,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/avatar.service.dart';
 import 'package:performance_tracker/services/trainer.agent.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/src/components/model_picker.dialog.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
-import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/pages/reports.page.dart';
+import 'package:performance_tracker/src/features/Coach/usecases/coach_client_mcp.dart';
 import 'package:performance_tracker/src/features/Coach/widgets/chat_bubble.dart';
 
 class CoachPage extends StatefulWidget {
@@ -24,19 +26,54 @@ class CoachPage extends StatefulWidget {
 class _CoachPageState extends State<CoachPage> {
   var trainerService = locator<TrainerAgentService>();
   var avatarService = locator<AvatarService>();
+  var aiService = locator<AiService>();
+  var coachClient = locator<CoachClientMcp>();
   var msgController = TextEditingController();
   var scrollController = ScrollController();
   Widget? coachIconImg;
   AiChatContent? olderChats;
   List<AiChatSegment> chats = [];
-  bool isTyping = false;
-  ChatDTO? latestChatDto;
   Timer? refreshTimer;
   bool isLoaded = false;
+  String? _selectedModel;
+  String? _selectedActModel;
+  // Tracks the previous responding state so we can detect when a reply just
+  // finished (and pull the committed exchange into the conversation window).
+  bool _wasResponding = false;
+
+  String _modelLabel() =>
+      (_selectedModel ?? AiService.defaultModel).replaceFirst('models/', '');
+
+  String _actModelLabel() =>
+      (_selectedActModel ?? AiService.defaultModel).replaceFirst('models/', '');
+
+  Future<void> _changeModel() async {
+    var selected = await showDialog<String>(
+      context: context,
+      builder: (context) => ModelPickerDialog(currentModel: _selectedModel),
+    );
+    if (selected != null) {
+      await aiService.setSelectedModel(selected);
+      if (mounted) setState(() => _selectedModel = selected);
+    }
+  }
+
+  Future<void> _changeActModel() async {
+    var selected = await showDialog<String>(
+      context: context,
+      builder: (context) => ModelPickerDialog(currentModel: _selectedActModel),
+    );
+    if (selected != null) {
+      await aiService.setSelectedActModel(selected);
+      if (mounted) setState(() => _selectedActModel = selected);
+    }
+  }
 
   setUpUi() async {
-    latestChatDto = null;
+    _wasResponding = trainerService.isResponding;
     coachIconImg = avatarService.getMaleAvatar();
+    _selectedModel = await aiService.getSelectedModel();
+    _selectedActModel = await aiService.getSelectedActModel();
     olderChats = await trainerService.getOlderChat();
     setUpConversationWindow();
     refreshState();
@@ -56,7 +93,38 @@ class _CoachPageState extends State<CoachPage> {
   @override
   void initState() {
     super.initState();
+    // Reflect the centralised act + chat progress (which keep running even
+    // while this page is gone) whenever they change.
+    coachClient.actProgress.addListener(_onActProgress);
+    trainerService.chatProgress.addListener(_onChatProgress);
     setUpUi();
+  }
+
+  @override
+  void dispose() {
+    coachClient.actProgress.removeListener(_onActProgress);
+    trainerService.chatProgress.removeListener(_onChatProgress);
+    refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onActProgress() => refreshState();
+
+  void _onChatProgress() {
+    final responding = trainerService.chatProgress.value.isResponding;
+    // Reply just finished: pull the committed exchange into the window.
+    if (_wasResponding && !responding) {
+      _reloadChats();
+    }
+    _wasResponding = responding;
+    controlledRefresh();
+  }
+
+  Future<void> _reloadChats() async {
+    olderChats = await trainerService.getOlderChat();
+    setUpConversationWindow();
+    refreshState();
+    Future.delayed(Duration(milliseconds: 100), scrollToEnd);
   }
 
   scrollToEnd() {
@@ -69,36 +137,23 @@ class _CoachPageState extends State<CoachPage> {
     }
   }
 
-  handleSendMessage() async {
-    if (isTyping || msgController.text.isEmpty) return;
+  handleSendMessage() {
+    if (trainerService.isResponding || msgController.text.isEmpty) return;
     var message = msgController.text;
     msgController.text = "";
-    isTyping = true;
-    chats.add(
-      AiChatSegment(
-        role: ChatRoles.user,
-        parts: [ChatPart(text: message)],
-      ),
-    );
+    // Fire and forget: progress is centralised in TrainerAgentService, so the
+    // reply keeps streaming (and is restored) across navigation. The pending
+    // user message is shown from chatProgress until the exchange is committed.
+    trainerService.sendCoachMessage(message);
+    // sendCoachMessage sets the pending-message state synchronously, so show
+    // it (and the thinking indicator) immediately rather than waiting for the
+    // throttled progress tick.
     refreshState();
     scrollToEnd();
-    var response = await trainerService.chatWithCoach(message);
-    latestChatDto = response;
-    if (response == null) {
-      Fluttertoast.showToast(msg: "An error has occur");
-      isTyping = false;
-      refreshState();
-      return;
-    }
-    chats.add(
-      AiChatSegment(
-        role: ChatRoles.model,
-        parts: [ChatPart(text: response.data)],
-      ),
-    );
+  }
 
-    isTyping = false;
-    refreshState();
+  handleStopGeneration() {
+    trainerService.cancelChat();
   }
 
   refreshState() {
@@ -149,6 +204,156 @@ class _CoachPageState extends State<CoachPage> {
   }
 
   handleViewAdvices() {}
+
+  Widget _buildThinkingIndicator() {
+    final thinkingText = trainerService.chatProgress.value.thinking;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 5.h),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: SURFACE2,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: BORDER_PRIMARY),
+        ),
+        padding: EdgeInsets.all(10.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  thinkingText.isEmpty ? "Typing" : "Thinking…",
+                  style: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
+                ),
+                SizedBox(width: 6.w),
+                SpinKitThreeBounce(color: TEXT_SECONDARY, size: 16.sp),
+                const Spacer(),
+                InkWell(
+                  onTap: handleStopGeneration,
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 2.h,
+                    ),
+                    child: Text(
+                      "Stop",
+                      style: TextStyle(
+                        color: Colors.redAccent.shade100,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (thinkingText.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 160.h),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Text(
+                    thinkingText,
+                    style: TextStyle(
+                      color: TEXT_SECONDARY,
+                      fontSize: 11.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Persistent panel showing the live progress of a coach "act" (advice
+  /// application). Reads the centralised [CoachClientMcp.actProgress] so it
+  /// reflects work that continued while the user was on another page.
+  Widget _buildActIndicator() {
+    final progress = coachClient.actProgress.value;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 5.h),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: SURFACE2,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: PRIMARY),
+        ),
+        padding: EdgeInsets.all(10.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(FontAwesomeIcons.gears, color: PRIMARY, size: 14.sp),
+                SizedBox(width: 6.w),
+                Text(
+                  "Applying advice…",
+                  style: TextStyle(
+                    color: TEXT_PRIMARY,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                SpinKitThreeBounce(color: TEXT_SECONDARY, size: 16.sp),
+                const Spacer(),
+                InkWell(
+                  onTap: coachClient.cancelAct,
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 2.h,
+                    ),
+                    child: Text(
+                      "Stop",
+                      style: TextStyle(
+                        color: Colors.redAccent.shade100,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (progress.adviceDesc.isNotEmpty) ...[
+              SizedBox(height: 6.h),
+              Text(
+                progress.adviceDesc,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: TEXT_TERTIARY, fontSize: 11.sp),
+              ),
+            ],
+            if (progress.thinking.isNotEmpty) ...[
+              SizedBox(height: 8.h),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 160.h),
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: Text(
+                    progress.thinking,
+                    style: TextStyle(
+                      color: TEXT_SECONDARY,
+                      fontSize: 11.sp,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +460,86 @@ class _CoachPageState extends State<CoachPage> {
                       ),
                     ),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: _changeModel,
+                      child: Row(
+                        children: [
+                          Icon(Icons.memory, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Model",
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                                Text(
+                                  _modelLabel(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: BORDER_PRIMARY)),
+                    ),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                        foregroundColor: TEXT_PRIMARY,
+                        iconColor: TEXT_SECONDARY,
+                      ),
+                      onPressed: _changeActModel,
+                      child: Row(
+                        children: [
+                          Icon(FontAwesomeIcons.gears, size: 18.sp),
+                          SizedBox(width: 20.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Act model",
+                                  style: TextStyle(fontSize: 12.sp),
+                                ),
+                                Text(
+                                  _actModelLabel(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: TEXT_SECONDARY,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -316,7 +601,7 @@ class _CoachPageState extends State<CoachPage> {
                     child: Column(
                       children: [
                         SizedBox(height: 30.h),
-                        if (chats.isEmpty)
+                        if (chats.isEmpty && !trainerService.isResponding)
                           ChatBubble(
                             data:
                                 "Hello there let me guide you !! and make you see progress by optimising your workout and other things",
@@ -335,46 +620,25 @@ class _CoachPageState extends State<CoachPage> {
                                   ),
                                 ),
                         ),
-                        if (isTyping)
+                        if (trainerService
+                            .chatProgress
+                            .value
+                            .pendingUserMessage
+                            .isNotEmpty)
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.0.w,
-                              vertical: 5.h,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: BORDER_PRIMARY,
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            "Typing",
-                                            style: TextStyle(
-                                              color: TEXT_SECONDARY,
-                                              fontSize: 12.sp,
-                                            ),
-                                          ),
-                                          SpinKitThreeBounce(
-                                            color: TEXT_SECONDARY,
-                                            size: 22.sp,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(flex: 2, child: SizedBox()),
-                              ],
+                            padding: EdgeInsets.symmetric(vertical: 8.0.h),
+                            child: ChatBubble(
+                              data: trainerService
+                                  .chatProgress
+                                  .value
+                                  .pendingUserMessage,
+                              type: ChatRoles.user,
                             ),
                           ),
+                        if (trainerService.isResponding)
+                          _buildThinkingIndicator(),
+                        if (coachClient.actProgress.value.isActing)
+                          _buildActIndicator(),
                       ],
                     ),
                   ),

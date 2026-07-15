@@ -1,27 +1,50 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/repositories/food.repository.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
+// import 'package:performance_tracker/services/nutritionInfoProvide.service.dart';
+
+enum AiFoodGenStatus { idle, generating, ready, error }
+
+class AiFoodGenState {
+  final AiFoodGenStatus status;
+  final String? foodName; // name being / that was generated
+  final Food? result; // set when status == ready
+  final String progressText; // live model output while generating
+  const AiFoodGenState({
+    this.status = AiFoodGenStatus.idle,
+    this.foodName,
+    this.result,
+    this.progressText = '',
+  });
+}
 
 class FoodService {
   final _ai = locator<AiService>();
   final _foodRepo = locator<FoodRepository>();
-  final nutriApi = locator<NutritionServiceProvider>();
+  // final nutriApi = locator<NutritionServiceProvider>();
   final dayService = locator<DayService>();
+
+  // In-memory state for the (single) ongoing AI food generation. Lives in this
+  // singleton so the description modal can be closed and reopened without
+  // losing the in-flight/completed result.
+  final ValueNotifier<AiFoodGenState> aiFoodGenNotifier = ValueNotifier(
+    const AiFoodGenState(),
+  );
+
+  bool get isGeneratingFood =>
+      aiFoodGenNotifier.value.status == AiFoodGenStatus.generating;
+
+  // Cancel handle for the in-flight generation (one at a time).
+  CancelToken? _genCancelToken;
 
   Future<List<Food>> searchFood(String key) async {
     var foods = _foodRepo.searchFoodByName(key);
-    var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
-    for (var food in foodsFromApi) {
-      if (!_foodRepo.foodExist(food.name)) {
-        _foodRepo.addFood(food);
-        foods.add(food);
-      }
-    }
+    // var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
     return foods;
   }
 
@@ -59,12 +82,68 @@ class FoodService {
   addFood(Food food) {
     _foodRepo.addFood(food);
   }
-
+  removeFood(Food food) async
+  {
+    await _foodRepo.removeFood(food);
+  }
   bool foodExist(String name) {
     return _foodRepo.foodExist(name);
   }
 
-  Future<Food?> AI_CreateFood(String name, String? description) async {
+  // Starts an AI food generation and tracks its state in [aiFoodGenNotifier].
+  // Fire-and-forget: the UI listens to the notifier rather than awaiting this.
+  // Only one generation may run at a time.
+  Future<void> startFoodGeneration(String name, String? description) async {
+    if (isGeneratingFood) return;
+    var cancelToken = CancelToken();
+    _genCancelToken = cancelToken;
+    aiFoodGenNotifier.value = AiFoodGenState(
+      status: AiFoodGenStatus.generating,
+      foodName: name,
+    );
+    var food = await _generateFood(name, description, cancelToken);
+    // The user aborted: leave the state as cancelFoodGeneration set it (idle).
+    if (cancelToken.isCancelled) return;
+    _genCancelToken = null;
+    if (food != null) {
+      addFood(food);
+      aiFoodGenNotifier.value = AiFoodGenState(
+        status: AiFoodGenStatus.ready,
+        foodName: name,
+        result: food,
+      );
+    } else {
+      aiFoodGenNotifier.value = AiFoodGenState(
+        status: AiFoodGenStatus.error,
+        foodName: name,
+      );
+    }
+  }
+
+  // Aborts the in-flight generation (closes the connection) and resets to idle.
+  void cancelFoodGeneration() {
+    _genCancelToken?.cancel();
+    _genCancelToken = null;
+    aiFoodGenNotifier.value = const AiFoodGenState();
+  }
+
+  // Returns the generated food (if ready) and resets state to idle.
+  Food? consumeGeneratedFood() {
+    var food = aiFoodGenNotifier.value.result;
+    aiFoodGenNotifier.value = const AiFoodGenState();
+    return food;
+  }
+
+  // Resets the generation state back to idle.
+  void resetFoodGeneration() {
+    aiFoodGenNotifier.value = const AiFoodGenState();
+  }
+
+  Future<Food?> _generateFood(
+    String name,
+    String? description,
+    CancelToken cancelToken,
+  ) async {
     try {
       const String jsonResponseStructure = '''
       {
@@ -219,7 +298,24 @@ class FoodService {
         $jsonResponseStructure
       ''';
 
-      var body = await _ai.getResponse(prompt, instructions,modelType: Models.Flash);
+      var selectedModel = await _ai.getSelectedModel();
+      var body = await _ai.getResponseStream(
+        prompt,
+        instructions,
+        modelName: selectedModel,
+        cancelToken: cancelToken,
+        onProgress: (thoughts, answer) {
+          // Surface live progress only while this generation is still running.
+          if (aiFoodGenNotifier.value.status != AiFoodGenStatus.generating) {
+            return;
+          }
+          aiFoodGenNotifier.value = AiFoodGenState(
+            status: AiFoodGenStatus.generating,
+            foodName: name,
+            progressText: thoughts.isNotEmpty ? thoughts : answer,
+          );
+        },
+      );
       var resString = body.message;
       if(resString[0]=="`")
       {
@@ -285,7 +381,6 @@ class FoodService {
         servings: servings,
         imageUrl: null, // JSON doesn't include imageUrl
       );
-      addFood(food);
       return food;
     } catch (e) {
       return null;

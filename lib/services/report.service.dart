@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/repositories/report.repository.dart';
+import 'package:performance_tracker/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 import 'package:performance_tracker/models/routine.model.dart';
 import 'package:performance_tracker/services/ai.service.dart';
@@ -20,6 +21,7 @@ class ReportService {
   final _healthService = locator<HealthService>();
   final _aiService = locator<AiService>();
   final _routineService = locator<RoutineService>();
+  final _workoutService = locator<WorkoutService>();
   ReportService();
 
   Future<void> createReport(Report report) async {
@@ -64,7 +66,7 @@ class ReportService {
       var maintenance = _userGoalService.fetchMaintenanceCalories(
         user,
         steps: user.userGoals.stepGoal,
-        macrosToday
+        macrosToday,
       );
       var nutritionToday = _dayService.getDaysCalories(today!);
       String context =
@@ -97,7 +99,6 @@ class ReportService {
     } else {
       report = previousReport;
     }
-
     return report;
   }
 
@@ -106,61 +107,46 @@ class ReportService {
     DateTime? summaryFromDate,
   ) async {
     var entityId = "Workout ${workout.key}";
-    var enabledSets = workout.sets.where((set) => set.enabled);
+    var enabledSets = workout.sets.where((set) => set.enabled).toList();
     var totalEnabledSet = enabledSets.length;
-    String workRep =
-        '''Workout name : ${workout.name}\nFrom Total of $totalEnabledSet sets User gets an total volume of :\n''';
-    // getting volume information
+
+    final buffer = StringBuffer();
+    buffer.writeln("## ${workout.name}");
+    buffer.writeln();
+    buffer.writeln("Total volume across $totalEnabledSet enabled set(s):");
+    buffer.writeln();
+
     for (var vol in workout.volumes) {
-      workRep += "\t${vol.muscleName} ${vol.volume * totalEnabledSet}\n";
+      buffer.writeln("- ${vol.muscleName}: ${vol.volume * totalEnabledSet}");
     }
-    workRep += "Sets descriptions :\n";
-    var i = 1;
-    DateTime? workRecentlyUpdatedTime;
-    for (var set in enabledSets) {
-      var summary = _summarizeSetPerformance(set, summaryFromDate, i);
-      var setSummary = summary.data;
-      var setLastUpdated = summary.recentUpdate;
-      workRecentlyUpdatedTime ??= setLastUpdated;
-      if (setLastUpdated != null &&
-          workRecentlyUpdatedTime!.isBefore(setLastUpdated)) {
-        // an entry is added on an set
-        workRecentlyUpdatedTime = setLastUpdated;
-      }
-      workRep += setSummary;
-      i++;
+    buffer.writeln();
+
+    buffer.write(_buildSetMatrix(workout, enabledSets, summaryFromDate));
+    buffer.writeln("Performance Analysis For Each Set");
+    buffer.write(_buildProgressionTable(workout, enabledSets,));
+    if (workout.desc.trim().isNotEmpty) {
+      buffer.writeln(
+        "**User journal while doing the workout:** ${workout.desc}",
+      );
     }
-    workRep+="\nUser Journal while doing tha workout if any: ${workout.desc}";
+    var workRep = buffer.toString();
+
     var previousReport = fetchReportsByEntityId(entityId);
+
     Report? report;
-    if (previousReport == null ||
-       ( workRecentlyUpdatedTime != null &&
-        previousReport.entityLastUpdated.isBefore(workRecentlyUpdatedTime))) {
-      // outdated previous report or no previous report
-      print("getting ${workout.name} context");
-      var resp = await _aiService.getResponse(
-        workRep,
-        '''You are a agent who is assigned with the crucial task of analyzing an workout and its performance and draw out an observation you must closely observe the data and provide insights that describes user performance in the workout this could guide agents in the chain further up to analyze and provide valuable advices to user ,  Respond with maximally dense, information-rich sentences. Eliminate all decorative language. Every sentence must convey essential detail, without omissions or filler.
-        ''',
-      );
-      print("finished ${workout.name} context");
-      workRecentlyUpdatedTime ??= DateTime.now();
-      report = Report(
-        generatedAt: DateTime.now(),
-        entityLastUpdated: workRecentlyUpdatedTime,
-        entityId: entityId,
-        reportData: resp.message,
-        entityName: workout.name,
-        type: EntityType.workout,
-      );
-      if (previousReport != null) {
-        // removing old report
-        await removeReport(previousReport.key);
-      }
-      await createReport(report);
-    } else {
-      report = previousReport;
+    final now = DateTime.now();
+    report = Report(
+      generatedAt: now,
+      entityLastUpdated: now,
+      entityId: entityId,
+      reportData: workRep,
+      entityName: workout.name,
+      type: EntityType.workout,
+    );
+    if (previousReport != null) {
+      await removeReport(previousReport.key);
     }
+    await createReport(report);
     return report;
   }
 
@@ -177,7 +163,16 @@ class ReportService {
     var previousReport = fetchReportsByEntityId(entityId);
     Report? report;
     DateTime? routineEntityLastUpdatedAt;
+    routineSummary +=
+        '''\nFatigue Adjusted Reps estimates how many reps you could have performed on a set if it had been performed fresh, without any fatigue accumulated from previous exercises and sets in the workout.
+    The system analyzes the fatigue generated by all work performed before that set and adjusts the observed performance accordingly. This helps normalize results when:
 
+    Exercises are performed in a different order
+    Sets are skipped or added
+    Extra volume is performed earlier in the session
+    Fatigue levels vary between workouts
+
+    The goal is to provide a more consistent measure of underlying strength and performance by reducing the impact of workout-specific fatigue.\n''';
     for (var vol in volumes) {
       routineSummary += "\t${vol.muscleName} ${vol.volume}\n";
     }
@@ -196,16 +191,19 @@ class ReportService {
         routineEntityLastUpdatedAt = res.entityLastUpdated;
       }
     }
-    routineSummary+="\nUser Journal of routine if any ${routine.desc}";
+    routineSummary += "\nUser Journal of routine if any ${routine.desc}";
     if (previousReport == null ||
         (routineEntityLastUpdatedAt != null &&
-        previousReport.entityLastUpdated.isBefore(routineEntityLastUpdatedAt))) {
+            previousReport.entityLastUpdated.isBefore(
+              routineEntityLastUpdatedAt,
+            ))) {
       print("started ${routine.name} context");
-
+      final modelName = await _aiService.getSelectedModel();
       var resp = await _aiService.getResponse(
         routineSummary,
         "Summaries this routine and draw out important observation",
         modelType: Models.Pro,
+        modelName: modelName,
       );
       print("finished ${routine.name} context");
 
@@ -228,29 +226,80 @@ class ReportService {
     return report;
   }
 
-  SummaryDTO<String> _summarizeSetPerformance(
-    WorkSet set,
+  /// Builds a single markdown matrix of the workout's performance:
+  /// columns are the dates the user trained, rows are each enabled set's
+  /// weight, and each cell is the fatigue-adjusted reps for that weight on
+  /// that date (blank when the set wasn't logged that day).
+  String _buildSetMatrix(
+    Workout workout,
+    List<WorkSet> enabledSets,
     DateTime? summaryFromDate,
-    int index,
   ) {
-    String setSummary = "Set $index ${set.value}kg:\n User performed reps if any :\n";
+    bool withinRange(TrackEntry entry) =>
+        summaryFromDate == null || !entry.entryDate.isBefore(summaryFromDate);
 
-    List<TrackEntry> contextEntries = [];
-    if (set.history.length > 5) {
-      contextEntries = set.history.sublist(set.history.length - 5);
-    } else {
-      contextEntries = set.history;
+    // Collect the unique training days across all enabled sets, ordered.
+    final Map<String, DateTime> dateByLabel = {};
+    for (var set in enabledSets) {
+      for (var entry in set.history) {
+        if (!withinRange(entry)) continue;
+        dateByLabel.putIfAbsent(
+          _commonService.getDateString(entry.entryDate),
+          () => entry.entryDate,
+        );
+      }
     }
-    for (var entry in contextEntries) {
-      setSummary +="\t\t\t${_commonService.getDateString(entry.entryDate)} Reps : ${entry.value}\n";
+    final dateLabels = dateByLabel.keys.toList()
+      ..sort((a, b) => dateByLabel[a]!.compareTo(dateByLabel[b]!));
+
+    final buffer = StringBuffer();
+    if (dateLabels.isEmpty) {
+      buffer.writeln("_No entries logged._");
+      buffer.writeln();
+      return buffer.toString();
     }
 
-    return SummaryDTO(
-      recentUpdate: contextEntries.isEmpty
-          ? null
-          : contextEntries.last.entryDate,
-      data: setSummary,
-    );
+    // Fatigue-adjusted reps for a set on a given day, or "" if not logged.
+    String cellFor(WorkSet set, String label) {
+      for (var entry in set.history) {
+        if (!withinRange(entry)) continue;
+        if (_commonService.getDateString(entry.entryDate) == label) {
+          return workout
+              .getFatigueAdjustedReps(entry.fatigueContext, entry.value)
+              .toStringAsFixed(2);
+        }
+      }
+      return "";
+    }
+
+    buffer.writeln("Fatigue-adjusted reps (rows = weight, columns = date):");
+    buffer.writeln();
+    buffer.writeln("| Weight | ${dateLabels.join(' | ')} |");
+    buffer.writeln("| --- |${dateLabels.map((_) => ' --- |').join()}");
+    for (var set in enabledSets) {
+      final cells = dateLabels.map((label) => cellFor(set, label)).join(' | ');
+      buffer.writeln("| ${set.value}kg | $cells |");
+    }
+    buffer.writeln();
+
+    return buffer.toString();
+  }
+
+  String _buildProgressionTable(Workout workout, List<WorkSet> enabledSets) {
+    final buffer = StringBuffer();
+
+    buffer.writeln("| Weight | Trend |");
+    buffer.writeln("| --- | --- |");
+
+    for (final set in enabledSets) {
+      final progression = _workoutService.getWorkSetProgression(
+        workout,
+        set.history,
+      );
+
+      buffer.writeln("| ${set.value}kg | ${progression.name} |");
+    }
+    buffer.writeln();
+    return buffer.toString();
   }
 }
-

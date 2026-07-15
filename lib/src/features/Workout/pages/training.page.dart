@@ -18,6 +18,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/routines.page.dart';
 import 'package:performance_tracker/src/components/routineSelection.component.dart';
+import 'package:performance_tracker/src/features/Workout/pages/fatigue.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
   const TrainingModulePage({super.key});
@@ -219,7 +220,44 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                                   ),
                                 ),
                               ),
-
+                              SizedBox(width: 10.w),
+                              Material(
+                                color: SURFACE2,
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FatiguePage(),
+                                      ),
+                                    );
+                                  },
+                                  child: SizedBox(
+                                    height: 60.h,
+                                    width: 140.w,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(14.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.fireFlameCurved,
+                                            size: 16.sp,
+                                            color: TEXT_SECONDARY,
+                                          ),
+                                          SizedBox(width: 20.w),
+                                          Text(
+                                            "Fatigue",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -248,7 +286,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
                           icon: Icon(
                             FontAwesomeIcons.plus,
                             size: 15.sp,
-                            color: TEXT_PRIMARY,
+                            color: Colors.white,
                           ),
                         ),
                       ],

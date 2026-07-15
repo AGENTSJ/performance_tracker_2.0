@@ -78,29 +78,48 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   focusedBorder: inputBorder,
                   border: inputBorder,
                   enabledBorder: inputBorder,
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Tooltip(
-                          message: 'Let AI help you create a custom food entry',
-                          child: Icon(
-                            FontAwesomeIcons.wandSparkles,
-                            color: Colors.amber[400],
-                            size: 14.w,
-                          ),
-                        ),
-                        onPressed: () {
-                          handleAICustomFood();
-                        },
-                      ),
-                    ],
-                  ),
                 ),
                 controller: foodNameControl,
                 onChanged: (str) {
                   handleSearchChange(str);
                 },
+              ),
+              SizedBox(height: 10.h),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Material(
+                  color: PRIMARY.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10.r),
+                    onTap: handleAICustomFood,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 8.h,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.wandSparkles,
+                            color: PRIMARY,
+                            size: 14.w,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Create with AI',
+                            style: TextStyle(
+                              color: PRIMARY,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
               if (showSearchRes) ...[
                 // search
@@ -110,11 +129,18 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   children: [
                     Text(
                       'Search results',
-                      style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: TEXT_SECONDARY,
+                      ),
                     ),
                     IconButton(
                       onPressed: handleSearchClose,
-                      icon: Icon(Icons.close,color: TEXT_SECONDARY,size: 18.sp,),
+                      icon: Icon(
+                        Icons.close,
+                        color: TEXT_SECONDARY,
+                        size: 18.sp,
+                      ),
                     ),
                   ],
                 ),
@@ -159,7 +185,12 @@ class _MealTrackerState extends State<MealTrackerPage> {
                                 showAddFoodModal(food);
                               },
                               child: Container(
-                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: BORDER_PRIMARY),),borderRadius: BorderRadius.circular(8.r)),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: BORDER_PRIMARY),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 8.0.w,
@@ -175,84 +206,93 @@ class _MealTrackerState extends State<MealTrackerPage> {
                   ),
                 ),
               ] else ...[
-                if(suggestedFoods.isNotEmpty)
-                Column(
-                  // suggested
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Suggested',
-                          style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
-                        ),
-                        if (showSuggested) ...[
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                showSuggested = false;
-                              });
-                            },
-                            icon: Icon(Icons.close,color: TEXT_SECONDARY,size: 18.sp,),
+                if (suggestedFoods.isNotEmpty)
+                  Column(
+                    // suggested
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Suggested',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: TEXT_SECONDARY,
+                            ),
                           ),
-                        ] else ...[
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                showSuggested = true;
-                              });
-                            },
-                            icon: Icon(Icons.visibility, size: 18.w),
-                          ),
+                          if (showSuggested) ...[
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  showSuggested = false;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.close,
+                                color: TEXT_SECONDARY,
+                                size: 18.sp,
+                              ),
+                            ),
+                          ] else ...[
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  showSuggested = true;
+                                });
+                              },
+                              icon: Icon(Icons.visibility, size: 18.w),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                    SizedBox(height: 5.h),
-                    Visibility(
-                      visible: showSuggested && suggestedFoods.isNotEmpty,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: SURFACE2,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Column(
-                          children: [
-                            ...suggestedFoods.map(
-                              (food) => Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    handleSelectSuggestedFood(food);
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: SURFACE2,
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: BORDER_PRIMARY,
+                      ),
+                      SizedBox(height: 5.h),
+                      Visibility(
+                        visible: showSuggested && suggestedFoods.isNotEmpty,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: SURFACE2,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Column(
+                            children: [
+                              ...suggestedFoods.map(
+                                (food) => Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () {
+                                      handleSelectSuggestedFood(food);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: SURFACE2,
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: BORDER_PRIMARY,
+                                          ),
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          8.r,
                                         ),
                                       ),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0.w,
-                                        vertical: 14.h,
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8.0.w,
+                                          vertical: 14.h,
+                                        ),
+                                        child: Row(children: [Text(food.name)]),
                                       ),
-                                      child: Row(children: [Text(food.name)]),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 SizedBox(height: 5.h),
                 Padding(
                   padding: EdgeInsets.only(top: 8.0.h, bottom: 8.0.h),
@@ -261,7 +301,10 @@ class _MealTrackerState extends State<MealTrackerPage> {
                     children: [
                       Text(
                         'Selected',
-                        style: TextStyle(fontWeight: FontWeight.w600,color: TEXT_SECONDARY),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: TEXT_SECONDARY,
+                        ),
                       ),
                     ],
                   ),
@@ -326,35 +369,18 @@ class _MealTrackerState extends State<MealTrackerPage> {
     });
   }
 
-  Timer? fetchFoodsData;
   bool fetching = false;
   handleSearchChange(String str) async {
     showSearchRes = foodNameControl.text.isNotEmpty;
     searchfoods = [];
     fetching = true;
     setState(() {});
-    if (fetchFoodsData == null) {
-      fetchFoodsData = Timer(Duration(milliseconds: 1000), () async {
-        if (foodNameControl.text.isEmpty) {
-          return;
-        }
-        searchfoods = await foodService.searchFood(str);
-        fetchFoodsData = null;
-        fetching = false;
-        setState(() {});
-      });
-    } else {
-      fetchFoodsData!.cancel();
-      fetchFoodsData = Timer(Duration(milliseconds: 1000), () async {
-        if (foodNameControl.text.isEmpty) {
-          return;
-        }
-        searchfoods = await foodService.searchFood(str);
-        fetchFoodsData = null;
-        fetching = false;
-        setState(() {});
-      });
+    if (foodNameControl.text.isEmpty) {
+      return;
     }
+    searchfoods = await foodService.searchFood(str);
+    fetching = false;
+    setState(() {});
   }
 
   showAddFoodModal(Food food) async {
@@ -366,7 +392,7 @@ class _MealTrackerState extends State<MealTrackerPage> {
       ),
     );
     if (returnedFood != null) {
-      widget.meal.foods.add(returnedFood);
+      widget.meal.foods.add(returnedFood.clone());
       dayService.updateDayData(widget.day);
     }
     foodNameControl.text = '';
@@ -395,22 +421,20 @@ class _MealTrackerState extends State<MealTrackerPage> {
   }
 
   handleAICustomFood() async {
-    if (foodNameControl.text.isNotEmpty) {
-      var returnedFood = await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) =>
-            FoodDescriptionPopUp(foodName: foodNameControl.text),
-      );
-      if (returnedFood != null) {
-        setState(() {
-          widget.meal.foods.add(returnedFood);
-          dayService.updateDayData(widget.day);
-          foodNameControl.text = '';
-          showSearchRes = false;
-          searchfoods = [];
-        });
-      }
+    var returnedFood = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) =>
+          FoodDescriptionPopUp(initialName: foodNameControl.text),
+    );
+    if (returnedFood != null) {
+      setState(() {
+        widget.meal.foods.add(returnedFood);
+        dayService.updateDayData(widget.day);
+        foodNameControl.text = '';
+        showSearchRes = false;
+        searchfoods = [];
+      });
     }
   }
 }

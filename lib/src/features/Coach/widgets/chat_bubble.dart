@@ -21,26 +21,18 @@ class ChatBubble extends StatefulWidget {
 class _ChatBubbleState extends State<ChatBubble> {
   var CHAT_CONT_COLOR = PRIMARY;
   bool showActions = false;
-  bool isTaking = false;
-  bool isTaken = false;
   var coachClient = locator<CoachClientMcp>();
 
-  handleTakeAdvice() async {
-    if (isTaking || isTaken) {
+  handleTakeAdvice() {
+    if (coachClient.isActing) {
+      Fluttertoast.showToast(
+        msg: "An another advice is getting applied wait few moments",
+      );
       return;
     }
-    try {
-      isTaking = true;
-      refreshState();
-      await coachClient.coachAct(widget.data);
-      Fluttertoast.showToast(msg: "Advice has been taken");
-      isTaken = true;
-    } catch (e) {
-      Fluttertoast.showToast(msg: "An error has occur");
-    } finally {
-      isTaking = false;
-      refreshState();
-    }
+    // Fire and forget: progress is centralised in [CoachClientMcp] and shown
+    // on the coach page, so it survives navigating away from this bubble.
+    coachClient.coachAct(widget.data);
   }
 
   refreshState() {
@@ -108,46 +100,54 @@ class _ChatBubbleState extends State<ChatBubble> {
                                           color: BORDER_PRIMARY,
                                         ),
                                       ),
-                                      child: Row(
-                                        children: [
-                                          if (isTaking)
-                                            Expanded(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8.0.r),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    Text("This may take few seconds",style: TextStyle(color: SURFACE2),),
-                                                    SizedBox(width: 10.w,),
-                                                    SpinKitSpinningLines(
-                                                      color: TEXT_TERTIARY,
-                                                      size: 30,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          if (!isTaking)
-                                            Expanded(
-                                              child: TextButton(
-                                                onPressed: () {
-                                                  handleTakeAdvice();
-                                                },
-                                                style: TextButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadiusGeometry.circular(
-                                                          0.r,
+                                      child: ValueListenableBuilder<CoachActProgress>(
+                                        valueListenable: coachClient.actProgress,
+                                        builder: (context, progress, _) {
+                                          final applyingThis =
+                                              progress.isActing &&
+                                              progress.adviceDesc == widget.data;
+                                          return Row(
+                                            children: [
+                                              if (applyingThis)
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(8.0.r),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Text("Applying… see Coach for progress",style: TextStyle(color: SURFACE2),),
+                                                        SizedBox(width: 10.w,),
+                                                        SpinKitSpinningLines(
+                                                          color: TEXT_TERTIARY,
+                                                          size: 30,
                                                         ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                  backgroundColor: PRIMARY,
-                                                  foregroundColor: SURFACE2,
                                                 ),
+                                              if (!applyingThis)
+                                                Expanded(
+                                                  child: TextButton(
+                                                    onPressed: () {
+                                                      handleTakeAdvice();
+                                                    },
+                                                    style: TextButton.styleFrom(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadiusGeometry.circular(
+                                                              0.r,
+                                                            ),
+                                                      ),
+                                                      backgroundColor: PRIMARY,
+                                                      foregroundColor: SURFACE2,
+                                                    ),
 
-                                                child: Text("Take Advice"),
-                                              ),
-                                            ),
-                                        ],
+                                                    child: Text("Take Advice"),
+                                                  ),
+                                                ),
+                                            ],
+                                          );
+                                        },
                                       ),
                                     ),
                             ),
