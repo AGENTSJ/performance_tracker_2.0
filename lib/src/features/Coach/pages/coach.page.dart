@@ -360,6 +360,7 @@ class _CoachPageState extends State<CoachPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: Row(
           children: [
             SizedBox(

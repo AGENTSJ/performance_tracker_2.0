@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -172,6 +170,7 @@ class _JournalPageState extends State<JournalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: const Text('Journals'),
         backgroundColor: BACKGROUND,
         actions: [
@@ -224,7 +223,7 @@ class _JournalPageState extends State<JournalPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: showAddJournalDialog,
         backgroundColor: PRIMARY,
-        child: Icon(Icons.add, color: SURFACE),
+        child: Icon(Icons.add, color: TEXT_PRIMARY),
       ),
     );
   }

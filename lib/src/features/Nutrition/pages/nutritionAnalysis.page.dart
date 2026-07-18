@@ -42,7 +42,7 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0),
+      appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0,foregroundColor: TEXT_PRIMARY,),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(14.0.w),

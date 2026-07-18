@@ -315,6 +315,7 @@ class _JournalEntryPageState extends State<JournalEntryPage> {
     return Scaffold(
       backgroundColor: SURFACE2,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: isEditingMode
             ? EditableText(
                 controller: _titleEditController,

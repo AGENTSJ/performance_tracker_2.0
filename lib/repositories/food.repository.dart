@@ -24,22 +24,43 @@ class FoodRepository
         .toList();
     await foodBox.deleteAll(keysToDelete);
   }
-  List<Food> searchFoodByName(String name)
-  {
-    List<Food> allFoods = foodBox.values.toList();
-    List<Food> filtered = [];
-    var inpLowCaseFoodName = name.toLowerCase();
+  List<Food> searchFoodByName(String query) {
+    final q = query.trim().toLowerCase();
 
-    for (var food in allFoods) {
-      var currFoodNameInLowCase = food.name.toLowerCase();
+    if (q.isEmpty) {
+      return foodBox.values.toList();
+    }
 
-      if(currFoodNameInLowCase.startsWith(inpLowCaseFoodName))
-      {
-        filtered.add(food);
+    final startsWith = <Food>[];
+    final wordStartsWith = <Food>[];
+    final contains = <Food>[];
+
+    for (final food in foodBox.values) {
+      final name = food.name.toLowerCase();
+
+      // Exact prefix
+      if (name.startsWith(q)) {
+        startsWith.add(food);
         continue;
       }
+
+      // Any word starts with query
+      if (name.split(RegExp(r'\s+')).any((word) => word.startsWith(q))) {
+        wordStartsWith.add(food);
+        continue;
+      }
+
+      // Anywhere in the string
+      if (name.contains(q)) {
+        contains.add(food);
+      }
     }
-    return filtered;
+
+    return [
+      ...startsWith,
+      ...wordStartsWith,
+      ...contains,
+    ];
   }
   
   updateFood(Food food)

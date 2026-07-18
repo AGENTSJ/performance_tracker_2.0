@@ -66,7 +66,7 @@ class MacroAnalysisWidget extends StatelessWidget {
                   if (macros.calories > 0) ...[
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: CONT_BACKGROUND,
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                       width: 90.w,

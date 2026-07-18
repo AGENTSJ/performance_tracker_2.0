@@ -53,23 +53,27 @@ class _JourneyGraphState extends State<JourneyGraph> {
   {
     final calories = dayService.getDaysCalories(day);
     final maintenance = day.goalForToday!.calorieLimit;
+    double calorieChange = 0;
     double calorieChangePercentage;
     switch (mode) {
       case JourneyMode.cut:
-        calorieChangePercentage = ((maintenance - calories.calories) / log.userAtDay.userGoals.caloricChangeGoal)*100;
+        calorieChange = maintenance - calories.calories;
+        calorieChangePercentage = (calorieChange / log.userAtDay.userGoals.caloricChangeGoal)*100;
         break;
       case JourneyMode.bulk:
-        calorieChangePercentage = calories.calories - maintenance;
+        calorieChange = calories.calories - maintenance;
+        calorieChangePercentage = (calorieChange / log.userAtDay.userGoals.caloricChangeGoal)*100;
         break;
       case JourneyMode.maintenance:
         // Closer to 0 is better: how far the day strayed from maintenance.
+        calorieChange = calories.calories - maintenance;
         calorieChangePercentage = goalService.getMaintenanceDeviationPercent(
             calories.calories, maintenance);
         break;
     }
 
     var stepChangeGoalPerentage = ((day.activity?.steps ?? 0) / log.userAtDay.userGoals.stepGoal)*100;
-    return _DataRepresentation(calorieGraphValue: clampPercent(calorieChangePercentage), stepGraphValue: clampPercent(stepChangeGoalPerentage), caloriePercentage: calorieChangePercentage.round().toDouble(), stepsPercentage: stepChangeGoalPerentage.round().toDouble());
+    return _DataRepresentation(calorieGraphValue: clampPercent(calorieChangePercentage), stepGraphValue: clampPercent(stepChangeGoalPerentage), caloriePercentage: calorieChangePercentage.round().toDouble(), stepsPercentage: stepChangeGoalPerentage.round().toDouble(),calorieChange: calorieChange.round().toDouble());
   }
   Future<void> _setUpGraphData() async {
     final count = widget.journey.logs.length;
@@ -172,7 +176,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
                         label = "Deviation";
                         break;
                     }
-                    labelData = "${barMetaData[groupIndex].caloriePercentage}%";
+                    labelData = "${barMetaData[groupIndex].calorieChange} Cal";
                   }
                   return BarTooltipItem(
                       "$label : $labelData",
@@ -234,6 +238,7 @@ class _DataRepresentation {
   double calorieGraphValue;
   double stepGraphValue;
   double caloriePercentage;
+  double calorieChange;
   double stepsPercentage;
-  _DataRepresentation({required this.calorieGraphValue,required this.stepGraphValue,required this.caloriePercentage,required this.stepsPercentage});
+  _DataRepresentation({required this.calorieGraphValue,required this.stepGraphValue,required this.caloriePercentage,required this.stepsPercentage,required this.calorieChange});
 }

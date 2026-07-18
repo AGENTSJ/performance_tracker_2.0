@@ -72,7 +72,7 @@ class _ReportsPageState extends State<ReportsPage> {
     return Scaffold(
       
       backgroundColor: BACKGROUND,
-      appBar: AppBar(backgroundColor: BACKGROUND, title: Text('Reports'),scrolledUnderElevation: 0,),
+      appBar: AppBar(backgroundColor: BACKGROUND, title: Text('Reports'),scrolledUnderElevation: 0,foregroundColor: TEXT_PRIMARY,),
       body: Column(
         children: [
           Container(
@@ -102,7 +102,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         onPressed: () {
                           setUpUi(EntityType.workout);
                         },
-                        child: Text("Workout"),
+                        child: Text("Workout",style: TextStyle(color: TEXT_PRIMARY),),
                       ),
                     ),
                   ),
@@ -124,7 +124,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         onPressed: () {
                           setUpUi(EntityType.routine);
                         },
-                        child: Text("Routine"),
+                        child: Text("Routine",style: TextStyle(color: TEXT_PRIMARY),),
                       ),
                     ),
                   ),
@@ -146,7 +146,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         onPressed: () {
                           setUpUi(EntityType.nutrition);
                         },
-                        child: Text("Nutrition"),
+                        child: Text("Nutrition",style: TextStyle(color: TEXT_PRIMARY),),
                       ),
                     ),
                   ),

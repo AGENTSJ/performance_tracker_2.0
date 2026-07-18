@@ -11,6 +11,7 @@ class FatiguePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         scrolledUnderElevation: 0,
         backgroundColor: BACKGROUND,
         title: const Text('Fatigue'),

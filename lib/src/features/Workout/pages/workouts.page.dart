@@ -26,6 +26,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         backgroundColor: BACKGROUND,
         scrolledUnderElevation: 0,
       ),
@@ -103,7 +104,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         onPressed: () {
           handleAddWorkout();
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add,color: TEXT_PRIMARY,),
       ),
     );
   }

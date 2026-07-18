@@ -98,6 +98,7 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
     return GestureDetector(
       child: Scaffold(
         appBar: AppBar(
+          foregroundColor: TEXT_PRIMARY,
           backgroundColor: BACKGROUND,
           title: const Text('Workout Details'),
           scrolledUnderElevation: 0,

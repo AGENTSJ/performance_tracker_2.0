@@ -84,7 +84,7 @@ class _AdvicesPageState extends State<AdvicesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: BACKGROUND),
+      appBar: AppBar(backgroundColor: BACKGROUND,foregroundColor: TEXT_PRIMARY,),
       body: !isLoaded
           ? LoadingPage()
           : SingleChildScrollView(

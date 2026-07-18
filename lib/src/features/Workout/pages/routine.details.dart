@@ -88,6 +88,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         backgroundColor: BACKGROUND,
         title: const Text('Routine Details'),
         scrolledUnderElevation: 0,

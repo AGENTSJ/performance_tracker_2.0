@@ -375,10 +375,10 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                   Center(
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: SURFACE2,
+                                        color: Colors.transparent,
                                         image: DecorationImage(
                                           image: currentBadge!.badgeImage.image,
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.contain,
                                         ),
                                         borderRadius: BorderRadius.circular(
                                           100.r,
@@ -486,12 +486,8 @@ class _JourneyComponentState extends State<JourneyComponent> {
                                                 show: true,
                                                 toY:
                                                     100, // Max value for the track
-                                                color: const Color.fromARGB(
-                                                  187,
-                                                  224,
-                                                  224,
-                                                  224,
-                                                ),
+                                                color: Colors
+                                                .grey[300],
                                               ),
                                         ),
                                       ],
