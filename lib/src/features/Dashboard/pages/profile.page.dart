@@ -233,6 +233,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
                                                 gender.name,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
+                                                  color: TEXT_PRIMARY
                                                 ),
                                               ),
                                             );
