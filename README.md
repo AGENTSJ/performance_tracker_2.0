@@ -1,3 +1,6 @@
+<div align="center">
+    <img width="200" height="200" alt="logo3 1" src="https://github.com/user-attachments/assets/4b36e2b3-f077-4687-8e2d-8e0f87cc7f35" />
+</div>
 # Performance Tracker
 
 A Flutter application for tracking training, nutrition, and overall fitness progress. Data is stored locally on device, with optional AI coaching that connects through your own API key.
