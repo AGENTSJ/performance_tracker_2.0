@@ -126,6 +126,7 @@ class _ProfilePageModuleState extends State<ProfilePageModule> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: const Text('Profile'),
         backgroundColor: BACKGROUND,
         scrolledUnderElevation: 0,

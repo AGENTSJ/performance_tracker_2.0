@@ -74,6 +74,7 @@ class NutritionModuleState extends State<NutritionModule> {
     return Scaffold(
       
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         scrolledUnderElevation:0,
         title: Row(
           children: [

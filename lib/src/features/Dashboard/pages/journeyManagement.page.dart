@@ -100,6 +100,7 @@ class _JourneyManagementPageState extends State<JourneyManagementPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: const Text("Journey Management"),
         backgroundColor: BACKGROUND,
         scrolledUnderElevation: 0,

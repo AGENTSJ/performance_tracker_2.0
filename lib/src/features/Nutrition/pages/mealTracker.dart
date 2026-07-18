@@ -62,8 +62,9 @@ class _MealTrackerState extends State<MealTrackerPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: BACKGROUND,
       appBar: AppBar(
-        title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18.sp)),
+        title: Text(widget.meal.mealName, style: TextStyle(fontSize: 18.sp,color: TEXT_PRIMARY)),
         backgroundColor: BACKGROUND,
+        foregroundColor: TEXT_PRIMARY,
         scrolledUnderElevation: 0,
       ),
       body: SingleChildScrollView(
@@ -98,24 +99,31 @@ class _MealTrackerState extends State<MealTrackerPage> {
                         horizontal: 14.w,
                         vertical: 8.h,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.wandSparkles,
-                            color: PRIMARY,
-                            size: 14.w,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            'Create with AI',
-                            style: TextStyle(
-                              color: PRIMARY,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13.sp,
-                            ),
-                          ),
-                        ],
+                      child: ValueListenableBuilder(
+                        valueListenable: foodService.aiFoodGenNotifier,
+                        builder: (context, state, child) {
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              state.status == AiFoodGenStatus.generating ?
+                                SpinKitThreeBounce(color: TEXT_PRIMARY, size: 14.sp) :
+                                Icon(
+                                  FontAwesomeIcons.wandSparkles,
+                                  color: TEXT_PRIMARY,
+                                  size: 14.w,
+                                ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                'Create with AI',
+                                style: TextStyle(
+                                  color: TEXT_PRIMARY,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
                       ),
                     ),
                   ),

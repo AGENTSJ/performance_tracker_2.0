@@ -77,6 +77,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         scrolledUnderElevation: 0,
         backgroundColor: BACKGROUND,
         title: Padding(

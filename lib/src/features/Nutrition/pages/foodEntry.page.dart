@@ -38,7 +38,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0),
+      appBar: AppBar(backgroundColor: BACKGROUND, scrolledUnderElevation: 0,foregroundColor: TEXT_PRIMARY,),
       body: Container(
         child: SingleChildScrollView(
           child: Padding(

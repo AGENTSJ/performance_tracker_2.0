@@ -98,6 +98,7 @@ class _AdviceDetailsPageState extends State<AdviceDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: Text(readonly ? 'View Advice' : 'Add Advice'),
         backgroundColor: BACKGROUND,
         actions: [

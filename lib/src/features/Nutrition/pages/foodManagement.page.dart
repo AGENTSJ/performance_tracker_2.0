@@ -87,6 +87,7 @@ class _FoodManagementPageState extends State<FoodManagementPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: const Text('Food Management'),
         backgroundColor: BACKGROUND,
         scrolledUnderElevation: 0,

@@ -90,6 +90,7 @@ class _ActivityPageState extends State<ActivityPage> {
     return Scaffold(
       backgroundColor: BACKGROUND,
       appBar: AppBar(
+        foregroundColor: TEXT_PRIMARY,
         title: day == null
             ? null
             : Row(
