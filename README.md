@@ -67,3 +67,17 @@ flutter build apk
 # iOS
 flutter build ios
 ```
+## Contributing
+
+Contributions are welcome and appreciated.
+
+If you'd like to contribute:
+
+1. Fork the repository.
+2. Create a feature or bug-fix branch.
+3. Make your changes and test them.
+4. Submit a Pull Request with a clear description of your changes.
+
+Please keep pull requests focused and follow the existing code style where possible.
+
+For significant changes or new features, consider opening an issue first to discuss the proposal.
