@@ -4,6 +4,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 class microNutrientList extends StatelessWidget {
   microNutrientList({
@@ -57,7 +58,7 @@ class microNutrientList extends StatelessWidget {
                     width: 40.w,
                     child: Text(
                       microNutrient != null
-                          ? '${_commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).round()}%'
+                          ? '${_commonService.getPercentage(MicroNutrients.microRDA[entry.key]!.value, microNutrient.value).safe.round()}%'
                           : '-',
                       textAlign: TextAlign.left,
                       style: TextStyle(

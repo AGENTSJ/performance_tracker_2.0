@@ -9,6 +9,7 @@ import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/day.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 class CalorieChart extends StatefulWidget {
   final double centerSpace;
@@ -89,7 +90,7 @@ class _CalorieChartState extends State<CalorieChart> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "${macroForToday!.calories.round()}",
+                                "${macroForToday!.calories.safe.round()}",
                                 style: TextStyle(
                                   fontSize: 18.sp,
                                   fontWeight: FontWeight.w500,

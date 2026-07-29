@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 import 'package:performance_tracker/models/day.model.dart';
 import 'package:performance_tracker/models/food.model.dart';
 import 'package:performance_tracker/services/day.service.dart';
@@ -54,7 +55,7 @@ class _MealContainerState extends State<MealContainer>
               ),
               Row(
                 children: [
-                  Text("${caloriesInMeal.round().toString()} Cal"),
+                  Text("${caloriesInMeal.safe.round().toString()} Cal"),
                   SizedBox(width: 10.w),
                   TextButton(
                     onPressed: () {
@@ -164,7 +165,7 @@ class _MealContainerState extends State<MealContainer>
                                         SizedBox(
                                           width: 80.w,
                                           child: Text(
-                                            "${food.macros.calories.round().toString()} Cal",
+                                            "${food.macros.calories.safe.round().toString()} Cal",
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
@@ -173,10 +174,16 @@ class _MealContainerState extends State<MealContainer>
                                           onTap: () {
                                             removeFoodFromMeal(food);
                                           },
-                                          child: Icon(
-                                            FontAwesomeIcons.xmark,
-                                            color: Colors.grey,
-                                            size: 15.w,
+                                          child: Container(
+                                            decoration: BoxDecoration(color: SURFACE2,shape: BoxShape.circle),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(10.0.r),
+                                              child: Icon(
+                                                FontAwesomeIcons.xmark,
+                                                color: Colors.grey,
+                                                size: 15.w,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],

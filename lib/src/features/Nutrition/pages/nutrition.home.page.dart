@@ -14,6 +14,7 @@ import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Nutrition/widgets/mealContainer.dart';
 import 'package:performance_tracker/src/features/Nutrition/pages/nutritionAnalysis.page.dart';
 import 'package:performance_tracker/src/features/Nutrition/widgets/greetingWidgets.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -157,7 +158,7 @@ class NutritionModuleState extends State<NutritionModule> {
                                     ),
                                   ),
                                   Text(
-                                    "${daysMacro.calories.round()} of ${currentDay?.goalForToday?.calorieLimit.round()} Cal",
+                                    "${daysMacro.calories.safe.round()} of ${currentDay?.goalForToday?.calorieLimit.safe.round()} Cal",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16.sp,

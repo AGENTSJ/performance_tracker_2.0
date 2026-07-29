@@ -8,6 +8,7 @@ import 'package:performance_tracker/services/common.service.dart';
 import 'package:performance_tracker/services/foods.service.dart';
 import 'package:performance_tracker/src/components/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 class FoodEntryPage extends StatefulWidget {
   final Food food;
@@ -73,20 +74,6 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                 width: double.infinity,
                                 height: double.infinity,
                               ),
-                              // ]
-                              // else ...[
-                              //   Container(
-                              //     decoration: BoxDecoration(
-                              //       image: DecorationImage(
-                              //         image: NetworkImage(widget.food.imageUrl!),
-                              //         fit: BoxFit.fitWidth,
-                              //       ),
-                              //       borderRadius: BorderRadius.circular(10),
-                              //     ),
-                              //     width: double.infinity,
-                              //     height: double.infinity,
-                              //   ),
-                              // ],
                               Positioned(
                                 bottom: 0,
                                 child: Padding(
@@ -212,7 +199,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                           ),
                         ),
                         Text(
-                          "${widget.food.macros.calories.round().toString()} Cal",
+                          "${widget.food.macros.calories.safe.round().toString()} Cal",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
@@ -250,7 +237,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                   ],
                                 ),
                                 Text(
-                                  "${widget.food.macros.protein.round().toString()} ${widget.food.quantity.unit}",
+                                  "${widget.food.macros.protein.safe.round().toString()} ${widget.food.quantity.unit}",
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -276,7 +263,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                   ],
                                 ),
                                 Text(
-                                  "${widget.food.macros.carbohydrate.round().toString()} ${widget.food.quantity.unit}",
+                                  "${widget.food.macros.carbohydrate.safe.round().toString()} ${widget.food.quantity.unit}",
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -302,7 +289,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                   ],
                                 ),
                                 Text(
-                                  "${widget.food.macros.fat.round().toString()} ${widget.food.quantity.unit}",
+                                  "${widget.food.macros.fat.safe.round().toString()} ${widget.food.quantity.unit}",
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -328,7 +315,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                                   ],
                                 ),
                                 Text(
-                                  "${widget.food.macros.fiber.round().toString()} ${widget.food.quantity.unit}",
+                                  "${widget.food.macros.fiber.safe.round().toString()} ${widget.food.quantity.unit}",
                                   style: TextStyle(fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -414,23 +401,6 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                 ),
               ),
             ),
-            // SizedBox(width: 10,),
-            // Expanded(
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       removeFood();
-            //     },
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.redAccent,
-            //       minimumSize: Size(double.infinity, 50),
-            //       foregroundColor: Colors.white,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadiusGeometry.circular(5),
-            //       ),
-            //     ),
-            //     child: Text("Remove Food"),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -558,6 +528,7 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
   }
 
   updateFood(double newQuant) {
+    newQuant = newQuant.safe;
     widget.food.macros.protein = (standard!.macros.protein * newQuant);
     widget.food.macros.carbohydrate =
         (standard!.macros.carbohydrate * newQuant);

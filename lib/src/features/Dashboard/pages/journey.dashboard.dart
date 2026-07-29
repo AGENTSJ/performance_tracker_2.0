@@ -18,6 +18,7 @@ import 'package:performance_tracker/src/features/Dashboard/widgets/journey.graph
 import 'package:performance_tracker/src/features/Dashboard/widgets/steps.chart.dart';
 import 'package:performance_tracker/src/components/journey.component.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({Key? key}) : super(key: key);
@@ -249,7 +250,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            "${(user!.weight >= user!.userGoals.targetWeight ? day!.goalForToday!.calorieLimit - day!.goalForToday!.caloricChangeGoal : day!.goalForToday!.calorieLimit + day!.goalForToday!.caloricChangeGoal).round()}",
+                                            "${(user!.weight >= user!.userGoals.targetWeight ? day!.goalForToday!.calorieLimit - day!.goalForToday!.caloricChangeGoal : day!.goalForToday!.calorieLimit + day!.goalForToday!.caloricChangeGoal).safe.round()}",
                                             style: smallLabelDecor,
                                           ),
                                           SizedBox(height: 5.h),
@@ -265,7 +266,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            "${(maintenance!).round()}",
+                                            "${(maintenance!).safe.round()}",
                                             style: smallLabelDecor,
                                           ),
                                           SizedBox(height: 5.h),
