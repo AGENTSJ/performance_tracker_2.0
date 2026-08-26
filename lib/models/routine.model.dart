@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 part 'routine.model.g.dart';
 
@@ -88,7 +89,7 @@ class Workout extends HiveObject {
   {
     var sumOfAllVolumes = 0.0;
     volumes.forEach((vol)=> sumOfAllVolumes+=vol.volume);
-    return (reps + (fatigue / sumOfAllVolumes));
+    return (reps + (fatigue / sumOfAllVolumes).safe);
   }
 }
 

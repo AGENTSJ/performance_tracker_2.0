@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:markdown_widget/config/configs.dart';
 import 'package:markdown_widget/widget/all.dart';
@@ -20,6 +21,7 @@ class _ReportsPageState extends State<ReportsPage> {
   final commonService = locator<CommonService>();
   var selectedType = EntityType.workout;
   List<Report> reports = [];
+  bool exporting = false;
 
   // Dark theme to match the app, with wide tables (e.g. the fatigue matrix)
   // made horizontally scrollable so they never overflow the card.
@@ -45,6 +47,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   setUpUi(EntityType tab) {
+    var _ = reportService.getAndCreateAllWorkoutReports();
     var allReports = reportService.fetchAllReports();
     selectedType = tab;
     reports = [];
@@ -67,6 +70,112 @@ class _ReportsPageState extends State<ReportsPage> {
     refreshState();
   }
 
+  showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  handleCopyWorkoutReports() async {
+    var export = reportService.buildReportsExport(EntityType.workout);
+    if (export.isEmpty) {
+      showMessage("No workout reports to copy");
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: export));
+    showMessage("Copied ${reports.length} workout report(s) to clipboard");
+  }
+
+  // Exports the raw logged data of the selected tab for the last [weeks]
+  // week(s), rather than the reports stored for it.
+  handleCopyDataExport(int weeks) async {
+    if (exporting) return;
+    setState(() {
+      exporting = true;
+    });
+    try {
+      var export = selectedType == EntityType.activity
+          ? await reportService.buildActivityExport(weeks)
+          : await reportService.buildNutritionExport(weeks);
+      await Clipboard.setData(ClipboardData(text: export));
+      showMessage(
+        "Copied last $weeks week(s) of ${selectedType.name} data to clipboard",
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          exporting = false;
+        });
+      }
+    }
+  }
+
+  ButtonStyle get actionButtonStyle => ElevatedButton.styleFrom(
+    backgroundColor: PRIMARY,
+    foregroundColor: SURFACE2,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+  );
+
+  // The workout tab copies the stored reports themselves, while the nutrition
+  // and activity tabs export their raw day by day data for the chosen window.
+  Widget buildExportActions() {
+    List<Widget> buttons;
+    if (selectedType == EntityType.workout) {
+      buttons = [
+        Expanded(
+          child: ElevatedButton(
+            style: actionButtonStyle,
+            onPressed: handleCopyWorkoutReports,
+            child: Text("Copy Workout Reports"),
+          ),
+        ),
+      ];
+    } else if (selectedType == EntityType.nutrition ||
+        selectedType == EntityType.activity) {
+      buttons = [
+        Expanded(child: buildDataExportButton(1, "Last 1 Week")),
+        SizedBox(width: 8.w),
+        Expanded(child: buildDataExportButton(2, "Last 2 Weeks")),
+      ];
+    } else {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.h),
+      child: Row(children: buttons),
+    );
+  }
+
+  Widget buildDataExportButton(int weeks, String label) {
+    return ElevatedButton(
+      style: actionButtonStyle,
+      onPressed: exporting ? null : () => handleCopyDataExport(weeks),
+      child: Text(exporting ? "Exporting..." : label),
+    );
+  }
+
+  Widget buildTabButton(EntityType type, String label) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 3.0.w),
+      child: Container(
+        decoration: BoxDecoration(
+          color: SURFACE,
+          border: Border(
+            bottom: BorderSide(
+              color: selectedType == type ? PRIMARY : Colors.transparent,
+            ),
+          ),
+        ),
+        child: TextButton(
+          style: navButtonStyle,
+          onPressed: () {
+            setUpUi(type);
+          },
+          child: Text(label, style: TextStyle(color: TEXT_PRIMARY)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,75 +191,17 @@ class _ReportsPageState extends State<ReportsPage> {
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.0.w),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: SURFACE,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: selectedType == EntityType.workout
-                                ? PRIMARY
-                                : Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      child: TextButton(
-                        style: navButtonStyle,
-                        onPressed: () {
-                          setUpUi(EntityType.workout);
-                        },
-                        child: Text("Workout",style: TextStyle(color: TEXT_PRIMARY),),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.0.w),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: SURFACE,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: selectedType == EntityType.routine
-                                ? PRIMARY
-                                : Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      child: TextButton(
-                        style: navButtonStyle,
-                        onPressed: () {
-                          setUpUi(EntityType.routine);
-                        },
-                        child: Text("Routine",style: TextStyle(color: TEXT_PRIMARY),),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.0.w),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: SURFACE,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: selectedType == EntityType.nutrition
-                                ? PRIMARY
-                                : Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      child: TextButton(
-                        style: navButtonStyle,
-                        onPressed: () {
-                          setUpUi(EntityType.nutrition);
-                        },
-                        child: Text("Nutrition",style: TextStyle(color: TEXT_PRIMARY),),
-                      ),
-                    ),
-                  ),
-                ],
+              // Scrollable so the tabs never overflow on narrow screens.
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    buildTabButton(EntityType.workout, "Workout"),
+                    buildTabButton(EntityType.routine, "Routine"),
+                    buildTabButton(EntityType.nutrition, "Nutrition"),
+                    buildTabButton(EntityType.activity, "Activity"),
+                  ],
+                ),
               ),
             ),
           ),
@@ -277,15 +328,12 @@ class _ReportsPageState extends State<ReportsPage> {
                           ),
                         );
                       }),
+                      buildExportActions(),
                       Row(
                         children: [
                           Expanded(
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: PRIMARY,
-                                foregroundColor: SURFACE2,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.r))
-                              ),
+                              style: actionButtonStyle,
                               onPressed: () async {
                                 await reportService.clearAllReports();
                                 reports = [];
