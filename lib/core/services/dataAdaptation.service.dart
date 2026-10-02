@@ -11,7 +11,7 @@ import 'package:performance_tracker/src/features/Dashboard/models/journalBook.mo
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
-import 'package:performance_tracker/repositories/conversation.respository.dart';
+import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/foods.service.dart';

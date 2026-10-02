@@ -1,6 +1,6 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
-import 'package:performance_tracker/repositories/routine.repository.dart';
+import 'package:performance_tracker/src/features/Workout/repositories/routine.repository.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 class SummaryDTO<T> {
   DateTime? recentUpdate;

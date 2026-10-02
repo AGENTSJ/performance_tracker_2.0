@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
-import 'package:performance_tracker/repositories/routine.repository.dart';
+import 'package:performance_tracker/src/features/Workout/repositories/routine.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';

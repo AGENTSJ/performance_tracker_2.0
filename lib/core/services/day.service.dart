@@ -3,7 +3,7 @@ import 'package:performance_tracker/core/models/activity.model.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
-import 'package:performance_tracker/repositories/day.repository.dart';
+import 'package:performance_tracker/core/repositories/day.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';

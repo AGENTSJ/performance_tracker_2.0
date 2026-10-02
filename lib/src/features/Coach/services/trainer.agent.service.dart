@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
-import 'package:performance_tracker/repositories/conversation.respository.dart';
+import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
 import 'package:performance_tracker/core/services/ai.service.dart';
 import 'package:performance_tracker/core/services/common.service.dart';

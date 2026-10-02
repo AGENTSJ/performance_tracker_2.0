@@ -10,7 +10,7 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:performance_tracker/repositories/dataAdaptation.service.dart';
+import 'package:performance_tracker/core/services/dataAdaptation.service.dart';
 import 'package:performance_tracker/core/services/avatar.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';

@@ -4,7 +4,7 @@ import 'package:performance_tracker/core/extensions/double_extensions.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
-import 'package:performance_tracker/repositories/report.repository.dart';
+import 'package:performance_tracker/src/features/Coach/repositories/report.repository.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';

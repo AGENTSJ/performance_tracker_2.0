@@ -1,7 +1,7 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/fatigue.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
-import 'package:performance_tracker/repositories/fatigue.repository.dart';
+import 'package:performance_tracker/src/features/Workout/repositories/fatigue.repository.dart';
 
 /// Captures and tracks accumulated muscle fatigue across the workouts a user
 /// performs within a single day.

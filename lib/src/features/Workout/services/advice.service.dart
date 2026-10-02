@@ -1,6 +1,6 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
-import 'package:performance_tracker/repositories/advice.repository.dart';
+import 'package:performance_tracker/src/features/Workout/repositories/advice.repository.dart';
 
 class AdviceService {
   final AdviceRepository _repository = locator<AdviceRepository>();

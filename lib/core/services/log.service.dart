@@ -1,7 +1,7 @@
 // services/log_service.dart
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/log.model.dart';
-import 'package:performance_tracker/repositories/log.repository.dart';
+import 'package:performance_tracker/core/repositories/log.repository.dart';
 
 class LogService {
   final LogRepository _repository = locator<LogRepository>();

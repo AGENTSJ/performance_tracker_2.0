@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
-import 'package:performance_tracker/repositories/journey.repository.dart';
+import 'package:performance_tracker/src/features/Dashboard/repositories/journey.repository.dart';
 class JourneyBadge
 {
   String title;

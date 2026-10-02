@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
-import 'package:performance_tracker/repositories/food.repository.dart';
+import 'package:performance_tracker/src/features/Nutrition/repositories/food.repository.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/services/ai.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';

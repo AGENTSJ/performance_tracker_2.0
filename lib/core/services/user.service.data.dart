@@ -1,6 +1,6 @@
 import "package:performance_tracker/DI.dart";
 import "package:performance_tracker/core/models/user.model.dart";
-import "package:performance_tracker/repositories/user.repository.dart";
+import "package:performance_tracker/core/repositories/user.repository.dart";
 
 class UserService {
   final _userRepo = locator<UserRepository>();

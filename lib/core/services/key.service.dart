@@ -5,7 +5,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/key.model.dart';
-import 'package:performance_tracker/repositories/key.repository.dart';
+import 'package:performance_tracker/core/repositories/key.repository.dart';
 
 class KeyService {
   final _keyRepo = locator<KeyRepository>();

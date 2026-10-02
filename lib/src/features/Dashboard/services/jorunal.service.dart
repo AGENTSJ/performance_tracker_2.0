@@ -1,6 +1,6 @@
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
-import 'package:performance_tracker/repositories/journal.repository.dart';
+import 'package:performance_tracker/src/features/Dashboard/repositories/journal.repository.dart';
 import 'package:performance_tracker/core/services/ai.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 
