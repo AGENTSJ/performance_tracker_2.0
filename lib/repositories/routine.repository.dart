@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 
 class RoutineRepository {
   final routineBox = Hive.box<Routine>(Collections.routines.value);

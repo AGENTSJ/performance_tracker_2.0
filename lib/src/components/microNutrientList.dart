@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/food.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 class microNutrientList extends StatelessWidget {

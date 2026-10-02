@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/food.model.dart';
-import 'package:performance_tracker/models/user.model.dart';
-import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/services/user.service.data.dart';
-import 'package:performance_tracker/services/userGoals.service.dart';
+import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/core/services/user.service.data.dart';
+import 'package:performance_tracker/core/services/userGoals.service.dart';
 
 class GoalsWidget extends StatefulWidget {
   final User user;

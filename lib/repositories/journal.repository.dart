@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
 
 class JournalRepository
 {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/models/food.model.dart';
-import 'package:performance_tracker/services/foods.service.dart';
+import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/src/features/Nutrition/services/foods.service.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class FoodManagementPage extends StatefulWidget {

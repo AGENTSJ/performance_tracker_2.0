@@ -5,8 +5,8 @@ import 'package:markdown_widget/config/configs.dart';
 import 'package:markdown_widget/widget/all.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/report.service.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/src/features/Coach/services/report.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 
 class ReportsPage extends StatefulWidget {

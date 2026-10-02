@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:performance_tracker/models/log.model.dart';
+import 'package:performance_tracker/core/models/log.model.dart';
 
 
 class LogRepository {

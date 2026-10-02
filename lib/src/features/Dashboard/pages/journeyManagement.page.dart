@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/journey.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/journey.service.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyManagementPage extends StatefulWidget {

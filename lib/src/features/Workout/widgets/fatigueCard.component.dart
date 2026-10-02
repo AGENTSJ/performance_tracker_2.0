@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/fatigue.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/fatigue.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/fatigue.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 
 /// Shows the muscle fatigue accumulated today plus a short history of past
 /// training sessions. Reads straight from [FatigueService].

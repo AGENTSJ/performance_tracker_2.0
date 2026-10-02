@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
 
 class UserRepository {
   final _userBox = Hive.box<User>(Collections.users.value);

@@ -9,8 +9,8 @@ import 'package:markdown_widget/markdown_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/journalBook.model.dart';
-import 'package:performance_tracker/services/jorunal.service.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/services/jorunal.service.dart';
 
 class JournalEntryPage extends StatefulWidget {
   final Journal journal;

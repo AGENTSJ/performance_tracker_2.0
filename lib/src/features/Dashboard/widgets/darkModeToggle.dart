@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/services/config.service.dart';
+import 'package:performance_tracker/core/services/config.service.dart';
 
 class DarkModeToggle extends StatefulWidget {
   const DarkModeToggle({super.key});

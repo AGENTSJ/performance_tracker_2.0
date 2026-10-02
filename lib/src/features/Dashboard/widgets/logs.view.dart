@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/log.model.dart';
-import 'package:performance_tracker/services/log.service.dart';
+import 'package:performance_tracker/core/models/log.model.dart';
+import 'package:performance_tracker/core/services/log.service.dart';
 
 class LogViewWidget extends StatefulWidget {
   final LogService logService = locator<LogService>();

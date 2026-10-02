@@ -4,8 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/journalBook.model.dart';
-import 'package:performance_tracker/services/jorunal.service.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/services/jorunal.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/journal.page.dart';
 
 class JournalLock extends StatefulWidget {

@@ -4,9 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 
 class SetDetailRowComponent extends StatefulWidget {
   static final fieldDecor = TextStyle(

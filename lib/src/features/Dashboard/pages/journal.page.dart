@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/journalBook.model.dart';
-import 'package:performance_tracker/services/jorunal.service.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/services/jorunal.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/journalEntry.page.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/journalCard.dart';
 

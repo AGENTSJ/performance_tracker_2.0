@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/advice.model.dart';
-import 'package:performance_tracker/services/advice.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
+import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
 
 class AdviceDetailsPage extends StatefulWidget {
   final Advice? advice;

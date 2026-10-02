@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/advice.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
 
 class AdviceRepository {
   final _adviceBox = Hive.box<AdviceSet>(Collections.advices.value);

@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/journey.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 
 class JourneyRepository {
   final _journeyBox = Hive.box<Journey>(Collections.journey.value);

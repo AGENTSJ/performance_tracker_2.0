@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/day.model.dart';
-import 'package:performance_tracker/models/journey.model.dart';
-import 'package:performance_tracker/models/user.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
-import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/services/user.service.data.dart';
-import 'package:performance_tracker/services/userGoals.service.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/core/services/user.service.data.dart';
+import 'package:performance_tracker/core/services/userGoals.service.dart';
 
 class JourneyGraph extends StatefulWidget {
   final Journey journey;

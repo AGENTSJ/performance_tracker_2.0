@@ -1,6 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
 
 class DayRepository 
 {

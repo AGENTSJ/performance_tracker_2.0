@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/day.model.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
 
 class DateSelector extends StatefulWidget {
   final DateTime selectedDate;

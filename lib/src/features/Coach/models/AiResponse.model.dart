@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'AiResponse.model.g.dart';
+part 'generated/AiResponse.model.g.dart';
 
 @HiveType(typeId: 25)
 class AiResponse extends HiveObject {

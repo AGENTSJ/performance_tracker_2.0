@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/models/fatigue.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/fatigue.model.dart';
 
 class FatigueRepository {
   final _box = Hive.box<FatigueDay>(Collections.fatigue.value);
