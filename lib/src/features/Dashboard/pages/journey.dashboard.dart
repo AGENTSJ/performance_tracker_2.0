@@ -16,7 +16,7 @@ import 'package:performance_tracker/src/features/Dashboard/widgets/calorie.chart
 import 'package:performance_tracker/src/features/Dashboard/widgets/journal.lock.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/journey.graph.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/steps.chart.dart';
-import 'package:performance_tracker/src/components/journey.component.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/journey.component.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/core/extensions/double_extensions.dart';
 

@@ -12,8 +12,8 @@ import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
-import 'package:performance_tracker/src/components/goals.widget.dart';
-import 'package:performance_tracker/src/components/journeyIntroduction.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/goals.widget.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/journeyIntroduction.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 
 class JourneyComponent extends StatefulWidget {

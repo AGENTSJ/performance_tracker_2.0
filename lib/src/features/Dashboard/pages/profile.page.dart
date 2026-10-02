@@ -15,7 +15,7 @@ import 'package:performance_tracker/core/services/avatar.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
-import 'package:performance_tracker/src/components/goals.widget.dart';
+import 'package:performance_tracker/src/features/Dashboard/widgets/goals.widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/AiMangement.page.dart';
 import 'package:performance_tracker/src/features/Dashboard/pages/journeyManagement.page.dart';

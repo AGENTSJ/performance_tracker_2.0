@@ -6,7 +6,7 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/foods.service.dart';
-import 'package:performance_tracker/src/components/microNutrientList.dart';
+import 'package:performance_tracker/src/features/Nutrition/widgets/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/core/extensions/double_extensions.dart';
 

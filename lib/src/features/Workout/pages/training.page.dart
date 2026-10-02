@@ -11,13 +11,13 @@ import 'package:performance_tracker/src/features/Coach/services/trainer.agent.se
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
-import 'package:performance_tracker/src/components/selectWorkout.dart';
-import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/selectWorkout.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/workout.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/advices.page.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/routines.page.dart';
-import 'package:performance_tracker/src/components/routineSelection.component.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/routineSelection.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/fatigue.page.dart';
 
 class TrainingModulePage extends StatefulWidget {

@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
-import 'package:performance_tracker/src/components/AnimatedProgressBar.dart';
-import 'package:performance_tracker/src/components/macroPieChart.dart';
+import 'package:performance_tracker/src/features/Nutrition/widgets/AnimatedProgressBar.dart';
+import 'package:performance_tracker/src/features/Nutrition/widgets/macroPieChart.dart';
 import 'package:performance_tracker/constants.ui.dart';
 
 class MacroAnalysisWidget extends StatelessWidget {

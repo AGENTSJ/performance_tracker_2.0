@@ -4,7 +4,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
-import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/workout.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workoutDetails.page.dart';
 
 class WorkoutsPage extends StatefulWidget {
