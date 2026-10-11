@@ -268,12 +268,12 @@ class FoodService {
             "value": Double value,
             "unit": "mg"
             }
-        }
+        },
         "servings":[
           {
             "unit":"common serving or 'serving'",
             "value":double value in grams
-          },
+          }
         ]
       }
       ''';
@@ -294,6 +294,9 @@ class FoodService {
         4 adhere to the response format strictly.
         5 put your knowledge here to the best use if not known make a guess based on user description.
         6 If even the description doesn't make sense return text error without json format.
+        7 Every micro nutrient MUST use exactly the unit shown in the format (mg or mcg). Never use IU, g or µg; convert first.
+        8 Vitamin A is mcg RAE, Folate is mcg DFE, Niacin is mg NE, Vitamin E is mg alpha-tocopherol.
+        9 If a nutrient is absent in the food use 0.
       Format :
         $jsonResponseStructure
       ''';
@@ -387,13 +390,29 @@ class FoodService {
     }
   }
 
+  // Reads a micro from the AI response and normalises it to the unit used in
+  // MicroNutrients.microRDA, since totals and RDA percentages ignore units.
+  // Returns null when the unit can't be converted rather than store a wrong value.
   MeasuredUnit? _getUnit(Map<String, dynamic> json, String key) {
     final data = json[key];
-    if (data == null) return null;
-    return MeasuredUnit(
-      value: (data['value'] as num).toDouble(),
-      unit: data['unit'],
-    );
+    if (data == null || data['value'] is! num) return null;
+    final value = (data['value'] as num).toDouble();
+    final targetUnit = MicroNutrients.microRDA[key]?.unit;
+    if (targetUnit == null) return null;
+
+    var unit = (data['unit'] as String? ?? targetUnit).trim().toLowerCase();
+    if (unit == 'µg' || unit == 'ug' || unit == 'μg') unit = 'mcg';
+
+    const toMcg = {'g': 1000000.0, 'mg': 1000.0, 'mcg': 1.0};
+    double? mcg;
+    if (toMcg.containsKey(unit)) {
+      mcg = value * toMcg[unit]!;
+    } else if (unit == 'iu' && key == 'Vitamin D') {
+      mcg = value * 0.025;
+    }
+    if (mcg == null) return null;
+
+    return MeasuredUnit(value: mcg / toMcg[targetUnit]!, unit: targetUnit);
   }
 
   clearAllFood()async
