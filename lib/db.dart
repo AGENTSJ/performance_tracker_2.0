@@ -5,7 +5,7 @@ import 'package:performance_tracker/src/features/Workout/models/advice.model.dar
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/fatigue.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
-import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Journal/models/journalBook.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/core/models/key.model.dart';
 import 'package:performance_tracker/core/models/log.model.dart';

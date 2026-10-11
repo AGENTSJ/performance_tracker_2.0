@@ -7,7 +7,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
-import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Journal/models/journalBook.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
@@ -15,7 +15,7 @@ import 'package:performance_tracker/src/features/Coach/repositories/conversation
 import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/foods.service.dart';
-import 'package:performance_tracker/src/features/Dashboard/services/jorunal.service.dart';
+import 'package:performance_tracker/src/features/Journal/services/journal.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
 import 'package:performance_tracker/src/features/Coach/services/report.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';

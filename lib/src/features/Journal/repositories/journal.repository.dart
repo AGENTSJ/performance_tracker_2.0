@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Journal/models/journalBook.model.dart';
 
 class JournalRepository
 {
@@ -23,7 +23,7 @@ class JournalRepository
     return _box.get(id);
   }
 
-  void updateJournalBook(int id, JournalBook jbook)async
+  Future<void> updateJournalBook(int id, JournalBook jbook)async
   {
     return await _box.put(id, jbook);
   }

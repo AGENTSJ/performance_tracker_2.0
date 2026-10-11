@@ -4,9 +4,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/src/features/Dashboard/models/journalBook.model.dart';
-import 'package:performance_tracker/src/features/Dashboard/services/jorunal.service.dart';
-import 'package:performance_tracker/src/features/Dashboard/pages/journal.page.dart';
+import 'package:performance_tracker/src/features/Journal/models/journalBook.model.dart';
+import 'package:performance_tracker/src/features/Journal/services/journal.service.dart';
+import 'package:performance_tracker/src/features/Journal/pages/journalBook.page.dart';
+import 'package:performance_tracker/src/features/Journal/widgets/journalTheme.dart';
 
 class JournalLock extends StatefulWidget {
   const JournalLock({Key? key}) : super(key: key);
@@ -25,33 +26,54 @@ class _JournalLockState extends State<JournalLock> {
     super.initState();
   }
 
-  handleJournalEntry() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Decode the cover ahead of time so it's ready when the diary opens.
+    precacheImage(const AssetImage(JournalTheme.coverImage), context);
+  }
+
+  handleJournalEntry() async {
     if (passController.value.text.isEmpty ||
         passController.value.text.length < 5) {
       Fluttertoast.showToast(msg: "Minimum password length is 5 ");
       return;
     }
+    var pass = passController.text;
     if (book == null) {
-      var jbook = new JournalBook([], passController.text);
-      _jBookService.createJournalBook(jbook);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => JournalPage(pass: passController.text),
-        ),
-      );
-    } else {
-      if (book?.password == passController.value.text) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => JournalPage(pass: passController.text),
+      await _jBookService.createJournalBook(JournalBook([], pass));
+    } else if (book?.password != pass) {
+      Fluttertoast.showToast(msg: "Wrong pass");
+      return;
+    }
+    passController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (!mounted) {
+      return;
+    }
+    await Navigator.push(context, _openBookRoute(pass));
+    if (mounted) {
+      setState(() => book = _jBookService.getJournalBook());
+    }
+  }
+
+  Route<void> _openBookRoute(String pass) {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 450),
+      reverseTransitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          JournalBookPage(pass: pass),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween(begin: 0.85, end: 1.0).animate(curved),
+            child: child,
           ),
         );
-      } else {
-        Fluttertoast.showToast(msg: "Wrong pass");
-      }
-    }
+      },
+    );
   }
 
   @override

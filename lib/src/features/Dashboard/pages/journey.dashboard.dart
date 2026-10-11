@@ -13,7 +13,7 @@ import 'package:performance_tracker/src/features/Dashboard/services/journey.serv
 import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/calorie.chart.dart';
-import 'package:performance_tracker/src/features/Dashboard/widgets/journal.lock.dart';
+import 'package:performance_tracker/src/features/Journal/widgets/journal.lock.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/journey.graph.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/steps.chart.dart';
 import 'package:performance_tracker/src/features/Dashboard/widgets/journey.component.dart';
