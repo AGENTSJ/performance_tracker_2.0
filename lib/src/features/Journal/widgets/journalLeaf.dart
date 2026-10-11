@@ -44,6 +44,8 @@ class _JournalLeafState extends State<JournalLeaf> {
   final commonService = locator<CommonService>();
   late TextEditingController _markdownController;
   late TextEditingController _titleEditController;
+  var bodyPadding = EdgeInsets.only(left: 28.w, right: 16.w);
+
   var beautiFying = false;
   var isEditingMode = false;
   double opacity = 0;
@@ -336,34 +338,31 @@ class _JournalLeafState extends State<JournalLeaf> {
               ),
             ),
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(left: 28.w, right: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildToolbar(),
-                  _buildHeading(),
-                  SizedBox(height: 10.h),
-                  const JournalOrnament(),
-                  SizedBox(height: 10.h),
-                  if (journal.imagePaths.isNotEmpty) ...[
-                    _buildImageStrip(),
-                    SizedBox(height: 12.h),
-                  ],
-                  Expanded(child: _buildBody()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    child: Text(
-                      '— ${widget.pageNumber} —',
-                      textAlign: TextAlign.center,
-                      style: JournalTheme.serif(
-                        fontSize: 13.sp,
-                        color: style.inkFaded,
-                      ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildToolbar(),
+                _buildHeading(),
+                SizedBox(height: 10.h),
+                const JournalOrnament(),
+                SizedBox(height: 10.h),
+                if (journal.imagePaths.isNotEmpty) ...[
+                  _buildImageStrip(),
+                  SizedBox(height: 12.h),
+                ],
+                Expanded(child: _buildBody()),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  child: Text(
+                    '— ${widget.pageNumber} —',
+                    textAlign: TextAlign.center,
+                    style: JournalTheme.serif(
+                      fontSize: 13.sp,
+                      color: style.inkFaded,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -429,54 +428,57 @@ class _JournalLeafState extends State<JournalLeaf> {
     var style = JournalTheme.pageStyleOf(context);
     var date = journal.dateOfJournal;
     var title = journal.title.trim();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${journalWeekday(date).toUpperCase()}  ·  ${commonService.getTimeString(date)}',
-          style: JournalTheme.serif(
-            fontSize: 11.sp,
-            letterSpacing: 2,
-            color: style.inkFaded,
-          ),
-        ),
-        SizedBox(height: 4.h),
-        Text(
-          journalLongDate(date),
-          style: JournalTheme.serif(fontSize: 26.sp),
-        ),
-        if (isEditingMode)
-          TextField(
-            controller: _titleEditController,
+    return Padding(
+      padding: bodyPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${journalWeekday(date).toUpperCase()}  ·  ${commonService.getTimeString(date)}',
             style: JournalTheme.serif(
-              fontSize: 17.sp,
-              fontStyle: FontStyle.italic,
-              color: style.ink,
+              fontSize: 11.sp,
+              letterSpacing: 2,
+              color: style.inkFaded,
             ),
-            cursorColor: style.ink,
-            decoration: InputDecoration(
-              isDense: true,
-              border: InputBorder.none,
-              hintText: 'Give this day a title',
-              hintStyle: JournalTheme.serif(
-                fontSize: 17.sp,
-                fontStyle: FontStyle.italic,
-                color: style.inkFaded.withValues(alpha: 0.6),
-              ),
-            ),
-          )
-        else if (title.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(top: 4.h),
-            child: Text(
-              title,
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            journalLongDate(date),
+            style: JournalTheme.serif(fontSize: 26.sp),
+          ),
+          if (isEditingMode)
+            TextField(
+              controller: _titleEditController,
               style: JournalTheme.serif(
                 fontSize: 17.sp,
                 fontStyle: FontStyle.italic,
+                color: style.ink,
+              ),
+              cursorColor: style.ink,
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: 'Give this day a title',
+                hintStyle: JournalTheme.serif(
+                  fontSize: 17.sp,
+                  fontStyle: FontStyle.italic,
+                  color: style.inkFaded.withValues(alpha: 0.6),
+                ),
+              ),
+            )
+          else if (title.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(top: 4.h),
+              child: Text(
+                title,
+                style: JournalTheme.serif(
+                  fontSize: 17.sp,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -532,20 +534,23 @@ class _JournalLeafState extends State<JournalLeaf> {
   Widget _buildBody() {
     var style = JournalTheme.pageStyleOf(context);
     if (isEditingMode) {
-      return TextField(
-        controller: _markdownController,
-        maxLines: null,
-        expands: true,
-        textAlignVertical: TextAlignVertical.top,
-        cursorColor: style.ink,
-        style: JournalTheme.serif(fontSize: 16.sp, height: 1.6, color: style.ink),
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Dear diary…',
-          hintStyle: JournalTheme.serif(
-            fontSize: 16.sp,
-            fontStyle: FontStyle.italic,
-            color: style.inkFaded.withValues(alpha: 0.6),
+      return Padding(
+        padding: bodyPadding,
+        child: TextField(
+          controller: _markdownController,
+          maxLines: null,
+          expands: true,
+          textAlignVertical: TextAlignVertical.top,
+          cursorColor: style.ink,
+          style: JournalTheme.serif(fontSize: 16.sp, height: 1.6, color: style.ink),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: 'Dear diary…',
+            hintStyle: JournalTheme.serif(
+              fontSize: 16.sp,
+              fontStyle: FontStyle.italic,
+              color: style.inkFaded.withValues(alpha: 0.6),
+            ),
           ),
         ),
       );
@@ -571,9 +576,12 @@ class _JournalLeafState extends State<JournalLeaf> {
         ),
       );
     }
-    return MarkdownWidget(
-      data: journal.journalData,
-      config: _markdownConfig(style),
+    return Padding(
+      padding: bodyPadding,
+      child: MarkdownWidget(
+        data: journal.journalData,
+        config: _markdownConfig(style),
+      ),
     );
   }
 

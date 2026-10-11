@@ -63,91 +63,88 @@ class _JournalIndexState extends State<JournalIndex> {
 
     return JournalPaper(
       child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(left: 32.w, right: 20.w),
-          child: Column(
-            children: [
-              Row(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: widget.onBack,
+                  icon: const Icon(Icons.chevron_left),
+                  color: style.inkFaded,
+                  tooltip: 'Cover',
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: widget.onSettings,
+                  icon: const Icon(Icons.settings_outlined),
+                  color: style.inkFaded,
+                  tooltip: 'Settings',
+                ),
+              ],
+            ),
+            Text(
+              'Index',
+              style: JournalTheme.serif(
+                fontSize: 34.sp,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            SizedBox(height: 6.h),
+            const JournalOrnament(),
+            SizedBox(height: 8.h),
+            Expanded(
+              child: years.isEmpty
+                  ? _buildEmpty(style)
+                  : ListView(
+                      padding: EdgeInsets.only(bottom: 16.h),
+                      children: [
+                        for (var year in years)
+                          _YearChapter(
+                            year: year,
+                            entries: byYear[year]!.reversed.toList(),
+                            pageNumbers: pageNumbers,
+                            isOpen: _openYears.contains(year),
+                            onToggle: () => _toggleYear(year),
+                            onEntryTap: widget.onEntryTap,
+                          ),
+                      ],
+                    ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h, top: 8.h),
+              child: Row(
                 children: [
-                  IconButton(
-                    onPressed: widget.onBack,
-                    icon: const Icon(Icons.chevron_left),
-                    color: style.inkFaded,
-                    tooltip: 'Cover',
+                  Expanded(
+                    flex: 3,
+                    child: OutlinedButton.icon(
+                      onPressed: widget.onOpenToday,
+                      icon: const Icon(Icons.today_outlined, size: 18),
+                      label: Text(
+                        'Today',
+                        style: JournalTheme.serif(fontSize: 16.sp),
+                      ),
+                      style: _buttonStyle(style, filled: false),
+                    ),
                   ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: widget.onSettings,
-                    icon: const Icon(Icons.settings_outlined),
-                    color: style.inkFaded,
-                    tooltip: 'Settings',
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    flex: 3,
+                    child: OutlinedButton.icon(
+                      onPressed: widget.onAddEntry,
+                      icon: const Icon(Icons.edit_calendar_outlined, size: 18),
+                      label: Text(
+                        'Previous',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: JournalTheme.serif(fontSize: 16.sp),
+                      ),
+                      style: _buttonStyle(style, filled: true),
+                    ),
                   ),
                 ],
               ),
-              Text(
-                'Index',
-                style: JournalTheme.serif(
-                  fontSize: 34.sp,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-              SizedBox(height: 6.h),
-              const JournalOrnament(),
-              SizedBox(height: 8.h),
-              Expanded(
-                child: years.isEmpty
-                    ? _buildEmpty(style)
-                    : ListView(
-                        padding: EdgeInsets.only(bottom: 16.h),
-                        children: [
-                          for (var year in years)
-                            _YearChapter(
-                              year: year,
-                              entries: byYear[year]!.reversed.toList(),
-                              pageNumbers: pageNumbers,
-                              isOpen: _openYears.contains(year),
-                              onToggle: () => _toggleYear(year),
-                              onEntryTap: widget.onEntryTap,
-                            ),
-                        ],
-                      ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: 16.h, top: 8.h),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: OutlinedButton.icon(
-                        onPressed: widget.onOpenToday,
-                        icon: const Icon(Icons.today_outlined, size: 18),
-                        label: Text(
-                          'Today',
-                          style: JournalTheme.serif(fontSize: 16.sp,),
-                        ),
-                        style: _buttonStyle(style, filled: false),
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      flex: 3,
-                      child: OutlinedButton.icon(
-                        onPressed: widget.onAddEntry,
-                        icon: const Icon(Icons.edit_calendar_outlined, size: 18),
-                        label: Text(
-                          'Previous',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: JournalTheme.serif(fontSize: 16.sp),
-                        ),
-                        style: _buttonStyle(style, filled: true),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -204,60 +201,64 @@ class _YearChapter extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        InkWell(
-          onTap: onToggle,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '$year',
-                  style: JournalTheme.serif(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const Expanded(child: _DottedLeader()),
-                Text(
-                  '${entries.length} ${entries.length == 1 ? 'entry' : 'entries'}',
-                  style: JournalTheme.serif(
-                    fontSize: 13.sp,
-                    fontStyle: FontStyle.italic,
-                    color: style.inkFaded,
-                  ),
-                ),
-                AnimatedRotation(
-                  turns: isOpen ? 0.25 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: style.inkFaded,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-          alignment: Alignment.topCenter,
-          child: isOpen
-              ? Padding(
-                  padding: EdgeInsets.only(left: 8.w, bottom: 8.h),
-                  child: Column(
+        Padding(
+          padding: EdgeInsets.only(left: 32.w, right: 20.w),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: onToggle,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 6.h, bottom: 6.h),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      for (var entry in entries)
-                        _EntryLine(
-                          entry: entry,
-                          pageNumber: pageNumbers[entry]!,
-                          onTap: () => onEntryTap(entry),
+                      Text(
+                        '$year',
+                        style: JournalTheme.serif(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
                         ),
+                      ),
+                      const Expanded(child: _DottedLeader()),
+                      Text(
+                        '${entries.length} ${entries.length == 1 ? 'entry' : 'entries'}',
+                        style: JournalTheme.serif(
+                          fontSize: 13.sp,
+                          fontStyle: FontStyle.italic,
+                          color: style.inkFaded,
+                        ),
+                      ),
+                      AnimatedRotation(
+                        turns: isOpen ? 0.25 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Icon(Icons.chevron_right, color: style.inkFaded),
+                      ),
                     ],
                   ),
-                )
-              : const SizedBox(width: double.infinity),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                alignment: Alignment.topCenter,
+                child: isOpen
+                    ? Padding(
+                        padding: EdgeInsets.only(left: 8.w, bottom: 8.h),
+                        child: Column(
+                          children: [
+                            for (var entry in entries)
+                              _EntryLine(
+                                entry: entry,
+                                pageNumber: pageNumbers[entry]!,
+                                onTap: () => onEntryTap(entry),
+                              ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox(width: double.infinity),
+              ),
+            ],
+          ),
         ),
         Divider(color: style.rule, height: 1),
       ],
@@ -285,36 +286,46 @@ class _EntryLine extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 92.w,
-              child: Text(
-                journalShortDay(entry.dateOfJournal),
-                style: JournalTheme.serif(
-                  fontSize: 13.sp,
-                  color: style.inkFaded,
+            // SizedBox(
+            //   child: Text(
+            //     journalShortDay(entry.dateOfJournal),
+            //     style: JournalTheme.serif(
+            //       fontSize: 13.sp,
+            //       color: style.inkFaded,
+            //     ),
+            //   ),
+            // ),
+            Expanded(
+              // flex: 3,
+              child: SizedBox(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title.isEmpty ? 'Untitled' : title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: JournalTheme.serif(
+                        fontSize: 15.sp,
+                        fontStyle: title.isEmpty ? FontStyle.italic : null,
+                        color: title.isEmpty ? style.inkFaded : style.ink,
+                      ),
+                    ),
+                    Text(
+                      journalShortDay(entry.dateOfJournal),
+                      style: JournalTheme.serif(
+                        fontSize: 10.sp,
+                        color: style.inkFaded,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            Flexible(
-              flex: 3,
-              child: Text(
-                title.isEmpty ? 'Untitled' : title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: JournalTheme.serif(
-                  fontSize: 15.sp,
-                  fontStyle: title.isEmpty ? FontStyle.italic : null,
-                  color: title.isEmpty ? style.inkFaded : style.ink,
-                ),
-              ),
-            ),
-            const Expanded(child: _DottedLeader()),
-            Text(
-              '$pageNumber',
-              style: JournalTheme.serif(fontSize: 15.sp),
-            ),
+            // const Expanded(child: _DottedLeader()),
+            Text('$pageNumber', style: JournalTheme.serif(fontSize: 15.sp)),
           ],
         ),
       ),
