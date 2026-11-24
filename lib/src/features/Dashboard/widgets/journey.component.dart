@@ -107,7 +107,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
   int _countAdheredDays(Journey journey) {
     var count = 0;
     for (final log in journey.logs) {
-      final day = dayService.getDayById(log.dayId);
+      final day = log.dateKey == null ? null : dayService.getDayByDateKey(log.dateKey!);
       if (day == null || day.goalForToday == null) continue;
       final cals = dayService.getDaysCalories(day).calories;
       if (userGoalService.isWithinMaintenance(
@@ -162,7 +162,8 @@ class _JourneyComponentState extends State<JourneyComponent> {
       currentJourney!.lastUpdated!,
     );
     var day = await dayService.getDayDataByDate(DateTime.now());
-    var macros = dayService.getDaysCalories(day!);
+    var todayKey = commonService.getDateKey(day!.dayTime);
+    var macros = dayService.getDaysCalories(day);
     var maintenance = userGoalService.fetchMaintenanceCalories(
       user!,
       steps: day.activity!.steps,
@@ -192,7 +193,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
 
       currentJourney!.caloriesChangeAchieved += calDiffAchievedToday;
       currentJourney!.stepsWalked += day.activity!.steps;
-      currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
+      currentJourney!.logs.add(JourneyLog(dateKey: todayKey, userAtDay: user!));
     } else {
       // updating log
       currentJourney!.caloriesChangeAchieved =
@@ -201,11 +202,11 @@ class _JourneyComponentState extends State<JourneyComponent> {
           currentJourney!.lastStepValue! + day.activity!.steps;
       JourneyLog lastLog;
       if (currentJourney!.logs.isEmpty) {
-        currentJourney!.logs.add(JourneyLog(dayId: day.key, userAtDay: user!));
+        currentJourney!.logs.add(JourneyLog(dateKey: todayKey, userAtDay: user!));
       }
       lastLog = currentJourney!.logs.last;
       // if today and last log day is not same
-      lastLog.dayId = day.key;
+      lastLog.dateKey = todayKey;
       lastLog.userAtDay = user!;
     }
     await journeyService.updateJourney(currentJourney!);

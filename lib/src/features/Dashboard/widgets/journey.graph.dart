@@ -81,7 +81,9 @@ class _JourneyGraphState extends State<JourneyGraph> {
     
     for (int i = 0; i < count; i++) {
       final log = widget.journey.logs[i];
-      final day = dayService.getDayById(log.dayId)!;
+      final day = log.dateKey == null ? null : dayService.getDayByDateKey(log.dateKey!);
+      // Days are only stored once food is logged, so a log may have no day.
+      if (day == null || day.goalForToday == null) continue;
       days.add(day);
       var data = _getCaloriesAndStepDataByLog(day, log);
       barMetaData.add(data);
@@ -91,7 +93,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       );
       barGroups.add(
         BarChartGroupData(
-          x: i,
+          x: days.length - 1,
           barsSpace: 6,
           barRods: [
             /// Steps
@@ -113,7 +115,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       );
     }
 
-    graphWidth = widthPerPoint * count;
+    graphWidth = widthPerPoint * days.length;
   }
 
   @override

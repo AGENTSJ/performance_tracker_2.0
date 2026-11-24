@@ -76,20 +76,26 @@ class Journey extends HiveObject {
 
 @HiveType(typeId: 22)
 class JourneyLog {
+  /// Legacy: the old auto-increment day key. New logs use [dateKey].
   @HiveField(0)
-  int dayId;
+  int? dayId;
   @HiveField(1)
   User userAtDay;
+  /// DATE_KEY (`yyyy-MM-dd`) of the logged day.
+  @HiveField(2)
+  String? dateKey;
 
-  JourneyLog({required this.dayId,required this.userAtDay});
+  JourneyLog({this.dayId, this.dateKey, required this.userAtDay});
 
   Map<String, dynamic> toJson() => {
     'dayId': dayId,
+    'dateKey': dateKey,
     'userAtDay': userAtDay.toJson(),
   };
 
   factory JourneyLog.fromJson(Map<String, dynamic> json) => JourneyLog(
-    dayId: json['dayId'] as int,
+    dayId: json['dayId'] as int?,
+    dateKey: json['dateKey'] as String?,
     userAtDay: User.fromJson(json['userAtDay'] as Map<String, dynamic>),
   );
 }

@@ -78,7 +78,8 @@ class JourneyLogAdapter extends TypeAdapter<JourneyLog> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return JourneyLog(
-      dayId: fields[0] as int,
+      dayId: fields[0] as int?,
+      dateKey: fields[2] as String?,
       userAtDay: fields[1] as User,
     );
   }
@@ -86,11 +87,13 @@ class JourneyLogAdapter extends TypeAdapter<JourneyLog> {
   @override
   void write(BinaryWriter writer, JourneyLog obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.dayId)
       ..writeByte(1)
-      ..write(obj.userAtDay);
+      ..write(obj.userAtDay)
+      ..writeByte(2)
+      ..write(obj.dateKey);
   }
 
   @override

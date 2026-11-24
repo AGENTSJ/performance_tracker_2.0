@@ -27,6 +27,7 @@ import 'package:performance_tracker/src/features/Dashboard/services/journey.serv
 import 'package:performance_tracker/core/services/key.service.dart';
 import 'package:performance_tracker/core/services/log.service.dart';
 import 'package:performance_tracker/core/services/maintainance.service.dart';
+import 'package:performance_tracker/core/services/migration.service.dart';
 import 'package:performance_tracker/src/features/Coach/services/report.service.dart';
 import 'package:performance_tracker/core/services/rest.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/nutritionInfoProvide.service.dart';
@@ -56,6 +57,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<FatigueService>(()=>FatigueService());
   locator.registerLazySingleton<RoutineService>(()=>RoutineService());
   locator.registerLazySingleton<MaintainanceService>(()=>MaintainanceService());
+  locator.registerLazySingleton<MigrationService>(()=>MigrationService());
   locator.registerLazySingleton<DataService>(()=>DataService());
   locator.registerLazySingleton<HealthService>(()=>HealthService());
   locator.registerLazySingleton<TrainerAgentService>(()=>TrainerAgentService());

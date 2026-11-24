@@ -14,6 +14,7 @@ import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/core/services/migration.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/foods.service.dart';
 import 'package:performance_tracker/src/features/Journal/services/journal.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
@@ -30,6 +31,7 @@ class DataService {
   final workService = locator<WorkoutService>();
   final foodService = locator<FoodService>();
   final dayService = locator<DayService>();
+  final migrationService = locator<MigrationService>();
   final userService = locator<UserService>();
   final routService = locator<RoutineService>();
   final jourService = locator<JourneyService>();
@@ -90,6 +92,7 @@ class DataService {
     Fluttertoast.showToast(msg: "Started importing");
     try {
       AppData data = AppData.fromJson(oldData);
+      migrationService.migrateImportedData(days: data.days, journeys: data.journeys);
       List<Future<void>> futures = [
         // Restore Foods
         () async {

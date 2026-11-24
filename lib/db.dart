@@ -12,6 +12,7 @@ import 'package:performance_tracker/core/models/log.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/core/services/maintainance.service.dart';
+import 'package:performance_tracker/core/services/migration.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 
@@ -89,6 +90,7 @@ Future<void> setupHiveDb() async
   await Hive.openBox<SecretAppKey>(Collections.key.value);
   await Hive.openBox<LogModel>(Collections.logs.value);
   await Hive.openBox<FatigueDay>(Collections.fatigue.value);
+  await locator<MigrationService>().runStartupMigrations();
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);
