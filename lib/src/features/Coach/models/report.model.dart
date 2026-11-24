@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'report.model.g.dart';
+part 'generated/report.model.g.dart';
 
 @HiveType(typeId: 30)
 class Report extends HiveObject {

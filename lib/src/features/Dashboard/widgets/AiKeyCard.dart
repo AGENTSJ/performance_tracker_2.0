@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/services/key.service.dart';
+import 'package:performance_tracker/core/services/key.service.dart';
 
 class ApiKeyWidget extends StatefulWidget {
   const ApiKeyWidget({Key? key}) : super(key: key);

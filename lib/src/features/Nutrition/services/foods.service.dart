@@ -1,0 +1,422 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/src/features/Nutrition/repositories/food.repository.dart';
+import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/core/services/ai.service.dart';
+import 'package:performance_tracker/core/services/day.service.dart';
+// import 'package:performance_tracker/src/features/Nutrition/services/nutritionInfoProvide.service.dart';
+
+enum AiFoodGenStatus { idle, generating, ready, error }
+
+class AiFoodGenState {
+  final AiFoodGenStatus status;
+  final String? foodName; // name being / that was generated
+  final Food? result; // set when status == ready
+  final String progressText; // live model output while generating
+  const AiFoodGenState({
+    this.status = AiFoodGenStatus.idle,
+    this.foodName,
+    this.result,
+    this.progressText = '',
+  });
+}
+
+class FoodService {
+  final _ai = locator<AiService>();
+  final _foodRepo = locator<FoodRepository>();
+  // final nutriApi = locator<NutritionServiceProvider>();
+  final dayService = locator<DayService>();
+
+  // In-memory state for the (single) ongoing AI food generation. Lives in this
+  // singleton so the description modal can be closed and reopened without
+  // losing the in-flight/completed result.
+  final ValueNotifier<AiFoodGenState> aiFoodGenNotifier = ValueNotifier(
+    const AiFoodGenState(),
+  );
+
+  bool get isGeneratingFood =>
+      aiFoodGenNotifier.value.status == AiFoodGenStatus.generating;
+
+  // Cancel handle for the in-flight generation (one at a time).
+  CancelToken? _genCancelToken;
+
+  Future<List<Food>> searchFood(String key) async {
+    var foods = _foodRepo.searchFoodByName(key);
+    // var foodsFromApi = await nutriApi.getFoodByNameAPI(key);
+    return foods;
+  }
+
+  List<Food> getAllFoods() {
+    return _foodRepo.getAllFoods();
+  }
+
+  Future<List<Food>> suggestFoods(Meal meal, Day day) async {
+    var currentDay = day;
+    const contextLimitInDays = 5;
+    Set<String> selectedFoodNames = {};
+    List<Food> selectedFoods = [];
+
+    for (var i = 1; i <= contextLimitInDays; i++) {
+      var date = currentDay.dayTime.subtract(Duration(days: i));
+      var dayObject = await dayService.getDayDataByDate(date);
+
+      for (var currDayMeal in dayObject!.meals!) {
+        if (currDayMeal.mealName == meal.mealName) {
+          for (var food in currDayMeal.foods) {
+            if (!selectedFoodNames.contains(food.name)) {
+              selectedFoodNames.add(food.name);
+              selectedFoods.add(food);
+            }
+          }
+        }
+      }
+    }
+    if (selectedFoods.isEmpty) {
+      selectedFoods = getAllFoods();
+    }
+    return selectedFoods;
+  }
+
+  addFood(Food food) {
+    _foodRepo.addFood(food);
+  }
+  removeFood(Food food) async
+  {
+    await _foodRepo.removeFood(food);
+  }
+  bool foodExist(String name) {
+    return _foodRepo.foodExist(name);
+  }
+
+  // Starts an AI food generation and tracks its state in [aiFoodGenNotifier].
+  // Fire-and-forget: the UI listens to the notifier rather than awaiting this.
+  // Only one generation may run at a time.
+  Future<void> startFoodGeneration(String name, String? description) async {
+    if (isGeneratingFood) return;
+    var cancelToken = CancelToken();
+    _genCancelToken = cancelToken;
+    aiFoodGenNotifier.value = AiFoodGenState(
+      status: AiFoodGenStatus.generating,
+      foodName: name,
+    );
+    var food = await _generateFood(name, description, cancelToken);
+    // The user aborted: leave the state as cancelFoodGeneration set it (idle).
+    if (cancelToken.isCancelled) return;
+    _genCancelToken = null;
+    if (food != null) {
+      addFood(food);
+      aiFoodGenNotifier.value = AiFoodGenState(
+        status: AiFoodGenStatus.ready,
+        foodName: name,
+        result: food,
+      );
+    } else {
+      aiFoodGenNotifier.value = AiFoodGenState(
+        status: AiFoodGenStatus.error,
+        foodName: name,
+      );
+    }
+  }
+
+  // Aborts the in-flight generation (closes the connection) and resets to idle.
+  void cancelFoodGeneration() {
+    _genCancelToken?.cancel();
+    _genCancelToken = null;
+    aiFoodGenNotifier.value = const AiFoodGenState();
+  }
+
+  // Returns the generated food (if ready) and resets state to idle.
+  Food? consumeGeneratedFood() {
+    var food = aiFoodGenNotifier.value.result;
+    aiFoodGenNotifier.value = const AiFoodGenState();
+    return food;
+  }
+
+  // Resets the generation state back to idle.
+  void resetFoodGeneration() {
+    aiFoodGenNotifier.value = const AiFoodGenState();
+  }
+
+  Future<Food?> _generateFood(
+    String name,
+    String? description,
+    CancelToken cancelToken,
+  ) async {
+    try {
+      const String jsonResponseStructure = '''
+      {
+        "name":"String",
+        "macro":{
+          "protein":double value,
+          "fat":double value,
+          "carbohydrate":double value,
+          "fiber":double value,
+          "calories":double value
+        },
+        "micro":{
+          "Vitamin A":{
+            "value":Double value,
+            "unit":"mcg"
+            },
+            "Vitamin C": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Vitamin D": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Vitamin E": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Vitamin K": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Thiamin": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Riboflavin": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Niacin": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Vitamin B6": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Folate": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Vitamin B12": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Pantothenic Acid": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Biotin": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Calcium": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Iron": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Magnesium": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Phosphorus": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Potassium": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Sodium": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Zinc": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Copper": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Manganese": {
+            "value": Double value,
+            "unit": "mg"
+            },
+            "Selenium": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Iodine": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Chromium": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Molybdenum": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Fluoride": {
+            "value": Double value,
+            "unit": "mcg"
+            },
+            "Chloride": {
+            "value": Double value,
+            "unit": "mg"
+            }
+        },
+        "servings":[
+          {
+            "unit":"common serving or 'serving'",
+            "value":double value in grams
+          }
+        ]
+      }
+      ''';
+
+      String prompt =
+          "food name  $name , description:$description , Do not include any code block markers (such as json) in your response, as this will interfere with parsing.";
+      // const String instructions = "You are a food data generator. Return the macro nutrients in JSON format for 100 grams of the specified food, using the structure provided in $jsonResponseStructure. The unit is not required, as all values are in grams, and all fields should be of type double. Use the food name and description, if available, to make the best estimation.Your response must include only the macro nutrients in the given JSON format, with no extra text or decorations. Do not include any code block markers (such as json) in your response, as this will interfere with parsing. if the name of the food doesn't make sense you can return the text error without json";
+      const String instructions =
+      '''
+      You are a food macro and micro nutrient predicting API End point
+      your responsibilities :
+        1. Predict the foods macro and micro nutrients based on user input food name and description.
+        2. Provide your prediction in the provided format.
+      Note :
+        1 Your response should be in json.
+        2 SHOULD NOT INCLUDE  ```json ```or any other code blocker.
+        3 Food macro and micros should be based on 100 grams. 
+        4 adhere to the response format strictly.
+        5 put your knowledge here to the best use if not known make a guess based on user description.
+        6 If even the description doesn't make sense return text error without json format.
+        7 Every micro nutrient MUST use exactly the unit shown in the format (mg or mcg). Never use IU, g or µg; convert first.
+        8 Vitamin A is mcg RAE, Folate is mcg DFE, Niacin is mg NE, Vitamin E is mg alpha-tocopherol.
+        9 If a nutrient is absent in the food use 0.
+      Format :
+        $jsonResponseStructure
+      ''';
+
+      var selectedModel = await _ai.getSelectedModel();
+      var body = await _ai.getResponseStream(
+        prompt,
+        instructions,
+        modelName: selectedModel,
+        cancelToken: cancelToken,
+        onProgress: (thoughts, answer) {
+          // Surface live progress only while this generation is still running.
+          if (aiFoodGenNotifier.value.status != AiFoodGenStatus.generating) {
+            return;
+          }
+          aiFoodGenNotifier.value = AiFoodGenState(
+            status: AiFoodGenStatus.generating,
+            foodName: name,
+            progressText: thoughts.isNotEmpty ? thoughts : answer,
+          );
+        },
+      );
+      var resString = body.message;
+      if(resString[0]=="`")
+      {
+        resString = resString.substring(7, resString.length - 3);
+      }
+      var json = jsonDecode(resString);
+
+      // Parse macros
+      final macroJson = json['macro'];
+      final macros = MacroNutrients(
+        (macroJson['protein'] as num).toDouble(),
+        (macroJson['carbohydrate'] as num).toDouble(),
+        (macroJson['fat'] as num).toDouble(),
+        (macroJson['fiber'] as num).toDouble(),
+        (macroJson['calories'] as num).toDouble(),
+      );
+
+      // Parse micros
+      final microJson = json['micro'] as Map<String, dynamic>;
+      final microNutrients = MicroNutrients(
+        vitaminA: _getUnit(microJson, 'Vitamin A'),
+        vitaminC: _getUnit(microJson, 'Vitamin C'),
+        vitaminD: _getUnit(microJson, 'Vitamin D'),
+        vitaminE: _getUnit(microJson, 'Vitamin E'),
+        vitaminK: _getUnit(microJson, 'Vitamin K'),
+        thiamin: _getUnit(microJson, 'Thiamin'),
+        riboflavin: _getUnit(microJson, 'Riboflavin'),
+        niacin: _getUnit(microJson, 'Niacin'),
+        vitaminB6: _getUnit(microJson, 'Vitamin B6'),
+        folate: _getUnit(microJson, 'Folate'),
+        vitaminB12: _getUnit(microJson, 'Vitamin B12'),
+        pantothenicAcid: _getUnit(microJson, 'Pantothenic Acid'),
+        biotin: _getUnit(microJson, 'Biotin'),
+        calcium: _getUnit(microJson, 'Calcium'),
+        iron: _getUnit(microJson, 'Iron'),
+        magnesium: _getUnit(microJson, 'Magnesium'),
+        phosphorus: _getUnit(microJson, 'Phosphorus'),
+        potassium: _getUnit(microJson, 'Potassium'),
+        sodium: _getUnit(microJson, 'Sodium'),
+        zinc: _getUnit(microJson, 'Zinc'),
+        copper: _getUnit(microJson, 'Copper'),
+        manganese: _getUnit(microJson, 'Manganese'),
+        selenium: _getUnit(microJson, 'Selenium'),
+        iodine: _getUnit(microJson, 'Iodine'),
+        chromium: _getUnit(microJson, 'Chromium'),
+        molybdenum: _getUnit(microJson, 'Molybdenum'),
+        fluoride: _getUnit(microJson, 'Fluoride'),
+        chloride: _getUnit(microJson, 'Chloride'),
+      );
+      final servings = (json['servings'] as List<dynamic>)
+          .map(
+            (e) => MeasuredUnit(
+              value: (e['value'] as num).toDouble(),
+              unit: e['unit'],
+            ),
+          )
+          .toList();
+      var food = Food(
+        name: json['name'],
+        macros: macros,
+        micros: microNutrients,
+        quantity: MeasuredUnit(value: 100, unit: 'g'), // assuming the first is default quantity
+        servings: servings,
+        imageUrl: null, // JSON doesn't include imageUrl
+      );
+      return food;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Reads a micro from the AI response and normalises it to the unit used in
+  // MicroNutrients.microRDA, since totals and RDA percentages ignore units.
+  // Returns null when the unit can't be converted rather than store a wrong value.
+  MeasuredUnit? _getUnit(Map<String, dynamic> json, String key) {
+    final data = json[key];
+    if (data == null || data['value'] is! num) return null;
+    final value = (data['value'] as num).toDouble();
+    final targetUnit = MicroNutrients.microRDA[key]?.unit;
+    if (targetUnit == null) return null;
+
+    var unit = (data['unit'] as String? ?? targetUnit).trim().toLowerCase();
+    if (unit == 'µg' || unit == 'ug' || unit == 'μg') unit = 'mcg';
+
+    const toMcg = {'g': 1000000.0, 'mg': 1000.0, 'mcg': 1.0};
+    double? mcg;
+    if (toMcg.containsKey(unit)) {
+      mcg = value * toMcg[unit]!;
+    } else if (unit == 'iu' && key == 'Vitamin D') {
+      mcg = value * 0.025;
+    }
+    if (mcg == null) return null;
+
+    return MeasuredUnit(value: mcg / toMcg[targetUnit]!, unit: targetUnit);
+  }
+
+  clearAllFood()async
+  {
+    _foodRepo.clearAllFoodData();
+  }
+}

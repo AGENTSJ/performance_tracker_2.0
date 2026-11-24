@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/day.model.dart';
-import 'package:performance_tracker/models/food.model.dart';
-import 'package:performance_tracker/services/avatar.service.dart';
-import 'package:performance_tracker/services/comments.service.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/core/services/avatar.service.dart';
+import 'package:performance_tracker/src/features/Nutrition/services/comments.service.dart';
 
 class MicroCommentsWidget extends StatefulWidget {
   final Day? day;

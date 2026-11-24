@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:performance_tracker/models/advice.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 
 class ChatDTO {

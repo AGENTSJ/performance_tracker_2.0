@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/day.model.dart';
-import 'package:performance_tracker/models/user.model.dart';
+import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:performance_tracker/services/day.service.dart';
-import 'package:performance_tracker/models/routine.model.dart';
+import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:performance_tracker/services/trainer.agent.service.dart';
-import 'package:performance_tracker/services/workout.service.dart';
-import 'package:performance_tracker/services/routine.service.dart';
-import 'package:performance_tracker/services/user.service.data.dart';
-import 'package:performance_tracker/src/components/selectWorkout.dart';
-import 'package:performance_tracker/src/components/workout.component.dart';
+import 'package:performance_tracker/src/features/Coach/services/trainer.agent.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
+import 'package:performance_tracker/core/services/user.service.data.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/selectWorkout.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/workout.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/advices.page.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/routines.page.dart';
-import 'package:performance_tracker/src/components/routineSelection.component.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/routineSelection.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/fatigue.page.dart';
 
 class TrainingModulePage extends StatefulWidget {

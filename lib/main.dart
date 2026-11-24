@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/db.dart';
-import 'package:performance_tracker/services/config.service.dart';
+import 'package:performance_tracker/core/services/config.service.dart';
 import 'package:performance_tracker/src/features/Coach/pages/coach.page.dart';
 import 'package:performance_tracker/src/features/Nutrition/pages/nutrition.home.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/training.page.dart';

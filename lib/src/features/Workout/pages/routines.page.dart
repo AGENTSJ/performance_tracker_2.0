@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/routine.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
 import 'package:performance_tracker/src/features/Workout/pages/routine.details.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

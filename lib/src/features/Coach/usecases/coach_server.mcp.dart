@@ -1,9 +1,9 @@
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/models/advice.model.dart';
-import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/advice.service.dart';
-import 'package:performance_tracker/services/routine.service.dart';
-import 'package:performance_tracker/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/advice.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 
 class CoachServerMcp {
   final adviceService = locator<AdviceService>();

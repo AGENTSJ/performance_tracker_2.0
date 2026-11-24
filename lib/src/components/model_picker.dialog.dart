@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/services/ai.service.dart';
+import 'package:performance_tracker/core/services/ai.service.dart';
 
 /// Fetches the available Gemini models and lets the user pick one.
 /// Pops with the selected model name, or null if cancelled.

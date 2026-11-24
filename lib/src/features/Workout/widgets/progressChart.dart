@@ -4,8 +4,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/models/routine.model.dart';
-import 'package:performance_tracker/services/common.service.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
 
 class ProgressChart extends StatefulWidget {
   final WorkSet set;
