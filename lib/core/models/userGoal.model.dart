@@ -38,7 +38,12 @@ class UserGoal extends HiveObject {
   /// The goal's id (its Hive key), once stored.
   int? get id => key as int?;
 
+  /// Id read from a backup, so a restore can store the goal under the same
+  /// id that journeys reference. Not stored in Hive.
+  int? backupId;
+
   Map<String, dynamic> toJson() => {
+    'id': id,
     'startDate': startDate.toIso8601String(),
     'endDate': endDate?.toIso8601String(),
     'isActive': isActive,
@@ -56,5 +61,5 @@ class UserGoal extends HiveObject {
     stepGoal: json['stepGoal'] as int,
     targetWeight: (json['targetWeight'] as num).toDouble(),
     caloricChangeGoal: (json['caloricChangeGoal'] as num).toDouble(),
-  );
+  )..backupId = json['id'] as int?;
 }

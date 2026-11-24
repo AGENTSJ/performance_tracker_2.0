@@ -28,6 +28,8 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   final userGoalService = locator<UserGoalsService>();
   bool formChanged = false;
   late UserGoal goal;
+  /// Goals can't change while a journey is active.
+  late bool isLocked;
 
   final elevatedButtonDecor = ElevatedButton.styleFrom(
     backgroundColor: SURFACE,
@@ -72,6 +74,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     caloricLimit = TextEditingController();
     caloricBurn = TextEditingController();
     goal = userGoalService.getActiveGoal();
+    isLocked = userGoalService.isGoalLocked();
     updateFormUi(widget.user);
   }
 
@@ -116,6 +119,14 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                   ),
                 ],
               ),
+              if (isLocked)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Locked while a journey is in progress',
+                    style: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                 child: Column(
@@ -124,6 +135,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -140,6 +152,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                         SizedBox(width: 10.w),
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -157,6 +170,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,

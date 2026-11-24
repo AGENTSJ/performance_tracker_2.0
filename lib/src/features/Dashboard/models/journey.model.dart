@@ -34,13 +34,21 @@ class Journey extends HiveObject {
   @HiveField(9)
   String? reasonToStop;
 
+  /// Id of the user goal this journey is measured against. Goals are locked
+  /// while a journey is active, so it stays the active goal throughout.
+  /// Null for journeys from before goal periods (they keep using
+  /// `userAtStart.userGoals`).
+  @HiveField(10)
+  int? goalId;
+
   Journey({
     required this.startDate,
     required this.userAtStart,
     required this.caloriesChangeAchieved,
     required this.stepsWalked,
     required this.logs,
-    required this.status
+    required this.status,
+    this.goalId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -54,6 +62,7 @@ class Journey extends HiveObject {
     'logs': logs.map((log) => log.toJson()).toList(),
     'status': status.name,
     'reasonToStop': reasonToStop,
+    'goalId': goalId,
   };
 
   factory Journey.fromJson(Map<String, dynamic> json) => Journey(
@@ -65,6 +74,7 @@ class Journey extends HiveObject {
         .map((logJson) => JourneyLog.fromJson(logJson as Map<String, dynamic>))
         .toList(),
     status: JourneyStatus.values.firstWhere((e) => e.name == json['status']),
+    goalId: json['goalId'] as int?,
   )
     ..lastUpdated = json['lastUpdated'] != null 
         ? DateTime.parse(json['lastUpdated'] as String)

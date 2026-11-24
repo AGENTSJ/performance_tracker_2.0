@@ -7,6 +7,7 @@ import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/repositories/userGoal.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
+import 'package:performance_tracker/src/features/Dashboard/repositories/journey.repository.dart';
 
 enum JourneyMode { cut, bulk, maintenance }
 
@@ -15,12 +16,12 @@ class UserGoalsService {
   var userService = locator<UserService>();
   final _goalRepo = locator<UserGoalRepository>();
   final _commonService = locator<CommonService>();
+  final _journeyRepo = locator<JourneyRepository>();
 
   /// Classifies a user's current goal as a cut, bulk or maintenance.
   /// Maintenance applies when the target weight is essentially the current
   /// weight, or when there is no caloric change goal set.
-  JourneyMode getJourneyMode(User user) {
-    final goals = user.userGoals;
+  JourneyMode getJourneyMode(User user, UserGoal goals) {
     final weightDiff = (goals.targetWeight - user.weight).abs();
     if (weightDiff <= MAINTENANCE_WEIGHT_TOLERANCE_KG ||
         goals.caloricChangeGoal == 0) {
@@ -111,22 +112,36 @@ class UserGoalsService {
 
   List<UserGoal> getAllGoals() => _goalRepo.getAllGoals();
 
-  /// Replaces all goals with [goals] (backup restore).
+  /// Replaces all goals with [goals] (backup restore), keeping each goal's
+  /// backed-up id so journeys still point at the right goal.
   Future<void> restoreGoals(List<UserGoal> goals) async {
     await _goalRepo.clearAllGoals();
     for (final goal in goals) {
-      await _goalRepo.addGoal(goal);
+      final id = goal.backupId;
+      if (id != null) {
+        await _goalRepo.putGoal(id, goal);
+      } else {
+        await _goalRepo.addGoal(goal);
+      }
     }
   }
+
+  /// Goals can't be changed while a journey is active: the journey is
+  /// measured against the goal it started with.
+  bool isGoalLocked() => _journeyRepo.getCurrentJourneyData() != null;
 
   /// Saves new goal values. If the active goal started today it is edited in
   /// place; otherwise it is ended yesterday and a new active goal starts
   /// today, so periods never overlap and only one goal is active.
+  /// Throws a [StateError] while a journey is active.
   Future<UserGoal> saveGoal({
     required int stepGoal,
     required double targetWeight,
     required double caloricChangeGoal,
   }) async {
+    if (isGoalLocked()) {
+      throw StateError('Goals are locked while a journey is active');
+    }
     final today = _dateOnly(DateTime.now());
     var goal = getActiveGoal();
     if (_commonService.getDateKey(goal.startDate) ==
@@ -150,20 +165,7 @@ class UserGoalsService {
       );
       await _goalRepo.addGoal(goal);
     }
-    await _mirrorToUser(goal);
     return goal;
-  }
-
-  /// Temporary until Phase 4: journeys still read goals from their copy of
-  /// the user (`userAtStart.userGoals`, `userAtDay.userGoals`), so the user
-  /// record keeps a copy of the active goal's values.
-  Future<void> _mirrorToUser(UserGoal goal) async {
-    final user = await userService.getUserData();
-    user.userGoals
-      ..stepGoal = goal.stepGoal
-      ..targetWeight = goal.targetWeight
-      ..caloricChangeGoal = goal.caloricChangeGoal;
-    await userService.updateUser(user);
   }
 
   DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);

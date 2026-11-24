@@ -45,6 +45,7 @@ class MigrationService {
     _register(1, 'Days keyed by DATE_KEY', _migrateDaysToDateKey);
     _register(2, 'Auto routines keyed by DATE_KEY', _migrateAutoRoutinesToDateKey);
     _register(3, 'User goals as periods', _migrateUserGoalsToPeriods);
+    _register(4, 'Active journey linked to its goal', _linkActiveJourneyToGoal);
   }
 
   void _register(int index, String name, Future<void> Function() run) {
@@ -95,6 +96,23 @@ class MigrationService {
     // Older backups have no goal periods: start one from the user's goals.
     if (goals.isEmpty && users.isNotEmpty) {
       goals.add(_goalFromLegacyUser(users.first));
+    }
+
+    // Journeys reference goals by id, so every restored goal needs one, and
+    // an in-progress journey without a goal is linked to the active goal.
+    var nextId = goals.fold<int>(
+        0, (max, g) => (g.backupId ?? 0) > max ? g.backupId! : max);
+    for (final goal in goals) {
+      goal.backupId ??= ++nextId;
+    }
+    final active = goals.where((g) => g.isActive).firstOrNull;
+    if (active != null) {
+      for (final journey in journeys) {
+        if (journey.status == JourneyStatus.onProgress &&
+            journey.goalId == null) {
+          journey.goalId = active.backupId;
+        }
+      }
     }
 
     // Older backups have auto routines without a DATE_KEY.
@@ -272,6 +290,29 @@ class MigrationService {
       targetWeight: user.userGoals.targetWeight,
       caloricChangeGoal: user.userGoals.caloricChangeGoal,
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4. Active journey linked to its goal
+  //
+  // Journeys now reference the goal they are measured against, and goals are
+  // locked while a journey is active. The journey in progress is linked to
+  // the active goal. Ended journeys stay unlinked and keep using the goals
+  // saved with their user copy, so their history doesn't change.
+  // ---------------------------------------------------------------------------
+
+  Future<void> _linkActiveJourneyToGoal() async {
+    final goalBox = Hive.box<UserGoal>(Collections.userGoals.value);
+    final active = goalBox.values.where((g) => g.isActive).firstOrNull;
+    if (active == null) return;
+    final journeyBox = Hive.box<Journey>(Collections.journey.value);
+    for (final journey in journeyBox.values) {
+      if (journey.status == JourneyStatus.onProgress &&
+          journey.goalId == null) {
+        journey.goalId = active.key as int;
+        await journey.save();
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------

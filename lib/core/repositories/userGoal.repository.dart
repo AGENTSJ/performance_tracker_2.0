@@ -24,6 +24,10 @@ class UserGoalRepository {
     return await _goalBox.add(goal);
   }
 
+  Future<void> putGoal(int id, UserGoal goal) async {
+    await _goalBox.put(id, goal);
+  }
+
   Future<void> updateGoal(UserGoal goal) async {
     await _goalBox.put(goal.key, goal);
   }

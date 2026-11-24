@@ -7,6 +7,7 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
@@ -33,6 +34,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
   final Color goldColor = Color(0xFFFFD700);
   Journey? currentJourney;
   User? user;
+  UserGoal? goal;
   double caloriesTotal = 0;
   int estimatedDays = 0;
   int stepsTotal = 0;
@@ -56,7 +58,9 @@ class _JourneyComponentState extends State<JourneyComponent> {
     this.currentJourney = journeyService.getActiveJourney();
     user = await userService.getUserData();
     if (currentJourney != null) {
-      mode = userGoalService.getJourneyMode(user!);
+      // Every calculation uses the goal the journey was started with.
+      goal = journeyService.getJourneyGoal(currentJourney!);
+      mode = userGoalService.getJourneyMode(user!, goal!);
       if (isMaintenance) {
         // No weight to reach: the goal is to stay near maintenance for a set
         // number of adherent days.
@@ -64,7 +68,7 @@ class _JourneyComponentState extends State<JourneyComponent> {
         estimatedDays =
             (maintenanceTargetDays - adheredDays).clamp(0, maintenanceTargetDays);
         stepsTotal =
-            maintenanceTargetDays * currentJourney!.userAtStart.userGoals.stepGoal;
+            maintenanceTargetDays * goal!.stepGoal;
         caloriesAchievePercent = commonService
             .getPercentage(
               maintenanceTargetDays.toDouble(),
@@ -74,15 +78,15 @@ class _JourneyComponentState extends State<JourneyComponent> {
             .clamp(0, 100);
       } else {
         caloriesTotal =
-            (currentJourney!.userAtStart.weight - user!.userGoals.targetWeight).abs() *
+            (currentJourney!.userAtStart.weight - goal!.targetWeight).abs() *
             7700;
         estimatedDays =
             ((caloriesTotal - currentJourney!.caloriesChangeAchieved) /
-                    currentJourney!.userAtStart.userGoals.caloricChangeGoal)
+                    goal!.caloricChangeGoal)
                 .round()
                 .abs();
         stepsTotal =
-            estimatedDays * currentJourney!.userAtStart.userGoals.stepGoal;
+            estimatedDays * goal!.stepGoal;
         caloriesAchievePercent = commonService
             .getPercentage(caloriesTotal, currentJourney!.caloriesChangeAchieved)
             .roundToDouble()
@@ -276,6 +280,8 @@ class _JourneyComponentState extends State<JourneyComponent> {
         stepsWalked: 0,
         logs: [],
         status: JourneyStatus.onProgress,
+        // The goal just confirmed in the dialog; locked until the journey ends.
+        goalId: userGoalService.getActiveGoal().id,
       );
       newJourney.lastUpdated = newJourney.startDate;
       await journeyService.createJourney(newJourney);

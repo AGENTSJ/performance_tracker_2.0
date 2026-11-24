@@ -23,6 +23,7 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       stepsWalked: fields[3] as int,
       logs: (fields[7] as List).cast<JourneyLog>(),
       status: fields[8] as JourneyStatus,
+      goalId: fields[10] as int?,
     )
       ..lastUpdated = fields[4] as DateTime?
       ..lastCaloriesValue = fields[5] as double?
@@ -33,7 +34,7 @@ class JourneyAdapter extends TypeAdapter<Journey> {
   @override
   void write(BinaryWriter writer, Journey obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.startDate)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class JourneyAdapter extends TypeAdapter<Journey> {
       ..writeByte(8)
       ..write(obj.status)
       ..writeByte(9)
-      ..write(obj.reasonToStop);
+      ..write(obj.reasonToStop)
+      ..writeByte(10)
+      ..write(obj.goalId);
   }
 
   @override

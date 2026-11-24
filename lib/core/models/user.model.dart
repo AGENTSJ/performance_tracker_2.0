@@ -46,6 +46,8 @@ class User extends HiveObject {
   @HiveField(5)
   ActivityLevel? activityLevel;
 
+  /// Legacy: goals now live in the userGoals box (`UserGoal`). Only read by
+  /// the goal migration and by journeys from before goal periods.
   @HiveField(6)
   UserGoals userGoals;
 
