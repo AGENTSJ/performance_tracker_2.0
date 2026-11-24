@@ -3,26 +3,78 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/core/services/log.service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
+
+class _StartupMigration {
+  final int index;
+  final String name;
+  final Future<void> Function() run;
+  _StartupMigration(this.index, this.name, this.run);
+}
 
 /// Every data migration lives in this file, so services and repositories stay
 /// free of legacy handling.
 ///
-/// To add a migration: write a private method below and append it to
-/// [_startupMigrations]. Each one runs on every launch, so it must check
-/// whether there is anything left to migrate and be safe to re-run if it was
-/// interrupted.
+/// Startup migrations are numbered. The highest index that has run on this
+/// device is kept in SharedPreferences, and on launch only migrations with a
+/// higher index run, in ascending order. A device with no stored index
+/// (fresh install, or an install from before this tracking) starts at 0 and
+/// runs them all, so every migration must cope with empty data.
+///
+/// To add a migration: write a private method below and register it in
+/// [_registerStartupMigrations] with the next unused index. Keep a cheap
+/// "anything left to do?" check at its start: if the app is killed midway
+/// the index has not moved yet, so it runs again on the next launch.
 class MigrationService {
+  static const _ranIndexKey = 'migrationRanIndex';
+
   final _commonService = locator<CommonService>();
+  final _logService = locator<LogService>();
+  final Map<int, _StartupMigration> _startupMigrations = {};
 
-  late final List<Future<void> Function()> _startupMigrations = [
-    _migrateDaysToDateKey,
-  ];
+  MigrationService() {
+    _registerStartupMigrations();
+  }
 
-  /// Runs all startup migrations in order. Call after the Hive boxes are open.
+  void _registerStartupMigrations() {
+    _register(1, 'Days keyed by DATE_KEY', _migrateDaysToDateKey);
+  }
+
+  void _register(int index, String name, Future<void> Function() run) {
+    if (index <= 0) {
+      throw StateError('Migration index must be positive: $index ($name)');
+    }
+    final existing = _startupMigrations[index];
+    if (existing != null) {
+      throw StateError(
+          'Duplicate migration index $index: "${existing.name}" and "$name"');
+    }
+    _startupMigrations[index] = _StartupMigration(index, name, run);
+  }
+
+  /// Runs every registered migration above this device's ran index, in
+  /// order, saving the index after each success. On failure it logs, stops,
+  /// and leaves that migration and later ones to retry on the next launch.
+  /// Call after the Hive boxes are open.
   Future<void> runStartupMigrations() async {
-    for (final migration in _startupMigrations) {
-      await migration();
+    final prefs = await SharedPreferences.getInstance();
+    final ranIndex = prefs.getInt(_ranIndexKey) ?? 0;
+    final pending = _startupMigrations.values
+        .where((m) => m.index > ranIndex)
+        .toList()
+      ..sort((a, b) => a.index.compareTo(b.index));
+
+    for (final migration in pending) {
+      try {
+        await migration.run();
+      } catch (e) {
+        await _logService.addErrorLog('migration',
+            'Migration ${migration.index} "${migration.name}" failed: $e');
+        return;
+      }
+      await prefs.setInt(_ranIndexKey, migration.index);
     }
   }
 
@@ -44,12 +96,13 @@ class MigrationService {
   }
 
   // ---------------------------------------------------------------------------
-  // Days keyed by DATE_KEY
+  // 1. Days keyed by DATE_KEY
   //
   // Days used to be stored under auto-increment int keys, and journey logs
   // pointed at them by that id. Days now live under their DATE_KEY
   // (`yyyy-MM-dd`). Journey logs are pointed at the date first, while the old
-  // keys still exist, then the days are re-keyed.
+  // keys still exist, then the days with food are re-keyed and every legacy
+  // entry is deleted.
   // ---------------------------------------------------------------------------
 
   Future<void> _migrateDaysToDateKey() async {
@@ -79,17 +132,15 @@ class MigrationService {
       if (changed) await journey.save();
     }
 
-    // 2. Re-key days. When several legacy days share a date, the first one
-    //    holding food wins (else the first one), matching the old lookup.
+    // 2. Re-key days. Days without any food are dropped, even if they hold
+    //    goals or activity: under the new rules they would never have been
+    //    stored. When several legacy days share a date, the first one holding
+    //    food wins.
     final chosen = <String, int>{};
     for (final key in legacyKeys) {
       final day = dayBox.get(key)!;
-      final dateKey = keyOf(day);
-      final current = chosen[dateKey];
-      if (current == null ||
-          (!_hasFood(dayBox.get(current)!) && _hasFood(day))) {
-        chosen[dateKey] = key;
-      }
+      if (!_hasFood(day)) continue;
+      chosen.putIfAbsent(keyOf(day), () => key);
     }
     for (final entry in chosen.entries) {
       if (dayBox.containsKey(entry.key)) continue; // already migrated
