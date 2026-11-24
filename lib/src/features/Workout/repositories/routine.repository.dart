@@ -18,13 +18,25 @@ class RoutineRepository {
     return null;
   }
   
+  /// Auto routines are stored under their DATE_KEY, custom ones under their
+  /// int key.
   updateRoutine(Routine routine)async
   {
-    await routineBox.put(routine.key, routine);
+    await routineBox.put(routine.dateKey ?? routine.key, routine);
   }
   Routine? getRoutineById(int id)
   {
     return routineBox.get(id);
+  }
+
+  Routine? getRoutineByDateKey(String dateKey)
+  {
+    return routineBox.get(dateKey);
+  }
+
+  bool isRoutineStored(String dateKey)
+  {
+    return routineBox.containsKey(dateKey);
   }
 
   Future<int> addRoutine(Routine routine)async

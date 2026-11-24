@@ -22,13 +22,14 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       createdAt: fields[2] as DateTime,
       isCustom: fields[3] as bool,
       desc: fields[4] as String,
+      dateKey: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       ..writeByte(3)
       ..write(obj.isCustom)
       ..writeByte(4)
-      ..write(obj.desc);
+      ..write(obj.desc)
+      ..writeByte(5)
+      ..write(obj.dateKey);
   }
 
   @override

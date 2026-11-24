@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
-import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/src/features/Coach/services/trainer.agent.service.dart';
@@ -46,9 +44,7 @@ class TrainingModulePageState extends State<TrainingModulePage> {
   Routine? routine;
   List<Workout> workouts = [];
   User? user;
-  Day? today;
   bool isLoaded = false;
-  var dayService = locator<DayService>();
   @override
   void initState() {
     setRoutineUi();
@@ -57,11 +53,8 @@ class TrainingModulePageState extends State<TrainingModulePage> {
 
   setRoutineUi() async {
     user = await userService.getUserData();
-    today = await dayService.getDayDataByDate(DateTime.now());
-    routine = await routineService.getRoutineById(today!.routineId!);
-    if (routine != null) {
-      workouts = await routineService.getRoutinesWorkouts(routine!);
-    }
+    routine = routineService.getDayRoutine(DateTime.now());
+    workouts = await routineService.getRoutinesWorkouts(routine!);
     isLoaded = true;
     await Future.delayed(Duration(milliseconds: WAITING_PERIOD_PAGE_SWITCH_MS));
     refreshState();

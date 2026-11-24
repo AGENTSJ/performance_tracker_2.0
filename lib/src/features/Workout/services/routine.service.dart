@@ -1,4 +1,5 @@
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/src/features/Workout/repositories/routine.repository.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
@@ -11,6 +12,7 @@ class SummaryDTO<T> {
 class RoutineService {
   final _routineRepo = locator<RoutineRepository>();
   final _workService = locator<WorkoutService>();
+  final _commonService = locator<CommonService>();
 
   Future<int> addRoutine(Routine routine) async {
     var routineSearch = _routineRepo.getRoutineByName(routine.name);
@@ -24,6 +26,20 @@ class RoutineService {
     return _routineRepo.getRoutineById(id);
   }
 
+  /// Returns the stored auto routine for [date], or a new unsaved one.
+  Routine getDayRoutine(DateTime date) {
+    final dateKey = _commonService.getDateKey(date);
+    return _routineRepo.getRoutineByDateKey(dateKey) ??
+        Routine(
+          name: _commonService.getDateString(date),
+          workoutsIds: [],
+          createdAt: DateTime.now(),
+          isCustom: false,
+          desc: '',
+          dateKey: dateKey,
+        );
+  }
+
   List<Routine> getAllAutoRoutines() {
     return _routineRepo
         .getAllRoutines()
@@ -31,7 +47,16 @@ class RoutineService {
         .toList();
   }
 
+  /// Saves [routine]. An auto routine reaches storage only once a workout is
+  /// added to it; after that every update is saved, even if all the workouts
+  /// are removed again.
   updateRoutine(Routine routine) async {
+    final dateKey = routine.dateKey;
+    if (dateKey != null &&
+        !_routineRepo.isRoutineStored(dateKey) &&
+        routine.workoutsIds.isEmpty) {
+      return;
+    }
     await _routineRepo.updateRoutine(routine);
   }
 

@@ -15,12 +15,17 @@ class Routine extends HiveObject {
   bool isCustom;
   @HiveField(4)
   String desc;
+  /// DATE_KEY (`yyyy-MM-dd`) of the day an auto routine belongs to; it is also
+  /// the routine's Hive key. Null for custom routines.
+  @HiveField(5)
+  String? dateKey;
   Routine({
     required this.name,
     required this.workoutsIds,
     required this.createdAt,
     required this.isCustom,
     required this.desc,
+    this.dateKey,
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,6 +34,7 @@ class Routine extends HiveObject {
     'createdAt': createdAt.toIso8601String(),
     'isCustom': isCustom,
     'desc': desc,
+    'dateKey': dateKey,
   };
 
   factory Routine.fromJson(Map<String, dynamic> json) => Routine(
@@ -37,6 +43,7 @@ class Routine extends HiveObject {
     createdAt: DateTime.parse(json['createdAt'] as String),
     isCustom: json['isCustom'] as bool,
     desc: json['desc'] as String,
+    dateKey: json['dateKey'] as String?,
   );
 }
 

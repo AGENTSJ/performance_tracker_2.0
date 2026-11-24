@@ -34,6 +34,8 @@ class Day extends HiveObject {
   @HiveField(9)
   UserGoals? goalForToday;
   
+  /// Legacy: no longer read or written. A day's routine is now found by its
+  /// DATE_KEY in the routine box.
   @HiveField(10)
   int? routineId;
   

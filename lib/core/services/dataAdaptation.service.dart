@@ -92,7 +92,8 @@ class DataService {
     Fluttertoast.showToast(msg: "Started importing");
     try {
       AppData data = AppData.fromJson(oldData);
-      migrationService.migrateImportedData(days: data.days, journeys: data.journeys);
+      migrationService.migrateImportedData(
+          days: data.days, journeys: data.journeys, routines: data.routines);
       List<Future<void>> futures = [
         // Restore Foods
         () async {
@@ -120,7 +121,12 @@ class DataService {
         () async {
           await routService.clearAll();
           for (var routine in data.routines) {
-            await routService.addRoutine(routine);
+            if (routine.dateKey != null) {
+              // Auto routine: stored under its DATE_KEY (if it has workouts).
+              await routService.updateRoutine(routine);
+            } else {
+              await routService.addRoutine(routine);
+            }
           }
         }(),
         // Restore Workouts

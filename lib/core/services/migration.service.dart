@@ -6,6 +6,7 @@ import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/log.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 
 class _StartupMigration {
   final int index;
@@ -40,6 +41,7 @@ class MigrationService {
 
   void _registerStartupMigrations() {
     _register(1, 'Days keyed by DATE_KEY', _migrateDaysToDateKey);
+    _register(2, 'Auto routines keyed by DATE_KEY', _migrateAutoRoutinesToDateKey);
   }
 
   void _register(int index, String name, Future<void> Function() run) {
@@ -83,7 +85,16 @@ class MigrationService {
   void migrateImportedData({
     required List<Day> days,
     required List<Journey> journeys,
+    required List<Routine> routines,
   }) {
+    // Older backups have auto routines without a DATE_KEY.
+    for (final routine in routines) {
+      if (!routine.isCustom && routine.dateKey == null) {
+        routine.dateKey = _commonService.getDateKey(
+            _parseDateString(routine.name) ?? routine.createdAt);
+      }
+    }
+
     // Older backups point journey logs at days by position, not DATE_KEY.
     for (final journey in journeys) {
       for (final log in journey.logs) {
@@ -149,6 +160,85 @@ class MigrationService {
     }
     await dayBox.deleteAll(legacyKeys);
   }
+
+  // ---------------------------------------------------------------------------
+  // 2. Auto routines keyed by DATE_KEY
+  //
+  // Each day used to get an auto routine at app start, stored under an int
+  // key and linked through `day.routineId`. Auto routines now live under
+  // their DATE_KEY and are only stored once a workout is added. Routines with
+  // no (existing) workouts are dropped; custom routines are untouched.
+  // ---------------------------------------------------------------------------
+
+  Future<void> _migrateAutoRoutinesToDateKey() async {
+    final routineBox = Hive.box<Routine>(Collections.routines.value);
+    final legacyKeys = routineBox.keys
+        .whereType<int>()
+        .where((key) => !routineBox.get(key)!.isCustom)
+        .toList()
+      ..sort();
+    if (legacyKeys.isEmpty) return;
+
+    final workoutBox = Hive.box<Workout>(Collections.workouts.value);
+    final dayBox = Hive.box<Day>(Collections.days.value);
+
+    // The date of each routine: from its name (created as the day's date
+    // string), else from the day that linked to it (ids can be stale after a
+    // backup restore, hence second), else from when it was created.
+    final dateByRoutineId = <int, String>{};
+    for (final day in dayBox.values) {
+      final id = day.routineId;
+      if (id != null) {
+        dateByRoutineId.putIfAbsent(
+            id, () => _commonService.getDateKey(day.dayTime));
+      }
+    }
+
+    final chosen = <String, int>{};
+    for (final key in legacyKeys) {
+      final routine = routineBox.get(key)!;
+      if (!routine.workoutsIds.any(workoutBox.containsKey)) continue;
+      final fromName = _parseDateString(routine.name);
+      final dateKey = fromName != null
+          ? _commonService.getDateKey(fromName)
+          : dateByRoutineId[key] ??
+              _commonService.getDateKey(routine.createdAt);
+      chosen.putIfAbsent(dateKey, () => key);
+    }
+
+    for (final entry in chosen.entries) {
+      if (routineBox.containsKey(entry.key)) continue; // already migrated
+      final old = routineBox.get(entry.value)!;
+      // A HiveObject can't live under two keys, so store a fresh instance.
+      await routineBox.put(
+        entry.key,
+        Routine(
+          name: old.name,
+          workoutsIds: List.of(old.workoutsIds),
+          createdAt: old.createdAt,
+          isCustom: false,
+          desc: old.desc,
+          dateKey: entry.key,
+        ),
+      );
+    }
+    await routineBox.deleteAll(legacyKeys);
+  }
+
+  /// Parses the `d MonthName yyyy` format of [CommonService.getDateString].
+  DateTime? _parseDateString(String text) {
+    final parts = text.trim().split(' ');
+    if (parts.length != 3) return null;
+    final day = int.tryParse(parts[0]);
+    final month = Months.values.indexWhere((m) => m.name == parts[1]);
+    final year = int.tryParse(parts[2]);
+    if (day == null || month < 0 || year == null) return null;
+    return DateTime(year, month + 1, day);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Shared helpers
+  // ---------------------------------------------------------------------------
 
   bool _hasFood(Day day) {
     return (day.meals ?? []).any((meal) => meal.foods.isNotEmpty);
