@@ -3,6 +3,7 @@ import 'package:performance_tracker/src/features/Workout/repositories/advice.rep
 import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/core/services/dataAdaptation.service.dart';
 import 'package:performance_tracker/core/repositories/day.repository.dart';
+import 'package:performance_tracker/core/repositories/userGoal.repository.dart';
 import 'package:performance_tracker/src/features/Workout/repositories/fatigue.repository.dart';
 import 'package:performance_tracker/src/features/Nutrition/repositories/food.repository.dart';
 import 'package:performance_tracker/src/features/Journal/repositories/journal.repository.dart';
@@ -76,6 +77,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<ReportRepository>(()=>ReportRepository());
   locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());
   locator.registerLazySingleton<DayRepository>(()=>DayRepository());
+  locator.registerLazySingleton<UserGoalRepository>(()=>UserGoalRepository());
   locator.registerLazySingleton<FatigueRepository>(()=>FatigueRepository());
   locator.registerLazySingleton<UserRepository>(()=>UserRepository());
   locator.registerLazySingleton<RoutineRepository>(()=>RoutineRepository());

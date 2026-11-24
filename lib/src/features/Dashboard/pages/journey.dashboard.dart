@@ -6,6 +6,7 @@ import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/health.service.dart';
@@ -41,7 +42,7 @@ class _ActivityPageState extends State<ActivityPage> {
   var dayService = locator<DayService>();
   var journeyService = locator<JourneyService>();
   bool isLoading = true;
-  UserGoals? userGoals;
+  UserGoal? userGoals;
   ScrollController daysScrollController = ScrollController();
   var smallLabelHeadingDecor = TextStyle(
     color: TEXT_SECONDARY,
@@ -62,7 +63,7 @@ class _ActivityPageState extends State<ActivityPage> {
   }
 
   setUpUi(DateTime date) async {
-    userGoals = await userGoalsService.getUserGoals();
+    userGoals = userGoalsService.getActiveGoal();
     steps = await healthService.getStepsByDate(date);
     user = await userService.getUserData();
     moveKm = await healthService.getMoveKm(date);
@@ -250,7 +251,7 @@ class _ActivityPageState extends State<ActivityPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            "${(user!.weight >= user!.userGoals.targetWeight ? day!.goalForToday!.calorieLimit - day!.goalForToday!.caloricChangeGoal : day!.goalForToday!.calorieLimit + day!.goalForToday!.caloricChangeGoal).safe.round()}",
+                                            "${userGoalsService.getCalorieTarget(user!, userGoals!, maintenance!).safe.round()}",
                                             style: smallLabelDecor,
                                           ),
                                           SizedBox(height: 5.h),

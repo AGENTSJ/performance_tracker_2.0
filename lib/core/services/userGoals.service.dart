@@ -3,6 +3,9 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
+import 'package:performance_tracker/core/repositories/userGoal.repository.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
 
 enum JourneyMode { cut, bulk, maintenance }
@@ -10,6 +13,8 @@ enum JourneyMode { cut, bulk, maintenance }
 class UserGoalsService {
 
   var userService = locator<UserService>();
+  final _goalRepo = locator<UserGoalRepository>();
+  final _commonService = locator<CommonService>();
 
   /// Classifies a user's current goal as a cut, bulk or maintenance.
   /// Maintenance applies when the target weight is essentially the current
@@ -47,14 +52,121 @@ class UserGoalsService {
     ActivityLevel.extraActive : 1.9,
   };
 
-  int getDaysToReachWeightTarget(User user)
+  int getDaysToReachWeightTarget(User user, UserGoal goal)
   {
-    double weightDiff = (user.userGoals.targetWeight - user.weight).abs();
+    double weightDiff = (goal.targetWeight - user.weight).abs();
     var caloriesToChange = weightDiff*CALORIES_IN_1KG_FAT;
 
-    var daysToReach = caloriesToChange/user.userGoals.caloricChangeGoal;
+    var daysToReach = caloriesToChange/goal.caloricChangeGoal;
     return daysToReach.round();
   }
+
+  /// Daily calorie target: maintenance minus the caloric change goal when
+  /// losing weight, plus it when gaining.
+  double getCalorieTarget(User user, UserGoal goal, double maintenance)
+  {
+    return user.weight >= goal.targetWeight
+        ? maintenance - goal.caloricChangeGoal
+        : maintenance + goal.caloricChangeGoal;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Goal periods
+  // ---------------------------------------------------------------------------
+
+  /// The active goal. On first launch, when none exists yet, a default one
+  /// starting today is created.
+  UserGoal getActiveGoal() {
+    final active = _goalRepo.getActiveGoal();
+    if (active != null) return active;
+    final goal = UserGoal(
+      startDate: _dateOnly(DateTime.now()),
+      isActive: true,
+      stepGoal: 5000,
+      targetWeight: 71,
+      caloricChangeGoal: 200,
+    );
+    // Hive applies the add in memory right away; the disk write finishes after.
+    _goalRepo.addGoal(goal);
+    return goal;
+  }
+
+  /// The goal whose period covers [date], if any.
+  UserGoal? getGoalForDate(DateTime date) {
+    final dateKey = _commonService.getDateKey(date);
+    for (final goal in _goalRepo.getAllGoals()) {
+      final start = _commonService.getDateKey(goal.startDate);
+      final end = goal.endDate == null
+          ? null
+          : _commonService.getDateKey(goal.endDate!);
+      if (start.compareTo(dateKey) <= 0 &&
+          (end == null || dateKey.compareTo(end) <= 0)) {
+        return goal;
+      }
+    }
+    return null;
+  }
+
+  UserGoal? getGoalById(int id) => _goalRepo.getGoalById(id);
+
+  List<UserGoal> getAllGoals() => _goalRepo.getAllGoals();
+
+  /// Replaces all goals with [goals] (backup restore).
+  Future<void> restoreGoals(List<UserGoal> goals) async {
+    await _goalRepo.clearAllGoals();
+    for (final goal in goals) {
+      await _goalRepo.addGoal(goal);
+    }
+  }
+
+  /// Saves new goal values. If the active goal started today it is edited in
+  /// place; otherwise it is ended yesterday and a new active goal starts
+  /// today, so periods never overlap and only one goal is active.
+  Future<UserGoal> saveGoal({
+    required int stepGoal,
+    required double targetWeight,
+    required double caloricChangeGoal,
+  }) async {
+    final today = _dateOnly(DateTime.now());
+    var goal = getActiveGoal();
+    if (_commonService.getDateKey(goal.startDate) ==
+        _commonService.getDateKey(today)) {
+      goal
+        ..stepGoal = stepGoal
+        ..targetWeight = targetWeight
+        ..caloricChangeGoal = caloricChangeGoal;
+      await _goalRepo.updateGoal(goal);
+    } else {
+      goal
+        ..isActive = false
+        ..endDate = today.subtract(const Duration(days: 1));
+      await _goalRepo.updateGoal(goal);
+      goal = UserGoal(
+        startDate: today,
+        isActive: true,
+        stepGoal: stepGoal,
+        targetWeight: targetWeight,
+        caloricChangeGoal: caloricChangeGoal,
+      );
+      await _goalRepo.addGoal(goal);
+    }
+    await _mirrorToUser(goal);
+    return goal;
+  }
+
+  /// Temporary until Phase 4: journeys still read goals from their copy of
+  /// the user (`userAtStart.userGoals`, `userAtDay.userGoals`), so the user
+  /// record keeps a copy of the active goal's values.
+  Future<void> _mirrorToUser(UserGoal goal) async {
+    final user = await userService.getUserData();
+    user.userGoals
+      ..stepGoal = goal.stepGoal
+      ..targetWeight = goal.targetWeight
+      ..caloricChangeGoal = goal.caloricChangeGoal;
+    await userService.updateUser(user);
+  }
+
+  DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
 
   ActivityLevel getActivity(int steps) {
       if (steps<= 3500)
@@ -80,30 +192,28 @@ class UserGoalsService {
       return ActivityLevel.sedentary;
   }
 
-  Future<UserGoals> getUserGoals() async {
-    var user = await userService.getUserData();
-    return user.userGoals;
-  }
-
-  Future<bool> resetGoals() async
+  /// Saves the recommended goals as the active goal.
+  Future<UserGoal> resetGoals() async
   {
     var user = await userService.getUserData();
-    user.userGoals.stepGoal = STANDARD_STEP_LIMIT;
     var recommendedUserWeight = getRecommendedWeight(user);
-    user.userGoals.targetWeight = recommendedUserWeight.round().toDouble();
+    double caloricChangeGoal;
     if ((recommendedUserWeight - user.weight).abs() <=
         MAINTENANCE_WEIGHT_TOLERANCE_KG) // GOOD WEIGHT -> MAINTAIN
     {
-      user.userGoals.caloricChangeGoal = 0;
+      caloricChangeGoal = 0;
     } else if (recommendedUserWeight < user.weight) // SHOULD CUT
     {
-      user.userGoals.caloricChangeGoal = CALORIE_DEFICIT_LIMIT;
+      caloricChangeGoal = CALORIE_DEFICIT_LIMIT;
     } else // SHOULD BULK
     {
-      user.userGoals.caloricChangeGoal = CAL_SURPLUS_LIMIT;
+      caloricChangeGoal = CAL_SURPLUS_LIMIT;
     }
-    await userService.updateUser(user);
-    return true;
+    return saveGoal(
+      stepGoal: STANDARD_STEP_LIMIT,
+      targetWeight: recommendedUserWeight.round().toDouble(),
+      caloricChangeGoal: caloricChangeGoal,
+    );
   }
   
   double fetchMaintenanceCalories(User user , MacroNutrients macro,{int steps= 3500})

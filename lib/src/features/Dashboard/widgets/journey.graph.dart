@@ -52,7 +52,8 @@ class _JourneyGraphState extends State<JourneyGraph> {
   _DataRepresentation _getCaloriesAndStepDataByLog(Day day , JourneyLog log)
   {
     final calories = dayService.getDaysCalories(day);
-    final maintenance = day.goalForToday!.calorieLimit;
+    // Maintenance for that day, using the user as logged on that day.
+    final maintenance = dayService.getMaintenanceCalories(day, log.userAtDay);
     double calorieChange = 0;
     double calorieChangePercentage;
     switch (mode) {
@@ -83,7 +84,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       final log = widget.journey.logs[i];
       final day = log.dateKey == null ? null : dayService.getDayByDateKey(log.dateKey!);
       // Days are only stored once food is logged, so a log may have no day.
-      if (day == null || day.goalForToday == null) continue;
+      if (day == null) continue;
       days.add(day);
       var data = _getCaloriesAndStepDataByLog(day, log);
       barMetaData.add(data);

@@ -17,23 +17,29 @@ class CommentsService {
   final CAL_DIFF_TRIGGER = 500;
   final CONTEXT_LIMIT_DAYS = 7;
   String userAccountCreatedDate = "";
-  String UserGoalDescription = "";
-
-  UserGoals? userGoals ;
   User? user;
   CommentsService()
   {
     Future.microtask(
       ()async
       {
-        userGoals = await userGoalService.getUserGoals();
         user = await userService.getUserData();
         userAccountCreatedDate = "${user!.createdAt}";
-        UserGoalDescription = "User is currently at ${user!.weight}kg and has a goal to reach ${userGoals!.targetWeight}kg Todays target calories is ${userGoals!.calorieLimit}";
       }
     );
   }
   
+  /// The user's goal for [day]: the goal period it falls in (else the active
+  /// goal) and that day's maintenance calories.
+  Future<String> _goalDescription(Day day) async
+  {
+    final user = await userService.getUserData();
+    final goal = userGoalService.getGoalForDate(day.dayTime) ??
+        userGoalService.getActiveGoal();
+    final maintenance = dayService.getMaintenanceCalories(day, user);
+    return "User is currently at ${user.weight}kg and has a goal to reach ${goal.targetWeight}kg Todays target calories is ${userGoalService.getCalorieTarget(user, goal, maintenance).round()}";
+  }
+
   Future<GeneratedComment?> setDietComments(Day day) async
   {
     var previousComment = day.comments?.overallDietComments;
@@ -185,7 +191,7 @@ class CommentsService {
     MacroNutrients currentMacroStructure = dayService.getDaysCalories(day);
     String currentMacroSignature = jsonEncode(currentMacroStructure);
     String prompt = '''
-    Users goal is $UserGoalDescription,
+    Users goal is ${await _goalDescription(day)},
     User has an macro structure as follows $currentMacroSignature 
     Suggest user foods that help them to achieve their goal and health
     ''';
@@ -264,7 +270,7 @@ class CommentsService {
     String currentMicroSignature = _convertMicroMapToString(microMap);
     
     String prompt = '''
-    Users goal is $UserGoalDescription,
+    Users goal is ${await _goalDescription(day)},
     User has an micro structure as follows $currentMicroSignature 
     Suggest user foods that help them to achieve their goal and health
     ''';

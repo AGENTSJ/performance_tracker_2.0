@@ -67,9 +67,10 @@ class ReportService {
       var today = await _dayService.getDayDataByDate(now);
       var stepsToday = await _healthService.getStepsByDate(now);
       var macrosToday = _dayService.getDaysCalories(today!);
+      var goal = _userGoalService.getActiveGoal();
       var maintenance = _userGoalService.fetchMaintenanceCalories(
         user,
-        steps: user.userGoals.stepGoal,
+        steps: goal.stepGoal,
         macrosToday,
       );
       var nutritionToday = _dayService.getDaysCalories(today!);
@@ -77,8 +78,8 @@ class ReportService {
           '''User Name : ${user.name}
       Current Weight: ${user.weight}
       Height: ${user.height}
-      User target weight : ${user.userGoals.targetWeight}
-      User target steps per day: ${user.userGoals.stepGoal}
+      User target weight : ${goal.targetWeight}
+      User target steps per day: ${goal.stepGoal}
       User Steps today:$stepsToday
       Today's Nutrition:
         Protein: ${nutritionToday.protein}g
@@ -327,7 +328,7 @@ class ReportService {
         "| ${_fmtNutrient(macros.fiber)} "
         "| ${stepsByDay[day]} "
         "| ${_fmtNutrient(maintenanceByDay[day])} "
-        "| ${_fmtNutrient(day.goalForToday?.calorieLimit)} |",
+        "| ${_fmtNutrient(_calorieGoalForDay(user, day, maintenanceByDay[day]!))} |",
       );
     }
     buffer.writeln();
@@ -417,9 +418,11 @@ class ReportService {
     var daysGoalMet = 0;
     for (var day in days) {
       final steps = stepsByDay[day]!;
-      // Days logged before a goal change keep the goal they were tracked
-      // against, so fall back to the current goal only when none was stored.
-      final goal = day.goalForToday?.stepGoal ?? user.userGoals.stepGoal;
+      // Each day is measured against the goal period it falls in, falling
+      // back to the active goal for days before the first period.
+      final goal = (_userGoalService.getGoalForDate(day.dayTime) ??
+              _userGoalService.getActiveGoal())
+          .stepGoal;
       final goalMet = goal > 0 && steps >= goal;
       if (goalMet) {
         daysGoalMet++;
@@ -445,6 +448,13 @@ class ReportService {
     return buffer.toString();
   }
 
+  /// Calorie target for [day] from the goal period it falls in.
+  double? _calorieGoalForDay(User user, Day day, double maintenance) {
+    final goal = _userGoalService.getGoalForDate(day.dayTime);
+    if (goal == null) return null;
+    return _userGoalService.getCalorieTarget(user, goal, maintenance);
+  }
+
   /// The user block every export opens with, plus the window it covers.
   String _buildExportHeader(User user, DateTime from) {
     final buffer = StringBuffer();
@@ -455,8 +465,9 @@ class ReportService {
     buffer.writeln("User Name : ${user.name}");
     buffer.writeln("Current Weight: ${user.weight}");
     buffer.writeln("Height: ${user.height}");
-    buffer.writeln("User target weight : ${user.userGoals.targetWeight}");
-    buffer.writeln("User target steps per day: ${user.userGoals.stepGoal}");
+    final goal = _userGoalService.getActiveGoal();
+    buffer.writeln("User target weight : ${goal.targetWeight}");
+    buffer.writeln("User target steps per day: ${goal.stepGoal}");
     buffer.writeln();
     return buffer.toString();
   }

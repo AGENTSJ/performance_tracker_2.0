@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:performance_tracker/core/models/activity.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
-import 'package:performance_tracker/core/models/user.model.dart';
 
 part 'generated/day.model.g.dart';
 
@@ -31,8 +30,8 @@ class Day extends HiveObject {
   @HiveField(8)
   DayComments? comments;
 
-  @HiveField(9)
-  UserGoals? goalForToday;
+  // HiveField 9 was `goalForToday` (removed in Phase 3: goals are periods in
+  // the userGoals box). Don't reuse index 9.
   
   /// Legacy: no longer read or written. A day's routine is now found by its
   /// DATE_KEY in the routine box.
@@ -61,7 +60,6 @@ class Day extends HiveObject {
     'meals': meals?.map((meal) => meal.toJson()).toList(),
     'dayTime': dayTime.toIso8601String(),
     'comments': comments?.toJson(),
-    'goalForToday': goalForToday?.toJson(),
     'routineId': routineId,
     'activity': activity?.toJson(),
   };
@@ -78,9 +76,6 @@ class Day extends HiveObject {
         .toList();
     day.comments = json['comments'] != null 
         ? DayComments.fromJson(json['comments'] as Map<String, dynamic>)
-        : null;
-    day.goalForToday = json['goalForToday'] != null
-        ? UserGoals.fromJson(json['goalForToday'] as Map<String, dynamic>)
         : null;
     day.routineId = json['routineId'] as int?;
     day.activity = json['activity'] != null

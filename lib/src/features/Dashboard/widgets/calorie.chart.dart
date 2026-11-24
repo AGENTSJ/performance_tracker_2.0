@@ -8,6 +8,7 @@ import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
@@ -24,7 +25,9 @@ class CalorieChart extends StatefulWidget {
 class _CalorieChartState extends State<CalorieChart> {
   var commonService = locator<CommonService>();
   var dayService = locator<DayService>();
+  var userService = locator<UserService>();
   MacroNutrients? macroForToday;
+  double maintenance = 0;
   Day? day;
   bool isLoaded = false;
   @override
@@ -36,6 +39,10 @@ class _CalorieChartState extends State<CalorieChart> {
   setUpUi() async {
     day = await dayService.getDayDataByDate(DateTime.now());
     macroForToday = dayService.getDaysCalories(day!);
+    maintenance = dayService.getMaintenanceCalories(
+      day!,
+      await userService.getUserData(),
+    );
     isLoaded = true;
     refreshState();
   }
@@ -46,7 +53,7 @@ class _CalorieChartState extends State<CalorieChart> {
   }
 
   _getCalChartSections() {
-    var limit = day!.goalForToday!.calorieLimit;
+    var limit = maintenance;
     double value = commonService.getPercentage(limit, macroForToday!.calories);
     return [
       PieChartSectionData(

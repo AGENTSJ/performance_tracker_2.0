@@ -22,6 +22,8 @@ import 'package:performance_tracker/src/features/Coach/services/report.service.d
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
 import 'package:performance_tracker/src/features/Coach/services/trainer.agent.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
+import 'package:performance_tracker/core/services/userGoals.service.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
@@ -33,6 +35,7 @@ class DataService {
   final dayService = locator<DayService>();
   final migrationService = locator<MigrationService>();
   final userService = locator<UserService>();
+  final goalService = locator<UserGoalsService>();
   final routService = locator<RoutineService>();
   final jourService = locator<JourneyService>();
   final reportService = locator<ReportService>();
@@ -93,7 +96,11 @@ class DataService {
     try {
       AppData data = AppData.fromJson(oldData);
       migrationService.migrateImportedData(
-          days: data.days, journeys: data.journeys, routines: data.routines);
+          days: data.days,
+          journeys: data.journeys,
+          routines: data.routines,
+          users: data.users,
+          goals: data.userGoals);
       List<Future<void>> futures = [
         // Restore Foods
         () async {
@@ -116,6 +123,10 @@ class DataService {
           for (var user in data.users) {
             await userService.addUser(user);
           }
+        }(),
+        // Restore User Goals
+        () async {
+          await goalService.restoreGoals(data.userGoals);
         }(),
         // Restore Routines
         () async {
@@ -203,7 +214,8 @@ class DataService {
         conversations: [await trainerAgentService.getOlderChat()],
         reports: reportService.fetchAllReports(),
         version: '',
-        journalBook: journalService.getJournalBook()
+        journalBook: journalService.getJournalBook(),
+        userGoals: goalService.getAllGoals()
       );
       var jsonData = appData.toJson();
       await saveJsonToFile(jsonData, "PerformanceTracker");
@@ -224,6 +236,7 @@ class AppData {
   List<AiChatContent> conversations;
   List<Report> reports;
   JournalBook? journalBook;
+  List<UserGoal> userGoals;
   String version;
   AppData({
     required this.foods,
@@ -237,6 +250,7 @@ class AppData {
     required this.reports,
     required this.version,
     required this.journalBook,
+    required this.userGoals,
   });
 
   Map<String, dynamic> toJson() {
@@ -251,6 +265,7 @@ class AppData {
       "conversations": conversations.map((conv) => conv.toJson()).toList(),
       "reports": reports.map((report) => report.toJson()).toList(),
       "journalBook": journalBook?.toJson(),
+      "userGoals": userGoals.map((goal) => goal.toJson()).toList(),
     };
   }
 
@@ -284,6 +299,10 @@ class AppData {
           .map((e) => Report.fromJson(e as Map<String, dynamic>))
           .toList(),
       journalBook: map['journalBook']!=null ? JournalBook.fromJson(map['journalBook']) : null,
+      // Absent in backups made before goal periods existed.
+      userGoals: ((map['userGoals'] as List<dynamic>?) ?? [])
+          .map((e) => UserGoal.fromJson(e as Map<String, dynamic>))
+          .toList(),
       version: map['version'] ??= "",
     );
   }

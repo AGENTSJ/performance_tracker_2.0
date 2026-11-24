@@ -8,6 +8,7 @@ import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
+import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/src/features/Nutrition/widgets/microNutrientList.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Nutrition/widgets/macroAnalysisWidget.dart';
@@ -24,6 +25,7 @@ class NutritionAnalysisPage extends StatefulWidget {
 class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
   final DayService dayService = locator<DayService>();
   final UserGoalsService userGoalService = locator<UserGoalsService>();
+  final UserService userService = locator<UserService>();
   MacroNutrients? todaysMacros;
   String unit = 'g';
   Map<String, MeasuredUnit> totalConsumed = {};
@@ -131,8 +133,10 @@ class _NutritionAnalysisState extends State<NutritionAnalysisPage> {
 
   setTotalConsumed() async {
     this.todaysMacros = new MacroNutrients(0, 0, 0, 0, 0);
-    var goal = widget.day.goalForToday;
-    totalCalLimit = goal!.calorieLimit;
+    totalCalLimit = dayService.getMaintenanceCalories(
+      widget.day,
+      await userService.getUserData(),
+    );
     for (var micro in MicroNutrients.microRDA.entries) {
       totalConsumed[micro.key] = MeasuredUnit(value: 0, unit: micro.value.unit);
     }

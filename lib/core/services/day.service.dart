@@ -2,6 +2,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/activity.model.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/core/repositories/day.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
@@ -18,10 +19,19 @@ class DayService {
       return day;
     }
     Day? newDay = Day(dayTime: date);
-    // In-memory defaults only: these are saved with the day once a food is added.
-    newDay.goalForToday = await goalService.getUserGoals();
+    // In-memory default only: saved with the day once a food is added.
     newDay.activity = Activity(steps: 0);
     return newDay;
+  }
+
+  /// Maintenance calories for [day], recalculated from [user], the day's food
+  /// and the steps stored on the day.
+  double getMaintenanceCalories(Day day, User user) {
+    return goalService.fetchMaintenanceCalories(
+      user,
+      getDaysCalories(day),
+      steps: day.activity?.steps ?? 0,
+    );
   }
 
   /// Saves [day] under its DATE_KEY. A day reaches storage only once one of

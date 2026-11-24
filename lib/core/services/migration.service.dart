@@ -2,6 +2,8 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/log.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +44,7 @@ class MigrationService {
   void _registerStartupMigrations() {
     _register(1, 'Days keyed by DATE_KEY', _migrateDaysToDateKey);
     _register(2, 'Auto routines keyed by DATE_KEY', _migrateAutoRoutinesToDateKey);
+    _register(3, 'User goals as periods', _migrateUserGoalsToPeriods);
   }
 
   void _register(int index, String name, Future<void> Function() run) {
@@ -86,7 +89,14 @@ class MigrationService {
     required List<Day> days,
     required List<Journey> journeys,
     required List<Routine> routines,
+    required List<User> users,
+    required List<UserGoal> goals,
   }) {
+    // Older backups have no goal periods: start one from the user's goals.
+    if (goals.isEmpty && users.isNotEmpty) {
+      goals.add(_goalFromLegacyUser(users.first));
+    }
+
     // Older backups have auto routines without a DATE_KEY.
     for (final routine in routines) {
       if (!routine.isCustom && routine.dateKey == null) {
@@ -237,6 +247,34 @@ class MigrationService {
   }
 
   // ---------------------------------------------------------------------------
+  // 3. User goals as periods
+  //
+  // Goals used to live on the user (`user.userGoals`) and were copied onto
+  // every day (`day.goalForToday`). They are now periods in the userGoals box.
+  // One active goal is created from the user's current goals, starting on the
+  // day the account was created; the old per-day copies are discarded.
+  // ---------------------------------------------------------------------------
+
+  Future<void> _migrateUserGoalsToPeriods() async {
+    final goalBox = Hive.box<UserGoal>(Collections.userGoals.value);
+    if (goalBox.isNotEmpty) return;
+    final userBox = Hive.box<User>(Collections.users.value);
+    if (userBox.isEmpty) return; // fresh install: a default goal is made on demand
+    await goalBox.add(_goalFromLegacyUser(userBox.values.first));
+  }
+
+  UserGoal _goalFromLegacyUser(User user) {
+    final created = user.createdAt;
+    return UserGoal(
+      startDate: DateTime(created.year, created.month, created.day),
+      isActive: true,
+      stepGoal: user.userGoals.stepGoal,
+      targetWeight: user.userGoals.targetWeight,
+      caloricChangeGoal: user.userGoals.caloricChangeGoal,
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // Shared helpers
   // ---------------------------------------------------------------------------
 
@@ -253,7 +291,6 @@ class MigrationService {
       ..eveningSnacks = day.eveningSnacks
       ..meals = day.meals
       ..comments = day.comments
-      ..goalForToday = day.goalForToday
       ..routineId = day.routineId
       ..activity = day.activity;
   }

@@ -108,10 +108,11 @@ class _JourneyComponentState extends State<JourneyComponent> {
     var count = 0;
     for (final log in journey.logs) {
       final day = log.dateKey == null ? null : dayService.getDayByDateKey(log.dateKey!);
-      if (day == null || day.goalForToday == null) continue;
+      if (day == null) continue;
       final cals = dayService.getDaysCalories(day).calories;
-      if (userGoalService.isWithinMaintenance(
-          cals, day.goalForToday!.calorieLimit)) {
+      // Maintenance for that day, using the user as logged on that day.
+      final maintenance = dayService.getMaintenanceCalories(day, log.userAtDay);
+      if (userGoalService.isWithinMaintenance(cals, maintenance)) {
         count++;
       }
     }
