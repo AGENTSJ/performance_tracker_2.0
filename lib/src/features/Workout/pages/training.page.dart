@@ -15,7 +15,6 @@ import 'package:performance_tracker/src/features/Workout/pages/advices.page.dart
 import 'package:performance_tracker/src/components/loading.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/workouts.page.dart';
 import 'package:performance_tracker/src/features/Workout/pages/routines.page.dart';
-import 'package:performance_tracker/src/features/Workout/widgets/routineSelection.component.dart';
 import 'package:performance_tracker/src/features/Workout/pages/fatigue.page.dart';
 
 class TrainingModulePage extends StatefulWidget {
@@ -396,43 +395,10 @@ class TrainingModulePageState extends State<TrainingModulePage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AdvicesPage()));
   }
   handleAddWorkout() async {
-    await showModalBottomSheet(
-      backgroundColor: SURFACE2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.vertical(top: Radius.circular(20.r)),
-      ),
-      context: context,
-      builder: (BuildContext context) => SizedBox(
-        child: SizedBox(
-          height: 600.h,
-          child: Column(
-            children: [
-              Expanded(
-                child: PageView(
-                  physics: BouncingScrollPhysics(),
-                  pageSnapping: true,
-                  children: [
-                    SelectWorkout(selectedWorkouts: workouts),
-                    RoutineSelection(selectedWorkouts: workouts),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.0.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Swipe to select from workouts or routines",
-                      style: TextStyle(color: TEXT_SECONDARY),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    await showWorkoutPickerSheet(
+      context,
+      selectedWorkouts: workouts,
+      includeRoutines: true,
     );
     routine?.workoutsIds = [];
     for (var work in workouts) {

@@ -5,7 +5,10 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/selectWorkout.dart';
 
+/// Lists custom routines; tapping one adds all of its workouts to
+/// [selectedWorkouts] and closes the sheet.
 class RoutineSelection extends StatefulWidget {
   final List<Workout> selectedWorkouts;
   const RoutineSelection({super.key, required this.selectedWorkouts});
@@ -17,85 +20,61 @@ class RoutineSelection extends StatefulWidget {
 class _RoutineSelectionState extends State<RoutineSelection> {
   var routineService = locator<RoutineService>();
   List<Routine> routines = [];
+
   @override
   void initState() {
-    routines = this.routineService.getAllCustomRoutines();
     super.initState();
+    routines = routineService.getAllCustomRoutines();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SingleChildScrollView(
+    if (routines.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
         child: Column(
           children: [
-            SizedBox(height: 15.h),
-            Container(
-              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: BORDER_PRIMARY))),
-              child: Padding(
-                padding: EdgeInsets.symmetric( vertical:  17.h,horizontal: 14.w),
-                child: Row(
-                  children: [
-                    Text(
-                      "Select a routine",
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+            SizedBox(width: 90.w, height: 90.h, child: empty),
+            SizedBox(height: 10.h),
+            Text(
+              "No routines yet",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14.sp,
+                color: TEXT_PRIMARY,
               ),
             ),
-            Material(
-              color: SURFACE2,
-              shape: Border.all(color: BORDER_SECONDARY),
-              child: Column(
-                children: [
-                  ...routines.map(
-                    (routine) => Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          handleSaveRoutine(routine);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(color: BORDER_SECONDARY),
-                            ),
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal:  14.0.w,vertical: 14.h),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  FontAwesomeIcons.layerGroup,
-                                  size: 18.sp,
-                                  color: TEXT_SECONDARY,
-                                ),
-                                SizedBox(width: 20.w),
-                                Text(routine.name,style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w500),),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SizedBox(height: 4.h),
+            Text(
+              "Create one from the Routines page",
+              style: TextStyle(fontSize: 12.sp, color: TEXT_SECONDARY),
             ),
           ],
         ),
-      ),
+      );
+    }
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 16.h),
+      itemCount: routines.length,
+      separatorBuilder: (_, __) => SizedBox(height: 8.h),
+      itemBuilder: (context, i) {
+        final routine = routines[i];
+        final count = routine.workoutsIds.length;
+        return PickerTile(
+          icon: FontAwesomeIcons.layerGroup,
+          title: routine.name,
+          subtitle: "$count workout${count == 1 ? '' : 's'}",
+          trailingIcon: Icons.playlist_add,
+          onTap: () => handleSaveRoutine(routine),
+        );
+      },
     );
   }
 
   handleSaveRoutine(Routine selectedRoutine) async {
     var workouts = await routineService.getRoutinesWorkouts(selectedRoutine);
     widget.selectedWorkouts.addAll([...workouts]);
+    if (!mounted) return;
     Navigator.of(context).pop();
   }
 }

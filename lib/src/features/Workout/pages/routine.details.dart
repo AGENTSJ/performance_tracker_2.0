@@ -589,18 +589,7 @@ class RoutineDetailsState extends State<RoutineDetails> {
   }
 
   handleAddRoutine() async {
-    await showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: SURFACE2,
-      context: context,
-      builder: (context) => Padding(
-        padding: MediaQuery.of(context).viewInsets,
-        child: SizedBox(
-          height: 400.h,
-          child: SelectWorkout(selectedWorkouts: workouts),
-        ),
-      ),
-    );
+    await showWorkoutPickerSheet(context, selectedWorkouts: workouts);
     routine?.workoutsIds = [];
     for (var work in workouts) {
       routine?.workoutsIds.add(work.key);
