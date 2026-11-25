@@ -71,13 +71,14 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       enabled: fields[2] as bool,
       desc: fields[3] as String,
       volumes: (fields[4] as List).cast<WorkoutVolume>(),
+      percentDrop: fields[5] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -87,7 +88,9 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       ..writeByte(3)
       ..write(obj.desc)
       ..writeByte(4)
-      ..write(obj.volumes);
+      ..write(obj.volumes)
+      ..writeByte(5)
+      ..write(obj.percentDrop);
   }
 
   @override

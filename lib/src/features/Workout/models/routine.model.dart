@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:hive/hive.dart';
+import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/core/extensions/double_extensions.dart';
 
 part 'generated/routine.model.g.dart';
@@ -15,6 +18,7 @@ class Routine extends HiveObject {
   bool isCustom;
   @HiveField(4)
   String desc;
+
   /// DATE_KEY (`yyyy-MM-dd`) of the day an auto routine belongs to; it is also
   /// the routine's Hive key. Null for custom routines.
   @HiveField(5)
@@ -59,6 +63,9 @@ class Workout extends HiveObject {
   String desc;
   @HiveField(4)
   List<WorkoutVolume> volumes;
+  // percent drop (0 -> 100) after a set
+  @HiveField(5)
+  double? percentDrop;
 
   Workout({
     required this.name,
@@ -66,6 +73,7 @@ class Workout extends HiveObject {
     required this.enabled,
     required this.desc,
     required this.volumes,
+    this.percentDrop,
   });
 
   Map<String, dynamic> toJson() => {
@@ -74,6 +82,7 @@ class Workout extends HiveObject {
     'enabled': enabled,
     'desc': desc,
     'volumes': volumes.map((volume) => volume.toJson()).toList(),
+    'percentDrop': percentDrop,
   };
 
   factory Workout.fromJson(Map<String, dynamic> json) => Workout(
@@ -89,15 +98,41 @@ class Workout extends HiveObject {
               WorkoutVolume.fromJson(volumeJson as Map<String, dynamic>),
         )
         .toList(),
+    percentDrop: (json['percentDrop'] as num?)?.toDouble(),
   );
-  
+
   // Returns reps that is assumed to be capable by user if previously no workout have been done
-  double getFatigueAdjustedReps(double fatigue , int reps)
-  {
+  double getFatigueAdjustedReps(double fatigue, int reps) {
     var sumOfAllVolumes = 0.0;
-    volumes.forEach((vol)=> sumOfAllVolumes+=vol.volume);
-    return (reps + (fatigue / sumOfAllVolumes).safe);
+    volumes.forEach((vol) => sumOfAllVolumes += vol.volume);
+    final normPercentDrop = percentDrop ?? (PERCENTAGE_DROP_PER_SET);
+    final numberOfEquivalentSetDone = (fatigue / sumOfAllVolumes).safe;
+    // var adjustedReps = reps * (1 +  numberOfEquivalentSetDone * normPercentDrop); //linear drop formula
+    var adjustedReps =
+        reps /
+        (1 -
+            exponentialSaturatedCurve(
+              numberOfEquivalentSetDone,
+              normPercentDrop,
+            ));
+    return adjustedReps;
   }
+}
+
+// x = 100 * (1-e^-d * y)
+// X is the percentage of performance lost , Y is the sets done , d is the  loss rate of performance meaning fatigue 1 get 15 % loss assumed
+// 100 since performance cannot loose after 100 %. at 100 % u are dead.
+// assumption that drop in performance is not linear given a fatigue level
+double exponentialSaturatedCurve(double setsDone, double percentageDrop) {
+  // 100 * is avoided here since we need values from 0.0 to 1.0
+  var d = findDecayRateForExponentialFunction(percentageDrop, 1);
+  var normalizedDropAfterSetsDone = (1 - exp(-1 * d * setsDone));
+  return normalizedDropAfterSetsDone;
+}
+
+double findDecayRateForExponentialFunction(double x, double y) {
+  var d = -1 * log((x - 100).abs() / 100) * 1 / y;
+  return d;
 }
 
 @HiveType(typeId: 15)
