@@ -51,8 +51,26 @@ void main() {
   test('fatigue before a set sums only earlier sets of that day', () {
     // bench1 (no record -> current volumes) + fly (record).
     expect(calc().fatigueBefore(bench2), {'chest': 1.5, 'triceps': 0.5});
-    // chest 1.5 * 1 + triceps 0.5 * 0.5
-    expect(calc().contextFor(bench2, bench), 1.75);
+    // chest 1.5 + triceps 0.5
+    expect(calc().contextFor(bench2, bench), 2.0);
+  });
+
+  test('one identical earlier set is one equivalent set', () {
+    final s1 = TrackEntry(entryDate: day.add(const Duration(hours: 9)), value: 10);
+    final s2 = TrackEntry(entryDate: day.add(const Duration(hours: 10)), value: 9);
+    final press = workout('Press', {'chest': 1, 'shoulders': 0.5}, [s1, s2]);
+    final c = FatigueCalculator([press], {}, dateKey);
+    // chest 1 + shoulders 0.5, equal to the workout's total volume.
+    expect(c.contextFor(s2, press), 1.5);
+  });
+
+  test('context ignores muscles the set does not work', () {
+    final s1 = TrackEntry(entryDate: day.add(const Duration(hours: 9)), value: 10);
+    final s2 = TrackEntry(entryDate: day.add(const Duration(hours: 10)), value: 9);
+    final curl = workout('Curl', {'biceps': 1}, [s1]);
+    final press = workout('Press', {'chest': 1, 'shoulders': 0.5}, [s2]);
+    final c = FatigueCalculator([curl, press], {}, dateKey);
+    expect(c.contextFor(s2, press), 0);
   });
 
   test('daily fatigue sums every set of the day', () {

@@ -168,13 +168,16 @@ class FatigueCalculator {
     return total;
   }
 
-  /// How fatigued the muscles [entry] works were when it was tracked: for each
-  /// muscle, the fatigue accumulated before it times the fatigue it adds.
+  /// How fatigued the muscles [entry] works were when it was tracked: the
+  /// fatigue accumulated before it on each muscle the entry works.
+  ///
+  /// Divided by the workout's total volume, this is the number of equivalent
+  /// sets of this workout already done (one identical earlier set gives 1).
   double contextFor(TrackEntry entry, Workout workout) {
     final before = fatigueBefore(entry);
     var context = 0.0;
     fatigueOf(entry, workout).forEach((muscle, volume) {
-      context += (before[muscle] ?? 0) * volume;
+      if (volume > 0) context += before[muscle] ?? 0;
     });
     return context;
   }

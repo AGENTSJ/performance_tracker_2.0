@@ -117,6 +117,20 @@ class ProgressChartState extends State<ProgressChart> {
       ? value.toInt().toString()
       : value.toStringAsFixed(1);
 
+  /// " · n sets worth", where n is [fatigue] over the workout's total volume
+  /// (the equivalent sets used by the fatigue adjustment). Empty when the
+  /// workout has no volumes.
+  String _setsWorth(double fatigue) {
+    final total = widget.workout.volumes.fold<double>(
+      0,
+      (sum, vol) => sum + vol.volume,
+    );
+    if (total <= 0) return '';
+    final sets = fatigue / total;
+    final unit = _formatFatigue(sets) == '1' ? 'set' : 'sets';
+    return ' · ${_formatFatigue(sets)} $unit worth';
+  }
+
   /// Pick a "nice" rounded axis step for the given range.
   double _niceInterval(double range) {
     if (range <= 0) return 1;
@@ -266,7 +280,9 @@ class ProgressChartState extends State<ProgressChart> {
                     ),
                   if (fatigue != null)
                     TextSpan(
-                      text: '\nFatigue ${_formatFatigue(fatigue)}',
+                      text:
+                          '\nFatigue ${_formatFatigue(fatigue)}'
+                          '${_setsWorth(fatigue)}',
                       style: TextStyle(
                         color: ACCENT,
                         fontSize: 11,
