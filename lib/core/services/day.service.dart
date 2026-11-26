@@ -2,43 +2,55 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/models/activity.model.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
-import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/core/repositories/day.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
-import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
 
 class DayService {
   final _dayRepo = locator<DayRepository>();
   final goalService = locator<UserGoalsService>();
-  final _routineService = locator<RoutineService>();
   final _commonService = locator<CommonService>();
 
+  /// Returns the stored day for [date], or a new unsaved one.
   Future<Day?> getDayDataByDate(DateTime date) async {
-    var day = _dayRepo.getDayData(date);
+    var day = _dayRepo.getDayByDateKey(_commonService.getDateKey(date));
     if (day != null) {
       return day;
     }
     Day? newDay = Day(dayTime: date);
-    var goal = await goalService.getUserGoals();
-    newDay.goalForToday = goal;
+    // In-memory default only: saved with the day once a food is added.
     newDay.activity = Activity(steps: 0);
-    var todaysRoutine = Routine(
-      name: _commonService.getDateString(date),
-      workoutsIds: [],
-      createdAt: DateTime.now(),
-      isCustom: false,
-      desc: ''
-    );
-    int routId = await _routineService.addRoutine(todaysRoutine);
-
-    newDay.routineId = routId;
-    newDay = await _dayRepo.addDayData(newDay);
     return newDay;
   }
 
+  /// Maintenance calories for [day], recalculated from [user], the day's food
+  /// and the steps stored on the day.
+  double getMaintenanceCalories(Day day, User user) {
+    return goalService.fetchMaintenanceCalories(
+      user,
+      getDaysCalories(day),
+      steps: day.activity?.steps ?? 0,
+    );
+  }
+
+  /// Saves [day] under its DATE_KEY. A day reaches storage only once one of
+  /// its meals has a food; after that every update is saved, even if all the
+  /// foods are removed again.
   updateDayData(Day day) async {
+    final dateKey = _commonService.getDateKey(day.dayTime);
+    if (!_dayRepo.isDayStored(dateKey) && !hasFood(day)) {
+      return;
+    }
     await _dayRepo.updateDayData(day);
+  }
+
+  bool hasFood(Day day) {
+    return (day.meals ?? []).any((meal) => meal.foods.isNotEmpty);
+  }
+
+  Day? getDayByDateKey(String dateKey) {
+    return _dayRepo.getDayByDateKey(dateKey);
   }
 
   String getDateString(DateTime date) {
@@ -74,11 +86,6 @@ class DayService {
     return macrosForDay;
   }
  
-  Day? getDayById(int id)
-  {
-    return _dayRepo.getDayById(id);
-  }
-
   List<Day> getAllDays()
   {
     return _dayRepo.getAllDays();

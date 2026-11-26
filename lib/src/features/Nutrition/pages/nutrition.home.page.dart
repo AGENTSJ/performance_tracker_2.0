@@ -33,6 +33,7 @@ class NutritionModuleState extends State<NutritionModule> {
   Day? currentDay;
   User? user;
   late MacroNutrients daysMacro;
+  double maintenance = 0;
   String dayMarker = '';
   bool showDateSelector = false;
   bool showWholeGreetings = false;
@@ -158,7 +159,7 @@ class NutritionModuleState extends State<NutritionModule> {
                                     ),
                                   ),
                                   Text(
-                                    "${daysMacro.calories.safe.round()} of ${currentDay?.goalForToday?.calorieLimit.safe.round()} Cal",
+                                    "${daysMacro.calories.safe.round()} of ${maintenance.safe.round()} Cal",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16.sp,
@@ -245,5 +246,8 @@ class NutritionModuleState extends State<NutritionModule> {
 
   setCaloriesInDay() {
     daysMacro = dayService.getDaysCalories(currentDay!);
+    if (user != null) {
+      maintenance = dayService.getMaintenanceCalories(currentDay!, user!);
+    }
   }
 }

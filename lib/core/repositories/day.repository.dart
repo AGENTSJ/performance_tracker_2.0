@@ -1,52 +1,42 @@
 import 'package:hive_flutter/adapters.dart';
+import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/db.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
+import 'package:performance_tracker/core/services/common.service.dart';
 
-class DayRepository 
+/// Days are stored with their DATE_KEY (`yyyy-MM-dd`) as the Hive key.
+class DayRepository
 {
   final _dayBox = Hive.box<Day>(Collections.days.value);
-  
-  Future<Day?>addDayData(Day day) async
+  final _commonService = locator<CommonService>();
+
+  String _keyOf(Day day) => _commonService.getDateKey(day.dayTime);
+
+  Future<Day?> addDayData(Day day) async
   {
-    var key = await _dayBox.add(day);
-    var insertedDay = _dayBox.getAt(key);
-    return insertedDay;  
+    var key = _keyOf(day);
+    await _dayBox.put(key, day);
+    return _dayBox.get(key);
   }
 
   Day? getDayData(DateTime dayTime)
   {
-    var days = _dayBox.values.toList();
-    Day? foundDay;
-
-    for (var day in days) 
-    {
-      var dayString1 = getDateString(day.dayTime);  
-      var dayString2 = getDateString(dayTime);
-      if(dayString2==dayString1)
-      {
-        foundDay = day;
-        break;
-      }  
-    }    
-    return foundDay;
-  }
-  
-  Future<void>updateDayData(Day day) async
-  {
-    await _dayBox.put(day.key, day);
+    return getDayByDateKey(_commonService.getDateKey(dayTime));
   }
 
-  String getDateString(DateTime date)
+  Day? getDayByDateKey(String dateKey)
   {
-    var year = date.year;
-    var month = date.month;
-    var dayOfMonth = date.day;
-    return "$year-$month-$dayOfMonth"; 
+    return _dayBox.get(dateKey);
   }
-  
-  Day? getDayById(int id)
+
+  bool isDayStored(String dateKey)
   {
-    return _dayBox.getAt(id);
+    return _dayBox.containsKey(dateKey);
+  }
+
+  Future<void> updateDayData(Day day) async
+  {
+    await _dayBox.put(_keyOf(day), day);
   }
 
   List<Day> getAllDays()

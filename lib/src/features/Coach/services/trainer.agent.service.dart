@@ -10,7 +10,6 @@ import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
 import 'package:performance_tracker/src/features/Coach/services/report.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/routine.service.dart';
-import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/chat.models.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
@@ -56,7 +55,6 @@ class TrainerAgentService {
   final _advService = locator<AdviceService>();
   final _journeyService = locator<JourneyService>();
   final _commonService = locator<CommonService>();
-  final _userService = locator<UserService>();
   StreamController<AiResponse>? _chatStreamInternal;
   StreamController<AiResponse>? _chatStreamExternal;
   bool _streamPipeLineActive = false;
@@ -119,16 +117,16 @@ class TrainerAgentService {
     {
       return "No active journey";
     }
-    var user = await _userService.getUserData();
+    var goal = _journeyService.getJourneyGoal(journey);
     var caloriesTotal =
-        (journey.userAtStart.weight - user.userGoals.targetWeight).abs() *
+        (journey.userAtStart.weight - goal.targetWeight).abs() *
         7700;
     var estimatedDays =
         ((caloriesTotal - journey.caloriesChangeAchieved) /
-                journey.userAtStart.userGoals.caloricChangeGoal)
+                goal.caloricChangeGoal)
             .round()
             .abs();
-    var stepsTotal = estimatedDays * journey.userAtStart.userGoals.stepGoal;
+    var stepsTotal = estimatedDays * goal.stepGoal;
     var caloriesAchievePercent = _commonService
         .getPercentage(caloriesTotal, journey.caloriesChangeAchieved)
         .roundToDouble()

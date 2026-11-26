@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:performance_tracker/DI.dart';
-import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
 import 'package:performance_tracker/src/features/Workout/widgets/addVolumeDialog.dart';
+import 'package:performance_tracker/src/features/Workout/widgets/percentDropCard.component.dart';
 import 'package:performance_tracker/src/features/Workout/widgets/progressChart.dart';
 import 'package:performance_tracker/src/features/Workout/widgets/setDetails.component.dart';
 
@@ -89,6 +89,13 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
 
   handleRemoveVolume(WorkoutVolume vol) async {
     widget.workout.volumes.remove(vol);
+    await workoutService.updateWorkout(widget.workout);
+    refreshState();
+  }
+
+  /// [percentDrop] null resets the workout to the default drop per set.
+  handlePercentDropChanged(double? percentDrop) async {
+    widget.workout.percentDrop = percentDrop;
     await workoutService.updateWorkout(widget.workout);
     refreshState();
   }
@@ -291,7 +298,12 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                     ],
                   ),
                 ),
-
+                SizedBox(height: 20.h),
+                // Drop per set
+                PercentDropCard(
+                  workout: widget.workout,
+                  onChanged: handlePercentDropChanged,
+                ),
                 SizedBox(height: 20.h),
                 // Notes
                 Container(
@@ -577,9 +589,12 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                     isFatigueAdjusted: adjustFatigue,
                                     set: selectedSetForProgress!,
                                     workout: widget.workout,
-                                    key: ValueKey(
-                                      "${selectedSetForProgress!.value}-$adjustFatigue",
-                                    ),
+                                    // Keyed by the set itself: sets can share
+                                    // a weight, so a weight-based key let a
+                                    // switch between them keep the old chart.
+                                    // Other changes are picked up in
+                                    // ProgressChart.didUpdateWidget.
+                                    key: ObjectKey(selectedSetForProgress),
                                   ),
                                 ),
                               ],

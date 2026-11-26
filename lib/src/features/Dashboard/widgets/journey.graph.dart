@@ -7,6 +7,8 @@ import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/core/models/day.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
+import 'package:performance_tracker/src/features/Dashboard/services/journey.service.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
@@ -27,6 +29,8 @@ class _JourneyGraphState extends State<JourneyGraph> {
   final userService = locator<UserService>();
   final commonService = locator<CommonService>();
   final goalService = locator<UserGoalsService>();
+  final journeyService = locator<JourneyService>();
+  UserGoal? goal;
   double clampPercent(double value) => value.clamp(-100, 100).round().toDouble();
   User? user;
   List<Day> days = [];
@@ -45,24 +49,27 @@ class _JourneyGraphState extends State<JourneyGraph> {
   Future<void> _setUpUi() async {
     user = await userService.getUserData();
     // The journey's mode is fixed by the user's goal when it started.
-    mode = goalService.getJourneyMode(widget.journey.userAtStart);
+    // Every calculation uses the goal the journey was started with.
+    goal = journeyService.getJourneyGoal(widget.journey);
+    mode = goalService.getJourneyMode(widget.journey.userAtStart, goal!);
     await _setUpGraphData();
     if (mounted) setState(() {});
   }
   _DataRepresentation _getCaloriesAndStepDataByLog(Day day , JourneyLog log)
   {
     final calories = dayService.getDaysCalories(day);
-    final maintenance = day.goalForToday!.calorieLimit;
+    // Maintenance for that day, using the user as logged on that day.
+    final maintenance = dayService.getMaintenanceCalories(day, log.userAtDay);
     double calorieChange = 0;
     double calorieChangePercentage;
     switch (mode) {
       case JourneyMode.cut:
         calorieChange = maintenance - calories.calories;
-        calorieChangePercentage = (calorieChange / log.userAtDay.userGoals.caloricChangeGoal)*100;
+        calorieChangePercentage = (calorieChange / goal!.caloricChangeGoal)*100;
         break;
       case JourneyMode.bulk:
         calorieChange = calories.calories - maintenance;
-        calorieChangePercentage = (calorieChange / log.userAtDay.userGoals.caloricChangeGoal)*100;
+        calorieChangePercentage = (calorieChange / goal!.caloricChangeGoal)*100;
         break;
       case JourneyMode.maintenance:
         // Closer to 0 is better: how far the day strayed from maintenance.
@@ -72,7 +79,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
         break;
     }
 
-    var stepChangeGoalPerentage = ((day.activity?.steps ?? 0) / log.userAtDay.userGoals.stepGoal)*100;
+    var stepChangeGoalPerentage = ((day.activity?.steps ?? 0) / goal!.stepGoal)*100;
     return _DataRepresentation(calorieGraphValue: clampPercent(calorieChangePercentage), stepGraphValue: clampPercent(stepChangeGoalPerentage), caloriePercentage: calorieChangePercentage.round().toDouble(), stepsPercentage: stepChangeGoalPerentage.round().toDouble(),calorieChange: calorieChange.round().toDouble());
   }
   Future<void> _setUpGraphData() async {
@@ -81,7 +88,9 @@ class _JourneyGraphState extends State<JourneyGraph> {
     
     for (int i = 0; i < count; i++) {
       final log = widget.journey.logs[i];
-      final day = dayService.getDayById(log.dayId)!;
+      final day = log.dateKey == null ? null : dayService.getDayByDateKey(log.dateKey!);
+      // Days are only stored once food is logged, so a log may have no day.
+      if (day == null) continue;
       days.add(day);
       var data = _getCaloriesAndStepDataByLog(day, log);
       barMetaData.add(data);
@@ -91,7 +100,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       );
       barGroups.add(
         BarChartGroupData(
-          x: i,
+          x: days.length - 1,
           barsSpace: 6,
           barRods: [
             /// Steps
@@ -113,7 +122,7 @@ class _JourneyGraphState extends State<JourneyGraph> {
       );
     }
 
-    graphWidth = widthPerPoint * count;
+    graphWidth = widthPerPoint * days.length;
   }
 
   @override

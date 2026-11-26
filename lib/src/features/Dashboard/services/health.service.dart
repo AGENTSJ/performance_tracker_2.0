@@ -2,8 +2,7 @@ import 'package:health/health.dart';
 import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/core/services/day.service.dart';
-import 'package:performance_tracker/core/services/user.service.data.dart';
-import 'package:performance_tracker/core/services/userGoals.service.dart';
+import 'package:performance_tracker/core/models/activity.model.dart';
 
 class HealthService {
   late Health _health;
@@ -11,8 +10,6 @@ class HealthService {
   bool Function()? authorized;
   final _commonService = locator<CommonService>();
   final _dayService = locator<DayService>();
-  final _goalService = locator<UserGoalsService>();
-  final _userService = locator<UserService>();
   HealthService() {
     _health = Health();
     _health.configure();
@@ -47,11 +44,10 @@ class HealthService {
     steps ??= 0;
     if(_commonService.getDateString(DateTime.now())==_commonService.getDateString(date))
     {
+      // Keep today's steps on the day; maintenance is recalculated from them.
       var day = await _dayService.getDayDataByDate(date);
-      var macrosToday = _dayService.getDaysCalories(day!);
-      var user = await _userService.getUserData();
-      var maintenanceCalories = _goalService.fetchMaintenanceCalories(user,steps: steps,macrosToday);
-      day.goalForToday!.calorieLimit = maintenanceCalories;
+      day!.activity ??= Activity(steps: 0);
+      day.activity!.steps = steps;
       _dayService.updateDayData(day);
     }
     return steps;

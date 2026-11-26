@@ -21,7 +21,7 @@ class _FatigueCardState extends State<FatigueCard> {
   final _commonService = locator<CommonService>();
 
   late Map<String, double> _today;
-  late List<FatigueDay> _past;
+  late List<DailyFatigue> _past;
 
   @override
   void initState() {
@@ -206,10 +206,10 @@ class _FatigueCardState extends State<FatigueCard> {
     );
   }
 
-  Widget _pastRow(FatigueDay day, double maxTotal) {
+  Widget _pastRow(DailyFatigue day, double maxTotal) {
     final total = _total(day.muscleFatigue);
     final frac = maxTotal <= 0 ? 0.0 : (total / maxTotal).clamp(0.0, 1.0);
-    final date = _fatigueService.dateFromKey(day.dateKey);
+    final date = day.date;
     // Most-fatigued muscle that day, for a quick glance.
     final top = day.muscleFatigue.entries.isEmpty
         ? null

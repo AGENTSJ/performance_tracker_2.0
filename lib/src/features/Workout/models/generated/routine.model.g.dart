@@ -22,13 +22,14 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       createdAt: fields[2] as DateTime,
       isCustom: fields[3] as bool,
       desc: fields[4] as String,
+      dateKey: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       ..writeByte(3)
       ..write(obj.isCustom)
       ..writeByte(4)
-      ..write(obj.desc);
+      ..write(obj.desc)
+      ..writeByte(5)
+      ..write(obj.dateKey);
   }
 
   @override
@@ -68,13 +71,14 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       enabled: fields[2] as bool,
       desc: fields[3] as String,
       volumes: (fields[4] as List).cast<WorkoutVolume>(),
+      percentDrop: fields[5] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Workout obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -84,7 +88,9 @@ class WorkoutAdapter extends TypeAdapter<Workout> {
       ..writeByte(3)
       ..write(obj.desc)
       ..writeByte(4)
-      ..write(obj.volumes);
+      ..write(obj.volumes)
+      ..writeByte(5)
+      ..write(obj.percentDrop);
   }
 
   @override
@@ -154,7 +160,7 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
     return TrackEntry(
       entryDate: fields[0] as DateTime,
       value: fields[1] as int,
-      fatigueContext: fields[2] == null ? 0.0 : fields[2] as double,
+      id: fields[3] == null ? '' : fields[3] as String?,
     );
   }
 
@@ -166,8 +172,8 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
       ..write(obj.entryDate)
       ..writeByte(1)
       ..write(obj.value)
-      ..writeByte(2)
-      ..write(obj.fatigueContext);
+      ..writeByte(3)
+      ..write(obj.id);
   }
 
   @override

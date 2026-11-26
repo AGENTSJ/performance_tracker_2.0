@@ -6,7 +6,7 @@ import 'package:performance_tracker/constants.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
-import 'package:performance_tracker/core/services/day.service.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
 
@@ -25,9 +25,11 @@ class _GoalsWidgetState extends State<GoalsWidget> {
   late TextEditingController caloricBurn;
   late TextEditingController caloricLimit;
   final userService = locator<UserService>();
-  final dayService = locator<DayService>();
   final userGoalService = locator<UserGoalsService>();
   bool formChanged = false;
+  late UserGoal goal;
+  /// Goals can't change while a journey is active.
+  late bool isLocked;
 
   final elevatedButtonDecor = ElevatedButton.styleFrom(
     backgroundColor: SURFACE,
@@ -71,6 +73,8 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     targetSteps = TextEditingController();
     caloricLimit = TextEditingController();
     caloricBurn = TextEditingController();
+    goal = userGoalService.getActiveGoal();
+    isLocked = userGoalService.isGoalLocked();
     updateFormUi(widget.user);
   }
 
@@ -115,6 +119,14 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                   ),
                 ],
               ),
+              if (isLocked)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Locked while a journey is in progress',
+                    style: TextStyle(color: TEXT_SECONDARY, fontSize: 12.sp),
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
                 child: Column(
@@ -123,6 +135,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -139,6 +152,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                         SizedBox(width: 10.w),
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -156,6 +170,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                       children: [
                         Expanded(
                           child: TextFormField(
+                            enabled: !isLocked,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -185,7 +200,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                                   TextSpan(text: 'Your maintenance '),
                                   TextSpan(
                                     text:
-                                        '${widget.user.userGoals.calorieLimit.round()}',
+                                        '${_maintenance().round()}',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ), // bold word
@@ -195,7 +210,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
                                   ),
                                   TextSpan(
                                     text:
-                                        '${userGoalService.getDaysToReachWeightTarget(widget.user)} days',
+                                        '${userGoalService.getDaysToReachWeightTarget(widget.user, goal)} days',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ), // another bold word
@@ -255,22 +270,12 @@ class _GoalsWidgetState extends State<GoalsWidget> {
 
   Future<void> _handleUpdate(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      var steps = int.tryParse(targetSteps.text) ?? widget.user.userGoals.stepGoal;
-      var maintenanceCalories = userGoalService.fetchMaintenanceCalories(widget.user,steps: steps,MacroNutrients(0, 0, 0, 0, 0));
-      widget.user
-        ..userGoals.stepGoal =
-            steps
-        ..userGoals.targetWeight =
-            double.tryParse(targetWeight.text) ??
-            widget.user.userGoals.targetWeight
-        ..userGoals.caloricChangeGoal =
-            double.tryParse(caloricBurn.text) ??
-            widget.user.userGoals.caloricChangeGoal
-        ..userGoals.calorieLimit = maintenanceCalories;
-      await userService.updateUser(widget.user);
-      var currentDay = await dayService.getDayDataByDate(DateTime.now());
-      currentDay?.goalForToday = widget.user.userGoals;
-      await dayService.updateDayData(currentDay!);
+      goal = await userGoalService.saveGoal(
+        stepGoal: int.tryParse(targetSteps.text) ?? goal.stepGoal,
+        targetWeight: double.tryParse(targetWeight.text) ?? goal.targetWeight,
+        caloricChangeGoal:
+            double.tryParse(caloricBurn.text) ?? goal.caloricChangeGoal,
+      );
       updateFormUi(widget.user);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -288,10 +293,7 @@ class _GoalsWidgetState extends State<GoalsWidget> {
 
   Future<void> _handleRecommended() async {
     if (_formKey.currentState!.validate()) {
-      await userGoalService.resetGoals();
-      var currentDay = await dayService.getDayDataByDate(DateTime.now());
-      currentDay?.goalForToday = widget.user.userGoals;
-      await dayService.updateDayData(currentDay!);
+      goal = await userGoalService.resetGoals();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Goals updated successfully!'),
@@ -307,10 +309,23 @@ class _GoalsWidgetState extends State<GoalsWidget> {
     }
   }
 
+  /// Maintenance at the goal's step count, before any food (as it was when
+  /// goals were saved).
+  double _maintenance() {
+    return userGoalService.fetchMaintenanceCalories(
+      widget.user,
+      MacroNutrients(0, 0, 0, 0, 0),
+      steps: goal.stepGoal,
+    );
+  }
+
   void updateFormUi(User user) {
-    targetWeight.text = user.userGoals.targetWeight.toString();
-    caloricLimit.text = user.weight>=user.userGoals.targetWeight? (user.userGoals.calorieLimit -user.userGoals.caloricChangeGoal).round().toString() :(user.userGoals.calorieLimit + user.userGoals.caloricChangeGoal).round().toString();
-    targetSteps.text = user.userGoals.stepGoal.toString();
-    caloricBurn.text = user.userGoals.caloricChangeGoal.round().toString();
+    targetWeight.text = goal.targetWeight.toString();
+    caloricLimit.text = userGoalService
+        .getCalorieTarget(user, goal, _maintenance())
+        .round()
+        .toString();
+    targetSteps.text = goal.stepGoal.toString();
+    caloricBurn.text = goal.caloricChangeGoal.round().toString();
   }
 }

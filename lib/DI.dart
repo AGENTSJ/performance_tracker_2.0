@@ -3,6 +3,7 @@ import 'package:performance_tracker/src/features/Workout/repositories/advice.rep
 import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/core/services/dataAdaptation.service.dart';
 import 'package:performance_tracker/core/repositories/day.repository.dart';
+import 'package:performance_tracker/core/repositories/userGoal.repository.dart';
 import 'package:performance_tracker/src/features/Workout/repositories/fatigue.repository.dart';
 import 'package:performance_tracker/src/features/Nutrition/repositories/food.repository.dart';
 import 'package:performance_tracker/src/features/Journal/repositories/journal.repository.dart';
@@ -27,6 +28,7 @@ import 'package:performance_tracker/src/features/Dashboard/services/journey.serv
 import 'package:performance_tracker/core/services/key.service.dart';
 import 'package:performance_tracker/core/services/log.service.dart';
 import 'package:performance_tracker/core/services/maintainance.service.dart';
+import 'package:performance_tracker/core/services/migration.service.dart';
 import 'package:performance_tracker/src/features/Coach/services/report.service.dart';
 import 'package:performance_tracker/core/services/rest.service.dart';
 import 'package:performance_tracker/src/features/Nutrition/services/nutritionInfoProvide.service.dart';
@@ -56,6 +58,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<FatigueService>(()=>FatigueService());
   locator.registerLazySingleton<RoutineService>(()=>RoutineService());
   locator.registerLazySingleton<MaintainanceService>(()=>MaintainanceService());
+  locator.registerLazySingleton<MigrationService>(()=>MigrationService());
   locator.registerLazySingleton<DataService>(()=>DataService());
   locator.registerLazySingleton<HealthService>(()=>HealthService());
   locator.registerLazySingleton<TrainerAgentService>(()=>TrainerAgentService());
@@ -74,6 +77,7 @@ setUpDependencyInjection()
   locator.registerLazySingleton<ReportRepository>(()=>ReportRepository());
   locator.registerLazySingleton<FoodRepository>(()=>FoodRepository());
   locator.registerLazySingleton<DayRepository>(()=>DayRepository());
+  locator.registerLazySingleton<UserGoalRepository>(()=>UserGoalRepository());
   locator.registerLazySingleton<FatigueRepository>(()=>FatigueRepository());
   locator.registerLazySingleton<UserRepository>(()=>UserRepository());
   locator.registerLazySingleton<RoutineRepository>(()=>RoutineRepository());

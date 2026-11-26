@@ -11,7 +11,9 @@ import 'package:performance_tracker/core/models/key.model.dart';
 import 'package:performance_tracker/core/models/log.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/core/services/maintainance.service.dart';
+import 'package:performance_tracker/core/services/migration.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 
@@ -29,7 +31,8 @@ enum Collections
   journal('journal'),
   key('key'),
   logs('logs'),
-  fatigue('fatigueCollection');
+  fatigueEntries('fatigueEntries'),
+  userGoals('userGoals');
   final String value;
   const Collections(this.value);
 }
@@ -73,7 +76,8 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(JournalAdapter());
   Hive.registerAdapter(SecretAppKeyAdapter());
   Hive.registerAdapter(LogModelAdapter());
-  Hive.registerAdapter(FatigueDayAdapter());
+  Hive.registerAdapter(FatigueEntryAdapter());
+  Hive.registerAdapter(UserGoalAdapter());
 
 
   await Hive.openBox<Food>(Collections.foods.value);
@@ -88,7 +92,9 @@ Future<void> setupHiveDb() async
   await Hive.openBox<JournalBook>(Collections.journal.value);
   await Hive.openBox<SecretAppKey>(Collections.key.value);
   await Hive.openBox<LogModel>(Collections.logs.value);
-  await Hive.openBox<FatigueDay>(Collections.fatigue.value);
+  await Hive.openBox<FatigueEntry>(Collections.fatigueEntries.value);
+  await Hive.openBox<UserGoal>(Collections.userGoals.value);
+  await locator<MigrationService>().runStartupMigrations();
   var maintainance = locator<MaintainanceService>();
   await maintainance.cleanUp();
   // await Hive.deleteBoxFromDisk(Collections.foods.value);

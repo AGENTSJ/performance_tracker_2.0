@@ -2,33 +2,46 @@ import 'package:hive/hive.dart';
 
 part 'generated/fatigue.model.g.dart';
 
-/// Accumulated muscle fatigue for a single calendar day.
-///
-/// Fatigue accumulates throughout the day and is shared across every workout
-/// performed on that day. Because records are keyed by [dateKey], a new day
-/// simply has no record yet, which means the fatigue map is effectively reset
-/// when a new day begins.
-@HiveType(typeId: 36)
-class FatigueDay extends HiveObject {
-  /// Calendar day this fatigue belongs to. Format: "year-month-day".
-  @HiveField(0)
-  String dateKey;
+// typeId 36 belonged to the retired FatigueDay (per-day running totals) and
+// must not be reused.
 
-  /// Map of muscle name -> accumulated fatigue for the day.
+/// The fatigue one tracked set added to each muscle.
+///
+/// Stored under [trackEntryId], the id of the [TrackEntry] it belongs to, so
+/// removing the entry removes its fatigue. The time comes from that entry.
+/// [muscleFatigue] is a copy of the workout's muscle volumes when the set was
+/// tracked, so editing the workout's volumes later doesn't rewrite past
+/// fatigue.
+@HiveType(typeId: 38)
+class FatigueEntry extends HiveObject {
+  @HiveField(0)
+  String trackEntryId;
+
+  /// Muscle name -> fatigue this set added to it.
   @HiveField(1)
   Map<String, double> muscleFatigue;
 
-  FatigueDay({required this.dateKey, required this.muscleFatigue});
+  FatigueEntry({required this.trackEntryId, required this.muscleFatigue});
 
   Map<String, dynamic> toJson() => {
-    'dateKey': dateKey,
+    'trackEntryId': trackEntryId,
     'muscleFatigue': muscleFatigue,
   };
 
-  factory FatigueDay.fromJson(Map<String, dynamic> json) => FatigueDay(
-    dateKey: json['dateKey'] as String,
+  factory FatigueEntry.fromJson(Map<String, dynamic> json) => FatigueEntry(
+    trackEntryId: json['trackEntryId'] as String,
     muscleFatigue: (json['muscleFatigue'] as Map<dynamic, dynamic>).map(
       (key, value) => MapEntry(key as String, (value as num).toDouble()),
     ),
   );
+}
+
+/// Fatigue accumulated on one calendar day. Calculated, never stored.
+class DailyFatigue {
+  final DateTime date;
+
+  /// Muscle name -> fatigue accumulated that day.
+  final Map<String, double> muscleFatigue;
+
+  const DailyFatigue({required this.date, required this.muscleFatigue});
 }

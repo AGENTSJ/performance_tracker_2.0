@@ -19,6 +19,8 @@ final double MAINTENANCE_ADHERENCE_TOLERANCE_PERCENT = 10;
 // Length of a maintenance journey, measured in adherent days.
 final int MAINTENANCE_JOURNEY_DAYS = 30;
 
+final double PERCENTAGE_DROP_PER_SET = 15;
+
 final double RECOMMENDED_B_M_I = 21.0;
 final List<String> TRAINABLE_MUSCLES = [
   'Chest',

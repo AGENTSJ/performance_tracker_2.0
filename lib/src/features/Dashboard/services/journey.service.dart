@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:performance_tracker/DI.dart';
+import 'package:performance_tracker/core/models/userGoal.model.dart';
+import 'package:performance_tracker/core/services/userGoals.service.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/repositories/journey.repository.dart';
 class JourneyBadge
@@ -10,6 +12,7 @@ class JourneyBadge
 }
 class JourneyService {
   final  _journeyRepo = locator<JourneyRepository>();
+  final _goalService = locator<UserGoalsService>();
   final beginnerBadge = JourneyBadge(title: "Beginner", badgeImage: Image.asset("assets/1Badge.png",));
   final proBadge = JourneyBadge(title: "Pro", badgeImage: Image.asset("assets/2Badge.png",));
   final advancedBadge = JourneyBadge(title: "Advanced", badgeImage: Image.asset("assets/3Badge.png",));
@@ -17,6 +20,22 @@ class JourneyService {
   
   Journey? getActiveJourney() {
     return _journeyRepo.getCurrentJourneyData();
+  }
+
+  /// The goal [journey] is measured against: the goal it references, or for
+  /// journeys from before goal periods, the goals saved with its user copy.
+  UserGoal getJourneyGoal(Journey journey) {
+    final id = journey.goalId;
+    final goal = id == null ? null : _goalService.getGoalById(id);
+    if (goal != null) return goal;
+    final legacy = journey.userAtStart.userGoals;
+    return UserGoal(
+      startDate: journey.startDate,
+      isActive: false,
+      stepGoal: legacy.stepGoal,
+      targetWeight: legacy.targetWeight,
+      caloricChangeGoal: legacy.caloricChangeGoal,
+    );
   }
   
   Future<int> createJourney(Journey journey) async {

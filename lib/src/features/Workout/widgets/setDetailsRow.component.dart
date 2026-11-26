@@ -59,18 +59,39 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
     }
   }
 
-  void handleTrack() {
+  bool get isTrackedToday => workoutService.isTrackedToday(widget.set);
+
+  bool _busy = false;
+
+  Future<void> handleTrack() async {
     var rep = int.tryParse(trackController.text);
-    if (rep == null) {
+    if (rep == null || _busy) {
       return;
     }
-    workoutService.trackRep(widget.workout, widget.set, rep);
-    setTrackValue();
-    if (widget.set.pr < rep) {
-      widget.set.pr = rep;
+    _busy = true;
+    try {
+      await workoutService.trackRep(widget.workout, widget.set, rep);
+      setTrackValue();
+    } finally {
+      _busy = false;
     }
     refreshState();
     Fluttertoast.showToast(msg: "Rep tracked");
+  }
+
+  Future<void> handleClear() async {
+    if (_busy) return;
+    _busy = true;
+    bool cleared;
+    try {
+      cleared = await workoutService.clearTodayRep(widget.workout, widget.set);
+    } finally {
+      _busy = false;
+    }
+    if (!cleared) return;
+    trackController.clear();
+    refreshState();
+    Fluttertoast.showToast(msg: "Rep cleared");
   }
 
   refreshState() {
@@ -124,6 +145,8 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                     textAlign: TextAlign.center,
                     style: SetDetailRowComponent.fieldDecor,
                     controller: trackController,
+                    // Locked once tracked today; clear it to change the value.
+                    readOnly: isTrackedToday,
                   ),
                 ),
               ),
@@ -132,15 +155,21 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () {
-                        handleTrack();
-                      },
+                      onPressed: isTrackedToday ? handleClear : handleTrack,
                       style: ElevatedButton.styleFrom(
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         minimumSize: Size(30.w, 30.h),
+                        foregroundColor: isTrackedToday
+                            ? const Color.fromARGB(149, 255, 111, 111)
+                            : null,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(4.r))
                       ),
-                      child: Icon(FontAwesomeIcons.check, size: 14.w),
+                      child: Icon(
+                        isTrackedToday
+                            ? FontAwesomeIcons.xmark
+                            : FontAwesomeIcons.check,
+                        size: 14.w,
+                      ),
                     ),
                   ],
                 ),
@@ -205,8 +234,7 @@ class SetDetailRowComponentState extends State<SetDetailRowComponent> {
   }
 
   handleRemoveSet(WorkSet setToRemove) async {
-    widget.workout.sets.remove(setToRemove);
-    await workoutService.updateWorkout(widget.workout);
+    await workoutService.removeSet(widget.workout, setToRemove);
     widget.onSetUpdated(true);
   }
 

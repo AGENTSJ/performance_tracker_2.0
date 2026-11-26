@@ -46,3 +46,9 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+# Android-only project: ignore desktop/web platform folders if regenerated
+/linux/
+/macos/
+/windows/
+/web/
+/temp_dump
