@@ -9,6 +9,7 @@ import 'package:performance_tracker/core/services/log.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 
 class _StartupMigration {
   final int index;
@@ -46,6 +47,8 @@ class MigrationService {
     _register(2, 'Auto routines keyed by DATE_KEY', _migrateAutoRoutinesToDateKey);
     _register(3, 'User goals as periods', _migrateUserGoalsToPeriods);
     _register(4, 'Active journey linked to its goal', _linkActiveJourneyToGoal);
+    _register(5, 'Track entries with ids and fatigue records',
+        _addTrackEntryIdsAndFatigueRecords);
   }
 
   void _register(int index, String name, Future<void> Function() run) {
@@ -313,6 +316,33 @@ class MigrationService {
         await journey.save();
       }
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 5. Track entries with ids and fatigue records
+  //
+  // Each track entry used to store its fatigue context, and a per-day box
+  // ('fatigueCollection') kept running totals. Fatigue is now calculated from
+  // one record per track entry, stored under the entry's new id. Every entry
+  // gets a record from its workout's current volumes (past volume edits
+  // can't be recovered), and the per-day box is deleted.
+  // ---------------------------------------------------------------------------
+
+  static const _legacyFatigueBox = 'fatigueCollection';
+
+  Future<void> _addTrackEntryIdsAndFatigueRecords() async {
+    final fatigueService = locator<FatigueService>();
+    final workoutBox = Hive.box<Workout>(Collections.workouts.value);
+    // Entries saved without an id get a fresh one each time they are read.
+    // Create the records first and save the workout after, so the ids stick.
+    // If the app is killed midway, unsaved entries get new ids on the rerun
+    // and the records made for their old ids are pruned below.
+    for (final workout in workoutBox.values) {
+      await fatigueService.ensureRecords([workout]);
+      await workout.save();
+    }
+    await fatigueService.pruneOrphans();
+    await Hive.deleteBoxFromDisk(_legacyFatigueBox);
   }
 
   // ---------------------------------------------------------------------------

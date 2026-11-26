@@ -10,6 +10,7 @@ import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/src/features/Journal/models/journalBook.model.dart';
 import 'package:performance_tracker/src/features/Dashboard/models/journey.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
+import 'package:performance_tracker/src/features/Workout/models/fatigue.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/src/features/Coach/repositories/conversation.respository.dart';
 import 'package:performance_tracker/src/features/Workout/services/advice.service.dart';
@@ -25,12 +26,14 @@ import 'package:performance_tracker/core/services/user.service.data.dart';
 import 'package:performance_tracker/core/services/userGoals.service.dart';
 import 'package:performance_tracker/core/models/userGoal.model.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/AiResponse.model.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class DataService {
   final workService = locator<WorkoutService>();
+  final fatigueService = locator<FatigueService>();
   final foodService = locator<FoodService>();
   final dayService = locator<DayService>();
   final migrationService = locator<MigrationService>();
@@ -140,12 +143,15 @@ class DataService {
             }
           }
         }(),
-        // Restore Workouts
+        // Restore Workouts, then their fatigue records (which point at the
+        // workouts' track entries). Older backups have no records, so they
+        // are created from the workouts' volumes.
         () async {
           await workService.clearAll();
           for (var workout in data.workouts) {
             await workService.addWorkout(workout);
           }
+          await fatigueService.restore(data.fatigueEntries, data.workouts);
         }(),
         // Restore Journeys
         () async {
@@ -209,6 +215,7 @@ class DataService {
         users: userService.getAllUser(),
         routines: routService.getAllRoutines(),
         workouts: workService.getAllWorkouts(),
+        fatigueEntries: fatigueService.getAllRecords(),
         journeys: jourService.getAllJourney(),
         advices: advService.fetchAllAdvices(),
         conversations: [await trainerAgentService.getOlderChat()],
@@ -231,6 +238,7 @@ class AppData {
   List<User> users;
   List<Routine> routines;
   List<Workout> workouts;
+  List<FatigueEntry> fatigueEntries;
   List<Journey> journeys;
   List<AdviceSet> advices;
   List<AiChatContent> conversations;
@@ -244,6 +252,7 @@ class AppData {
     required this.users,
     required this.routines,
     required this.workouts,
+    required this.fatigueEntries,
     required this.journeys,
     required this.advices,
     required this.conversations,
@@ -260,6 +269,7 @@ class AppData {
       "users": users.map((user) => user.toJson()).toList(),
       "routines": routines.map((routine) => routine.toJson()).toList(),
       "workouts": workouts.map((workout) => workout.toJson()).toList(),
+      "fatigueEntries": fatigueEntries.map((e) => e.toJson()).toList(),
       "journeys": journeys.map((journey) => journey.toJson()).toList(),
       "advices": advices.map((advice) => advice.toJson()).toList(),
       "conversations": conversations.map((conv) => conv.toJson()).toList(),
@@ -285,6 +295,10 @@ class AppData {
           .toList(),
       workouts: (map['workouts'] as List<dynamic>)
           .map((e) => Workout.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      // Absent in backups made before fatigue records existed.
+      fatigueEntries: ((map['fatigueEntries'] as List<dynamic>?) ?? [])
+          .map((e) => FatigueEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
       journeys: (map['journeys'] as List<dynamic>)
           .map((e) => Journey.fromJson(e as Map<String, dynamic>))

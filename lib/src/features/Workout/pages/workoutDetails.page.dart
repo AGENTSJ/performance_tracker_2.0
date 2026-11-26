@@ -589,9 +589,12 @@ class WorkoutDetailsPageState extends State<WorkoutDetailsPage> {
                                     isFatigueAdjusted: adjustFatigue,
                                     set: selectedSetForProgress!,
                                     workout: widget.workout,
-                                    key: ValueKey(
-                                      "${selectedSetForProgress!.value}-$adjustFatigue-${widget.workout.percentDrop}",
-                                    ),
+                                    // Keyed by the set itself: sets can share
+                                    // a weight, so a weight-based key let a
+                                    // switch between them keep the old chart.
+                                    // Other changes are picked up in
+                                    // ProgressChart.didUpdateWidget.
+                                    key: ObjectKey(selectedSetForProgress),
                                   ),
                                 ),
                               ],

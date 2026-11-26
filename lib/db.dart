@@ -31,7 +31,7 @@ enum Collections
   journal('journal'),
   key('key'),
   logs('logs'),
-  fatigue('fatigueCollection'),
+  fatigueEntries('fatigueEntries'),
   userGoals('userGoals');
   final String value;
   const Collections(this.value);
@@ -76,7 +76,7 @@ Future<void> setupHiveDb() async
   Hive.registerAdapter(JournalAdapter());
   Hive.registerAdapter(SecretAppKeyAdapter());
   Hive.registerAdapter(LogModelAdapter());
-  Hive.registerAdapter(FatigueDayAdapter());
+  Hive.registerAdapter(FatigueEntryAdapter());
   Hive.registerAdapter(UserGoalAdapter());
 
 
@@ -92,7 +92,7 @@ Future<void> setupHiveDb() async
   await Hive.openBox<JournalBook>(Collections.journal.value);
   await Hive.openBox<SecretAppKey>(Collections.key.value);
   await Hive.openBox<LogModel>(Collections.logs.value);
-  await Hive.openBox<FatigueDay>(Collections.fatigue.value);
+  await Hive.openBox<FatigueEntry>(Collections.fatigueEntries.value);
   await Hive.openBox<UserGoal>(Collections.userGoals.value);
   await locator<MigrationService>().runStartupMigrations();
   var maintainance = locator<MaintainanceService>();

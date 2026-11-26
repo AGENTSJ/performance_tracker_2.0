@@ -5,21 +5,11 @@ import 'package:performance_tracker/src/features/Workout/models/routine.model.da
 import 'package:performance_tracker/src/features/Workout/repositories/routine.repository.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
 import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WorkoutService {
   var routineRepo = locator<RoutineRepository>();
   var commonService = locator<CommonService>();
   var fatigueService = locator<FatigueService>();
-
-  // Set once the one-time rep-normalisation/fatigue-context backfill has run,
-  // so the migration (and its UI entry point) is not offered again.
-  static const String _keyRepNormalisedMigrated = 'repNormalisedMigrated';
-
-  Future<bool> isRepNormalisedMigrated() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyRepNormalisedMigrated) ?? false;
-  }
 
   Future<Workout?> getWorkOutById(int key) {
     return routineRepo.getWorkoutById(key);
@@ -56,27 +46,31 @@ class WorkoutService {
     return await getWorkOutById(key);
   }
 
+  /// Removes [workout] along with the fatigue of every set tracked on it.
   Future<void> removeWorkout(Workout workout) async {
+    await fatigueService.remove(
+      workout.sets.expand((set) => set.history).toList(),
+    );
     await routineRepo.removeWorkout(workout);
+  }
+
+  /// Removes [set] from [workout] along with the fatigue of its entries.
+  Future<void> removeSet(Workout workout, WorkSet set) async {
+    workout.sets.remove(set);
+    await updateWorkout(workout);
+    await fatigueService.remove(set.history);
   }
 
   Future<void> trackRep(Workout workout, WorkSet set, int repVal) async {
     var last = set.history.lastOrNull;
+    TrackEntry? added;
     if (last == null ||
         (commonService.getDateString(last.entryDate) !=
             commonService.getDateString(DateTime.now()))) {
-      // First time this set is recorded today: capture the fatigue context from
-      // the daily fatigue state BEFORE this set contributes to it.
-      var fatigueContext = fatigueService.calculateFatigueContext(workout);
-      last = TrackEntry(
-        entryDate: DateTime.now(),
-        value: repVal,
-        fatigueContext: fatigueContext,
-      );
+      // First time this set is recorded today.
+      last = TrackEntry(entryDate: DateTime.now(), value: repVal);
       set.history.add(last);
-      // Apply this set's muscle volumes to the daily fatigue map AFTER storing
-      // the entry, so it accumulates only once per set per day.
-      await fatigueService.accumulateFatigue(workout);
+      added = last;
     } else {
       last.value = repVal;
     }
@@ -84,6 +78,27 @@ class WorkoutService {
       set.pr = last.value;
     }
     await updateWorkout(workout);
+    // Record the fatigue this set adds once per set per day; re-tracking the
+    // same day only changes the reps, which don't affect fatigue.
+    if (added != null) await fatigueService.record(added, workout);
+  }
+
+  /// Whether [set] already has an entry tracked for today.
+  bool isTrackedToday(WorkSet set) {
+    final last = set.history.lastOrNull;
+    return last != null && isSameDay(last.entryDate, DateTime.now());
+  }
+
+  /// Removes today's tracked entry for [set] and its fatigue, and
+  /// recalculates the set's PR from the remaining history. Fatigue of sets
+  /// tracked after it is calculated, so it needs no update.
+  Future<bool> clearTodayRep(Workout workout, WorkSet set) async {
+    if (!isTrackedToday(set)) return false;
+    final removed = set.history.removeLast();
+    set.pr = set.history.fold<int>(0, (best, e) => max(best, e.value));
+    await updateWorkout(workout);
+    await fatigueService.remove([removed]);
+    return true;
   }
 
   clearAll() async {
@@ -96,12 +111,13 @@ class WorkoutService {
   ) {
     final List<double> reps = [];
     final totalEntries = entries.length;
+    final fatigue = fatigueService.calculator();
     var sumOfReps = 0.0;
     var sumOfCounts = 0.0;
     for (var i = 0; i < totalEntries; i++) {
       final entry = entries[i];
       final adjustedRep = workout.getFatigueAdjustedReps(
-        entry.fatigueContext,
+        fatigue.contextFor(entry, workout),
         entry.value,
       );
       reps.add(adjustedRep);
@@ -148,56 +164,6 @@ class WorkoutService {
     return WorkSetProgression.stale;
   }
 
-  Future<void> repNormalisedMigration() async {
-    final allRoutines = this.routineRepo.getAllRoutines();
-    allRoutines.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    Set<Workout> workoutSet = {};
-    for (var routine in allRoutines) {
-      final dateOfRoutine = routine.createdAt;
-      List<WorkoutEntryMap> trackingsOnThisDay = [];
-
-      for (var wId in routine.workoutsIds) {
-        final workout = await getWorkOutById(wId);
-        if (workout == null) {
-          continue;
-        }
-        workoutSet.add(workout);
-        for (var set in workout.sets) {
-          for (var entry in set.history) {
-            if (isSameDay(entry.entryDate, dateOfRoutine)) {
-              trackingsOnThisDay.add(
-                WorkoutEntryMap(entry: entry, workout: workout),
-              );
-            }
-          }
-        }
-      }
-      trackingsOnThisDay.sort(
-        (a, b) => a.entry.entryDate.compareTo(b.entry.entryDate),
-      );
-      Map<String, double> muscleFatigue = {};
-
-      for (var entry in trackingsOnThisDay) {
-        double fatigueContext = 0.0;
-        for (final vol in entry.workout.volumes) {
-          muscleFatigue[vol.muscleName] ??= 0;
-          fatigueContext += muscleFatigue[vol.muscleName]! * vol.volume;
-          muscleFatigue[vol.muscleName] =
-              muscleFatigue[vol.muscleName]! + vol.volume;
-        }
-        entry.entry.fatigueContext = fatigueContext;
-      }
-      await fatigueService.addFatigueDay(dateOfRoutine, muscleFatigue);
-    }
-    
-    for (var work in workoutSet) {
-      await updateWorkout(work);
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyRepNormalisedMigrated, true);
-  }
-
   bool isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 }
@@ -209,10 +175,4 @@ enum WorkSetProgression {
 
   final String value;
   const WorkSetProgression(this.value);
-}
-
-class WorkoutEntryMap {
-  TrackEntry entry;
-  Workout workout;
-  WorkoutEntryMap({required this.entry, required this.workout});
 }

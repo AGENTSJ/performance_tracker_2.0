@@ -6,28 +6,28 @@ part of '../fatigue.model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class FatigueDayAdapter extends TypeAdapter<FatigueDay> {
+class FatigueEntryAdapter extends TypeAdapter<FatigueEntry> {
   @override
-  final int typeId = 36;
+  final int typeId = 38;
 
   @override
-  FatigueDay read(BinaryReader reader) {
+  FatigueEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return FatigueDay(
-      dateKey: fields[0] as String,
+    return FatigueEntry(
+      trackEntryId: fields[0] as String,
       muscleFatigue: (fields[1] as Map).cast<String, double>(),
     );
   }
 
   @override
-  void write(BinaryWriter writer, FatigueDay obj) {
+  void write(BinaryWriter writer, FatigueEntry obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.dateKey)
+      ..write(obj.trackEntryId)
       ..writeByte(1)
       ..write(obj.muscleFatigue);
   }
@@ -38,7 +38,7 @@ class FatigueDayAdapter extends TypeAdapter<FatigueDay> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FatigueDayAdapter &&
+      other is FatigueEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

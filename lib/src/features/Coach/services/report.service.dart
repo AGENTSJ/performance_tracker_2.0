@@ -6,6 +6,7 @@ import 'package:performance_tracker/core/models/food.model.dart';
 import 'package:performance_tracker/core/models/user.model.dart';
 import 'package:performance_tracker/src/features/Coach/repositories/report.repository.dart';
 import 'package:performance_tracker/src/features/Workout/services/workout.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 import 'package:performance_tracker/src/features/Coach/models/report.model.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/services/ai.service.dart';
@@ -26,6 +27,7 @@ class ReportService {
   final _aiService = locator<AiService>();
   final _routineService = locator<RoutineService>();
   final _workoutService = locator<WorkoutService>();
+  final _fatigueService = locator<FatigueService>();
   ReportService();
 
   Future<void> createReport(Report report) async {
@@ -548,14 +550,17 @@ class ReportService {
     }
 
     // Fatigue-adjusted reps for a set on a given day, or "" if not logged.
+    final fatigue = _fatigueService.calculator();
     String cellFor(WorkSet set, String label) {
       for (var entry in set.history) {
         if (!withinRange(entry)) continue;
         if (_commonService.getDateString(entry.entryDate) == label) {
-          var test = workout
-              .getFatigueAdjustedReps(entry.fatigueContext, entry.value);
-          var test2 = test.toStringAsFixed(2); 
-          return test2;
+          return workout
+              .getFatigueAdjustedReps(
+                fatigue.contextFor(entry, workout),
+                entry.value,
+              )
+              .toStringAsFixed(2);
         }
       }
       return "";

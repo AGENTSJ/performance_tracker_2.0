@@ -6,6 +6,7 @@ import 'package:performance_tracker/DI.dart';
 import 'package:performance_tracker/constants.ui.dart';
 import 'package:performance_tracker/src/features/Workout/models/routine.model.dart';
 import 'package:performance_tracker/core/services/common.service.dart';
+import 'package:performance_tracker/src/features/Workout/services/fatigue.service.dart';
 
 class ProgressChart extends StatefulWidget {
   final WorkSet set;
@@ -23,6 +24,7 @@ class ProgressChart extends StatefulWidget {
 
 class ProgressChartState extends State<ProgressChart> {
   var commonService = locator<CommonService>();
+  final _fatigueService = locator<FatigueService>();
 
   /// Horizontal space allocated per attempt. The plot grows wider than the
   /// viewport when there are many points, and the user scrolls through them
@@ -33,6 +35,9 @@ class ProgressChartState extends State<ProgressChart> {
 
   final ScrollController _scrollController = ScrollController();
   List<FlSpot> dataPoints = [];
+
+  /// Fatigue context of each attempt, by index (same order as [dataPoints]).
+  List<double> _fatigue = [];
   double _minY = 0;
   double _maxY = 10;
   double _yInterval = 1;
@@ -49,6 +54,14 @@ class ProgressChartState extends State<ProgressChart> {
     });
   }
 
+  /// The parent rebuilds this with the same set when tracking a rep or
+  /// toggling fatigue adjustment, so the data must be rebuilt too.
+  @override
+  void didUpdateWidget(covariant ProgressChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _buildData();
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -57,13 +70,14 @@ class ProgressChartState extends State<ProgressChart> {
 
   void _buildData() {
     dataPoints = [];
+    _fatigue = [];
+    final fatigue = _fatigueService.calculator();
     for (var i = 0; i < widget.set.history.length; i++) {
       final entry = widget.set.history[i];
+      final context = fatigue.contextFor(entry, widget.workout);
+      _fatigue.add(context);
       final raw = widget.isFatigueAdjusted
-          ? widget.workout.getFatigueAdjustedReps(
-              entry.fatigueContext,
-              entry.value,
-            )
+          ? widget.workout.getFatigueAdjustedReps(context, entry.value)
           : entry.value.toDouble();
       // Guard against NaN/Infinity (e.g. fatigue adjustment divides by a
       // total volume of zero when no volumes are configured).
@@ -97,6 +111,11 @@ class ProgressChartState extends State<ProgressChart> {
     if (_maxY <= _minY) _maxY = _minY + 1;
     _yInterval = _niceInterval(_maxY - _minY);
   }
+
+  /// Whole numbers without decimals, otherwise one decimal place.
+  String _formatFatigue(double value) => value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toStringAsFixed(1);
 
   /// Pick a "nice" rounded axis step for the given range.
   double _niceInterval(double range) {
@@ -200,14 +219,21 @@ class ProgressChartState extends State<ProgressChart> {
           getTooltipItems: (touchedSpots) {
             return touchedSpots.map((touchedSpot) {
               final x = touchedSpot.x.toInt();
-              final date = (x >= 0 && x < widget.set.history.length)
-                  ? commonService.getDateString(
-                      widget.set.history[x].entryDate,
-                    )
+              final inRange = x >= 0 && x < widget.set.history.length;
+              final entry = inRange ? widget.set.history[x] : null;
+              final date = entry != null
+                  ? commonService.getDateString(entry.entryDate)
                   : null;
               final reps = widget.isFatigueAdjusted
                   ? touchedSpot.y.toStringAsFixed(1)
                   : touchedSpot.y.toStringAsFixed(0);
+              // Adjusted reps differ from what was logged, so show both.
+              final logged = widget.isFatigueAdjusted && entry != null
+                  ? ' (${entry.value} logged)'
+                  : '';
+              final fatigue = x >= 0 && x < _fatigue.length
+                  ? _fatigue[x]
+                  : null;
               return LineTooltipItem(
                 '',
                 const TextStyle(),
@@ -229,6 +255,24 @@ class ProgressChartState extends State<ProgressChart> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (logged.isNotEmpty)
+                    TextSpan(
+                      text: logged,
+                      style: TextStyle(
+                        color: TEXT_SECONDARY,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  if (fatigue != null)
+                    TextSpan(
+                      text: '\nFatigue ${_formatFatigue(fatigue)}',
+                      style: TextStyle(
+                        color: ACCENT,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                 ],
               );
             }).toList();

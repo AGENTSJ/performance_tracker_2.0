@@ -185,6 +185,13 @@ class WorkSet extends HiveObject {
   );
 }
 
+final _idRandom = Random();
+
+/// A unique id for a [TrackEntry]: the creation time plus a random suffix.
+String generateTrackEntryId() =>
+    '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}'
+    '-${_idRandom.nextInt(1 << 32).toRadixString(36)}';
+
 @HiveType(typeId: 16)
 class TrackEntry {
   @HiveField(0)
@@ -192,28 +199,28 @@ class TrackEntry {
   @HiveField(1)
   int value;
 
-  /// Accumulated muscle fatigue context present when this set was performed,
-  /// calculated from the daily fatigue map BEFORE this set contributed to it.
-  /// Normalized to the range [0, 2]. Stored as metadata; never modifies [value].
-  @HiveField(2, defaultValue: 0.0)
-  double fatigueContext;
+  // Field 2 held a stored fatigue context. Fatigue is now calculated from the
+  // fatigue records (see FatigueService), so 2 must not be reused.
 
-  TrackEntry({
-    required this.entryDate,
-    required this.value,
-    this.fatigueContext = 0,
-  });
+  /// Unique id. The entry's fatigue record is stored under it, so removing an
+  /// entry can remove its fatigue too. Entries saved before ids existed read
+  /// back with an empty value and get a fresh id here.
+  @HiveField(3, defaultValue: '')
+  String id;
+
+  TrackEntry({required this.entryDate, required this.value, String? id})
+    : id = (id == null || id.isEmpty) ? generateTrackEntryId() : id;
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'entryDate': entryDate.toIso8601String(),
     'value': value,
-    'fatigueContext': fatigueContext,
   };
 
   factory TrackEntry.fromJson(Map<String, dynamic> json) => TrackEntry(
+    id: json['id'] as String?,
     entryDate: DateTime.parse(json['entryDate'] as String),
     value: json['value'] as int,
-    fatigueContext: (json['fatigueContext'] as num?)?.toDouble() ?? 0,
   );
 }
 

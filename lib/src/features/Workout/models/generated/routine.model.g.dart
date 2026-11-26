@@ -160,7 +160,7 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
     return TrackEntry(
       entryDate: fields[0] as DateTime,
       value: fields[1] as int,
-      fatigueContext: fields[2] == null ? 0.0 : fields[2] as double,
+      id: fields[3] == null ? '' : fields[3] as String?,
     );
   }
 
@@ -172,8 +172,8 @@ class TrackEntryAdapter extends TypeAdapter<TrackEntry> {
       ..write(obj.entryDate)
       ..writeByte(1)
       ..write(obj.value)
-      ..writeByte(2)
-      ..write(obj.fatigueContext);
+      ..writeByte(3)
+      ..write(obj.id);
   }
 
   @override
