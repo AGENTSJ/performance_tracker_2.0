@@ -105,16 +105,24 @@ class Workout extends HiveObject {
   double getFatigueAdjustedReps(double fatigue, int reps) {
     var sumOfAllVolumes = 0.0;
     volumes.forEach((vol) => sumOfAllVolumes += vol.volume);
-    final normPercentDrop = percentDrop ?? (PERCENTAGE_DROP_PER_SET);
+    final percentageDrop = percentDrop ?? (PERCENTAGE_DROP_PER_SET);
     final numberOfEquivalentSetDone = (fatigue / sumOfAllVolumes).safe;
     // var adjustedReps = reps * (1 +  numberOfEquivalentSetDone * normPercentDrop); //linear drop formula
-    var adjustedReps =
-        reps /
-        (1 -
-            exponentialSaturatedCurve(
-              numberOfEquivalentSetDone,
-              normPercentDrop,
-            ));
+    // var adjustedReps =
+    //     reps /
+    //     (1 -
+    //         exponentialSaturatedCurve(
+    //           numberOfEquivalentSetDone,
+    //           normPercentDrop,
+    //         ));
+    var adjustedReps =(100 *
+      reps) /
+      (100 -
+          exponentialSaturatedCurve(
+            numberOfEquivalentSetDone,
+            percentageDrop,
+          ))
+      ;
     return adjustedReps;
   }
 }
@@ -124,10 +132,9 @@ class Workout extends HiveObject {
 // 100 since performance cannot loose after 100 %. at 100 % u are dead.
 // assumption that drop in performance is not linear given a fatigue level
 double exponentialSaturatedCurve(double setsDone, double percentageDrop) {
-  // 100 * is avoided here since we need values from 0.0 to 1.0
   var d = findDecayRateForExponentialFunction(percentageDrop, 1);
-  var normalizedDropAfterSetsDone = (1 - exp(-1 * d * setsDone));
-  return normalizedDropAfterSetsDone;
+  var dropPercentAfterSetsDone = 100 * (1 - exp(-1 * d * setsDone));
+  return dropPercentAfterSetsDone;
 }
 
 double findDecayRateForExponentialFunction(double x, double y) {
